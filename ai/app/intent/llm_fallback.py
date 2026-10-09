@@ -29,6 +29,14 @@ ALLOWED_LABELS = {
 _cache: dict[str, tuple[IntentLabel, float]] = {}
 
 
+def _failure_fields(exc: Exception) -> dict[str, int | str]:
+    """Return safe diagnostics without serialising request URLs or credentials."""
+    fields: dict[str, int | str] = {"error_type": type(exc).__name__}
+    if isinstance(exc, httpx.HTTPStatusError) and exc.response is not None:
+        fields["status_code"] = exc.response.status_code
+    return fields
+
+
 def _cache_key(text: str) -> str:
     return hashlib.sha256(text.lower().strip().encode()).hexdigest()
 
@@ -67,7 +75,7 @@ async def _call_gemini(
                 intent = "unclear"
             return intent, min(max(conf, 0.0), 1.0)  # type: ignore[return-value]
     except Exception as exc:
-        log.warning("gemini_fallback_failed", error=str(exc))
+        log.warning("gemini_fallback_failed", **_failure_fields(exc))
         return None
 
 
@@ -100,7 +108,7 @@ async def _call_groq(
                 intent = "unclear"
             return intent, min(max(conf, 0.0), 1.0)  # type: ignore[return-value]
     except Exception as exc:
-        log.warning("groq_fallback_failed", error=str(exc))
+        log.warning("groq_fallback_failed", **_failure_fields(exc))
         return None
 
 

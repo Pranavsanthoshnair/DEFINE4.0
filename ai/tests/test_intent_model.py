@@ -166,3 +166,10 @@ async def test_pipeline_order_rules_then_model_then_llm_then_unclear(monkeypatch
     monkeypatch.setattr(pipeline.settings, "llm_fallback", "none")
     label, confidence, source, _ = await pipeline.run_pipeline("maybe", "en")
     assert (label, confidence, source) == ("unclear", 0.0, "rules")
+
+
+def test_llm_failure_metadata_does_not_include_exception_message():
+    from app.intent.llm_fallback import _failure_fields
+
+    fields = _failure_fields(RuntimeError("secret-bearing request URL"))
+    assert fields == {"error_type": "RuntimeError"}
