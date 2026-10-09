@@ -1,3 +1,69 @@
-# TODO: Caddy reverse proxy config (Member 4 - Phase 1)
-# See member-4 doc for the snippet to add
+# infra/caddy/pr002.caddy
+# Veylo PR 002 — Caddy site blocks
+# Drop this file into /etc/caddy/conf.d/pr002.caddy on the VPS.
+# The main /etc/caddy/Caddyfile must contain: import /etc/caddy/conf.d/*.caddy
+# Validate: sudo caddy validate --config /etc/caddy/Caddyfile
+# Reload:   sudo systemctl reload caddy
 
+# ── API ───────────────────────────────────────────────────────────────────────
+api.{$PR002_DOMAIN} {
+    encode gzip
+
+    # Larger body for CSV contact import (up to 6 MB per contract §6)
+    route /api/campaigns/*/contacts/import {
+        request_body {
+            max_size 6MB
+        }
+        reverse_proxy 127.0.0.1:8100
+    }
+
+    # Webhook path — 1 MB limit
+    route /webhooks/* {
+        request_body {
+            max_size 1MB
+        }
+        reverse_proxy 127.0.0.1:8100
+    }
+
+    # All other API and media routes
+    reverse_proxy 127.0.0.1:8100
+
+    header {
+        # Security headers
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Remove server fingerprinting
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/pr002-api.log {
+            roll_size 10MB
+            roll_keep 5
+        }
+    }
+}
+
+# ── Web dashboard ─────────────────────────────────────────────────────────────
+app.{$PR002_DOMAIN} {
+    encode gzip
+
+    reverse_proxy 127.0.0.1:8101
+
+    header {
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    log {
+        output file /var/log/caddy/pr002-app.log {
+            roll_size 10MB
+            roll_keep 5
+        }
+    }
+}

@@ -1,0 +1,246 @@
+{"text":"हाँ, मैं आऊँगा","label":"confirm","lang":"hi"}
+{"text":"haan main aaunga","label":"confirm","lang":"hi"}
+{"text":"जी हाँ, मैं ज़रूर आऊँगा","label":"confirm","lang":"hi"}
+{"text":"ji haan, main zaroor aaunga","label":"confirm","lang":"hi"}
+{"text":"ठीक है, मैं आ जाऊँगा","label":"confirm","lang":"hi"}
+{"text":"theek hai, main aa jaunga","label":"confirm","lang":"hi"}
+{"text":"हाँ जी, पक्का आऊँगा","label":"confirm","lang":"hi"}
+{"text":"haan ji, pakka aaunga","label":"confirm","lang":"hi"}
+{"text":"मैं वहाँ पहुँच जाऊँगा","label":"confirm","lang":"hi"}
+{"text":"main wahan pahunch jaunga","label":"confirm","lang":"hi"}
+{"text":"जी, मेरी उपस्थिति रहेगी","label":"confirm","lang":"hi"}
+{"text":"ji, meri upasthiti rahegi","label":"confirm","lang":"hi"}
+{"text":"हाँ, मैंने नोट कर लिया है","label":"confirm","lang":"hi"}
+{"text":"haan, maine note kar liya hai","label":"confirm","lang":"hi"}
+{"text":"ठीक है, मैं भुगतान कर दूँगा","label":"confirm","lang":"hi"}
+{"text":"theek hai, main payment kar dunga","label":"confirm","lang":"hi"}
+{"text":"हाँ, मैसेज मिल गया","label":"confirm","lang":"hi"}
+{"text":"haan, message mil gaya","label":"confirm","lang":"hi"}
+{"text":"नहीं, मैं नहीं आ पाऊँगा","label":"decline","lang":"hi"}
+{"text":"nahi, main nahi aa paunga","label":"decline","lang":"hi"}
+{"text":"माफ़ कीजिए, मैं नहीं आ सकता","label":"decline","lang":"hi"}
+{"text":"maaf kijiye, main nahi aa sakta","label":"decline","lang":"hi"}
+{"text":"उस दिन मैं बाहर रहूँगा","label":"decline","lang":"hi"}
+{"text":"us din main bahar rahunga","label":"decline","lang":"hi"}
+{"text":"मेरे लिए आना संभव नहीं है","label":"decline","lang":"hi"}
+{"text":"mere liye aana mumkin nahi hai","label":"decline","lang":"hi"}
+{"text":"नहीं जी, मैं नहीं आऊँगा","label":"decline","lang":"hi"}
+{"text":"nahi ji, main nahi aaunga","label":"decline","lang":"hi"}
+{"text":"मैं यात्रा पर हूँ, नहीं आ सकता","label":"decline","lang":"hi"}
+{"text":"main yatra par hoon, nahi aa sakta","label":"decline","lang":"hi"}
+{"text":"आज नहीं, कल रख लीजिए","label":"reschedule","lang":"hi"}
+{"text":"aaj nahi, kal rakh lijiye","label":"reschedule","lang":"hi"}
+{"text":"क्या इसे अगले हफ्ते कर सकते हैं?","label":"reschedule","lang":"hi"}
+{"text":"kya ise agle hafte kar sakte hain?","label":"reschedule","lang":"hi"}
+{"text":"इस समय नहीं, शाम को रखिए","label":"reschedule","lang":"hi"}
+{"text":"is samay nahi, shaam ko rakhiye","label":"reschedule","lang":"hi"}
+{"text":"कोई दूसरी तारीख बता दीजिए","label":"reschedule","lang":"hi"}
+{"text":"koi doosri tareekh bata dijiye","label":"reschedule","lang":"hi"}
+{"text":"कल मेरे लिए बेहतर रहेगा","label":"reschedule","lang":"hi"}
+{"text":"kal mere liye behtar rahega","label":"reschedule","lang":"hi"}
+{"text":"अभी व्यस्त हूँ, बाद में फोन करना","label":"call_later","lang":"hi"}
+{"text":"abhi vyast hoon, baad mein phone karna","label":"call_later","lang":"hi"}
+{"text":"थोड़ी देर बाद कॉल कीजिए","label":"call_later","lang":"hi"}
+{"text":"thodi der baad call kijiye","label":"call_later","lang":"hi"}
+{"text":"मैं अभी बात नहीं कर सकता","label":"call_later","lang":"hi"}
+{"text":"main abhi baat nahi kar sakta","label":"call_later","lang":"hi"}
+{"text":"बाद में फोन करना, अभी काम है","label":"call_later","lang":"hi"}
+{"text":"baad mein phone karna, abhi kaam hai","label":"call_later","lang":"hi"}
+{"text":"मुझे दोबारा फोन मत कीजिए","label":"stop_calling","lang":"hi"}
+{"text":"mujhe dobara phone mat kijiye","label":"stop_calling","lang":"hi"}
+{"text":"आप मेरा नंबर हटा दीजिए","label":"stop_calling","lang":"hi"}
+{"text":"aap mera number hata dijiye","label":"stop_calling","lang":"hi"}
+{"text":"हैलो, कौन बोल रहा है?","label":"unclear","lang":"hi"}
+{"text":"hello, kaun bol raha hai?","label":"unclear","lang":"hi"}
+{"text":"क्या कहा आपने?","label":"unclear","lang":"hi"}
+{"text":"kya kaha aapne?","label":"unclear","lang":"hi"}
+{"text":"अच्छा, लेकिन किस बारे में?","label":"unclear","lang":"hi"}
+{"text":"achha, lekin kis baare mein?","label":"unclear","lang":"hi"}
+{"text":"हम्म, अभी पता नहीं","label":"unclear","lang":"hi"}
+{"text":"hmm, abhi pata nahi","label":"unclear","lang":"hi"}
+{"text":"आप कहाँ से बोल रहे हैं?","label":"unclear","lang":"hi"}
+{"text":"aap kahan se bol rahe hain?","label":"unclear","lang":"hi"}
+{"text":"അതെ, ഞാൻ വരും","label":"confirm","lang":"ml"}
+{"text":"athe, njan varum","label":"confirm","lang":"ml"}
+{"text":"ശരി, ഞാൻ എത്താം","label":"confirm","lang":"ml"}
+{"text":"shari, njan etham","label":"confirm","lang":"ml"}
+{"text":"തീർച്ചയായും വരാം","label":"confirm","lang":"ml"}
+{"text":"theerchayayum varam","label":"confirm","lang":"ml"}
+{"text":"അതെ, പരിപാടിയിൽ പങ്കെടുക്കാം","label":"confirm","lang":"ml"}
+{"text":"athe, paripadiyil pankedukkam","label":"confirm","lang":"ml"}
+{"text":"ഓക്കേ, ഞാൻ വരുന്നതാണ്","label":"confirm","lang":"ml"}
+{"text":"okay, njan varunnathaanu","label":"confirm","lang":"ml"}
+{"text":"ഞാൻ അവിടെ ഉണ്ടാകും","label":"confirm","lang":"ml"}
+{"text":"njan avide undakum","label":"confirm","lang":"ml"}
+{"text":"ശരി, സമയം കുറിച്ചുവെച്ചു","label":"confirm","lang":"ml"}
+{"text":"shari, samayam kurichuvechu","label":"confirm","lang":"ml"}
+{"text":"അറിയിപ്പ് കിട്ടി, നന്ദി","label":"confirm","lang":"ml"}
+{"text":"ariyippu kitti, nandi","label":"confirm","lang":"ml"}
+{"text":"അതെ, പണം അടച്ചോളാം","label":"confirm","lang":"ml"}
+{"text":"athe, panam adacholam","label":"confirm","lang":"ml"}
+{"text":"ഇല്ല, എനിക്ക് വരാൻ കഴിയില്ല","label":"decline","lang":"ml"}
+{"text":"illa, enikku varan kazhiyilla","label":"decline","lang":"ml"}
+{"text":"ക്ഷമിക്കണം, അന്ന് പറ്റില്ല","label":"decline","lang":"ml"}
+{"text":"kshamikkanam, annu pattilla","label":"decline","lang":"ml"}
+{"text":"അന്ന് ഞാൻ യാത്രയിലാണ്","label":"decline","lang":"ml"}
+{"text":"annu njan yathrayilaanu","label":"decline","lang":"ml"}
+{"text":"എനിക്ക് മറ്റൊരു പരിപാടിയുണ്ട്","label":"decline","lang":"ml"}
+{"text":"enikku mattoru paripadiyundu","label":"decline","lang":"ml"}
+{"text":"വരാൻ സാധിക്കില്ല, സോറി","label":"decline","lang":"ml"}
+{"text":"varan sadhikkilla, sorry","label":"decline","lang":"ml"}
+{"text":"ആ ദിവസം ഞാൻ തിരക്കിലാണ്","label":"decline","lang":"ml"}
+{"text":"aa divasam njan thirakkilaanu","label":"decline","lang":"ml"}
+{"text":"ഇന്ന് പറ്റില്ല, നാളെ ആക്കാമോ?","label":"reschedule","lang":"ml"}
+{"text":"innu pattilla, nale aakkamo?","label":"reschedule","lang":"ml"}
+{"text":"അടുത്ത ആഴ്ചയിലേക്ക് മാറ്റാമോ?","label":"reschedule","lang":"ml"}
+{"text":"adutha aazhchayilekku mattamo?","label":"reschedule","lang":"ml"}
+{"text":"വൈകുന്നേരം ആക്കിയാൽ പറ്റും","label":"reschedule","lang":"ml"}
+{"text":"vaikunneram aakkiyal pattum","label":"reschedule","lang":"ml"}
+{"text":"മറ്റൊരു ദിവസം പറയാമോ?","label":"reschedule","lang":"ml"}
+{"text":"mattoru divasam parayamo?","label":"reschedule","lang":"ml"}
+{"text":"നാളെ എനിക്ക് സൗകര്യമുണ്ട്","label":"reschedule","lang":"ml"}
+{"text":"nale enikku saukaryamundu","label":"reschedule","lang":"ml"}
+{"text":"ഇപ്പോൾ തിരക്കിലാണ്, പിന്നെ വിളിക്കൂ","label":"call_later","lang":"ml"}
+{"text":"ippo thirakkilaanu, pinne vilikku","label":"call_later","lang":"ml"}
+{"text":"കുറച്ചു കഴിഞ്ഞ് വിളിക്കാമോ?","label":"call_later","lang":"ml"}
+{"text":"kurachu kazhinju vilikkamo?","label":"call_later","lang":"ml"}
+{"text":"ഇപ്പോൾ സംസാരിക്കാൻ പറ്റില്ല","label":"call_later","lang":"ml"}
+{"text":"ippo samsarikkaan pattilla","label":"call_later","lang":"ml"}
+{"text":"പിന്നെ വിളിക്കൂ, ഇപ്പോൾ മീറ്റിംഗിലാണ്","label":"call_later","lang":"ml"}
+{"text":"pinne vilikku, ippo meetingilaanu","label":"call_later","lang":"ml"}
+{"text":"ദയവായി ഇനി വിളിക്കരുത്","label":"stop_calling","lang":"ml"}
+{"text":"dayavayi ini vilikkaruthu","label":"stop_calling","lang":"ml"}
+{"text":"എന്റെ നമ്പർ ലിസ്റ്റിൽ നിന്ന് മാറ്റൂ","label":"stop_calling","lang":"ml"}
+{"text":"ente number listil ninnu maattuu","label":"stop_calling","lang":"ml"}
+{"text":"ഹലോ, ആരാണ് സംസാരിക്കുന്നത്?","label":"unclear","lang":"ml"}
+{"text":"hello, aaraanu samsarikkunnath?","label":"unclear","lang":"ml"}
+{"text":"എന്താണ് പറഞ്ഞത്?","label":"unclear","lang":"ml"}
+{"text":"enthaanu paranjathu?","label":"unclear","lang":"ml"}
+{"text":"ഏത് പരിപാടിയാണ് ഇത്?","label":"unclear","lang":"ml"}
+{"text":"ethu paripadiyaanu ithu?","label":"unclear","lang":"ml"}
+{"text":"ആലോചിച്ചിട്ട് പറയാം","label":"unclear","lang":"ml"}
+{"text":"alochichittu parayam","label":"unclear","lang":"ml"}
+{"text":"നിങ്ങൾ എവിടെ നിന്നാണ് വിളിക്കുന്നത്?","label":"unclear","lang":"ml"}
+{"text":"ningal evide ninnaanu vilikkunnath?","label":"unclear","lang":"ml"}
+{"text":"ஆம், நான் வருவேன்","label":"confirm","lang":"ta"}
+{"text":"aam, naan varuven","label":"confirm","lang":"ta"}
+{"text":"சரி, நான் வந்துவிடுகிறேன்","label":"confirm","lang":"ta"}
+{"text":"sari, naan vandhuvidugiren","label":"confirm","lang":"ta"}
+{"text":"கண்டிப்பாக வருகிறேன்","label":"confirm","lang":"ta"}
+{"text":"kandippaaga varugiren","label":"confirm","lang":"ta"}
+{"text":"நிச்சயமாக கலந்து கொள்கிறேன்","label":"confirm","lang":"ta"}
+{"text":"nichayamaaga kalandhu kolgiren","label":"confirm","lang":"ta"}
+{"text":"ஓகே, நான் வருகிறேன்","label":"confirm","lang":"ta"}
+{"text":"okay, naan varugiren","label":"confirm","lang":"ta"}
+{"text":"நான் அங்கே இருப்பேன்","label":"confirm","lang":"ta"}
+{"text":"naan ange iruppen","label":"confirm","lang":"ta"}
+{"text":"சரி, நேரத்தைக் குறித்துக் கொண்டேன்","label":"confirm","lang":"ta"}
+{"text":"sari, nerathai kurithu konden","label":"confirm","lang":"ta"}
+{"text":"தகவல் கிடைத்தது, நன்றி","label":"confirm","lang":"ta"}
+{"text":"thagaval kidaithathu, nandri","label":"confirm","lang":"ta"}
+{"text":"ஆம், பணம் செலுத்துகிறேன்","label":"confirm","lang":"ta"}
+{"text":"aam, panam seluthugiren","label":"confirm","lang":"ta"}
+{"text":"இல்லை, என்னால் வர முடியாது","label":"decline","lang":"ta"}
+{"text":"illai, ennaal vara mudiyaadhu","label":"decline","lang":"ta"}
+{"text":"மன்னிக்கவும், அன்று வர முடியாது","label":"decline","lang":"ta"}
+{"text":"mannikkavum, andru vara mudiyaadhu","label":"decline","lang":"ta"}
+{"text":"அன்று நான் வெளியூரில் இருப்பேன்","label":"decline","lang":"ta"}
+{"text":"andru naan veliyooril iruppen","label":"decline","lang":"ta"}
+{"text":"எனக்கு வேறு வேலை இருக்கிறது","label":"decline","lang":"ta"}
+{"text":"enakku veru velai irukkirathu","label":"decline","lang":"ta"}
+{"text":"வர முடியாது, மன்னிக்கவும்","label":"decline","lang":"ta"}
+{"text":"vara mudiyaadhu, mannikkavum","label":"decline","lang":"ta"}
+{"text":"அந்த நாளில் எனக்கு நேரமில்லை","label":"decline","lang":"ta"}
+{"text":"antha naalil enakku neramillai","label":"decline","lang":"ta"}
+{"text":"இன்று முடியாது, நாளைக்கு மாற்றலாமா?","label":"reschedule","lang":"ta"}
+{"text":"indru mudiyaadhu, naalaikku maatralama?","label":"reschedule","lang":"ta"}
+{"text":"அடுத்த வாரம் வைத்துக்கொள்ளலாமா?","label":"reschedule","lang":"ta"}
+{"text":"adutha vaaram vaithukkollalama?","label":"reschedule","lang":"ta"}
+{"text":"மாலையில் வைத்தால் வர முடியும்","label":"reschedule","lang":"ta"}
+{"text":"maalaiyil vaithaal vara mudiyum","label":"reschedule","lang":"ta"}
+{"text":"வேறு ஒரு தேதியைச் சொல்லுங்கள்","label":"reschedule","lang":"ta"}
+{"text":"veru oru thethiyai sollungal","label":"reschedule","lang":"ta"}
+{"text":"நாளை எனக்கு வசதியாக இருக்கும்","label":"reschedule","lang":"ta"}
+{"text":"naalai enakku vasadhiyaaga irukkum","label":"reschedule","lang":"ta"}
+{"text":"இப்போது பிஸியாக இருக்கிறேன், பிறகு அழையுங்கள்","label":"call_later","lang":"ta"}
+{"text":"ippodhu busy-aaga irukkiren, piragu azhaiyungal","label":"call_later","lang":"ta"}
+{"text":"கொஞ்ச நேரம் கழித்து அழைக்க முடியுமா?","label":"call_later","lang":"ta"}
+{"text":"konja neram kazhithu azhaikka mudiyuma?","label":"call_later","lang":"ta"}
+{"text":"இப்போது பேச முடியாது","label":"call_later","lang":"ta"}
+{"text":"ippodhu pesa mudiyaadhu","label":"call_later","lang":"ta"}
+{"text":"பிறகு அழையுங்கள், இப்போது வேலையில் இருக்கிறேன்","label":"call_later","lang":"ta"}
+{"text":"piragu azhaiyungal, ippodhu velaiyil irukkiren","label":"call_later","lang":"ta"}
+{"text":"தயவுசெய்து இனிமேல் அழைக்காதீர்கள்","label":"stop_calling","lang":"ta"}
+{"text":"dayavuseithu inimel azhaikkaadheergal","label":"stop_calling","lang":"ta"}
+{"text":"என் எண்ணை பட்டியலிலிருந்து நீக்குங்கள்","label":"stop_calling","lang":"ta"}
+{"text":"en ennai pattiyalilirundhu neekkungal","label":"stop_calling","lang":"ta"}
+{"text":"ஹலோ, யார் பேசுகிறீர்கள்?","label":"unclear","lang":"ta"}
+{"text":"hello, yaar pesugireergal?","label":"unclear","lang":"ta"}
+{"text":"என்ன சொன்னீர்கள்?","label":"unclear","lang":"ta"}
+{"text":"enna sonneergal?","label":"unclear","lang":"ta"}
+{"text":"எதைப் பற்றி பேசுகிறீர்கள்?","label":"unclear","lang":"ta"}
+{"text":"ethaip patri pesugireergal?","label":"unclear","lang":"ta"}
+{"text":"ம், எனக்குத் தெரியவில்லை","label":"unclear","lang":"ta"}
+{"text":"hmm, enakku theriyavillai","label":"unclear","lang":"ta"}
+{"text":"நீங்கள் எங்கிருந்து பேசுகிறீர்கள்?","label":"unclear","lang":"ta"}
+{"text":"neengal engirundhu pesugireergal?","label":"unclear","lang":"ta"}
+{"text":"Yes, I'll be there","label":"confirm","lang":"en"}
+{"text":"yes","label":"confirm","lang":"en"}
+{"text":"Sure, I'll attend","label":"confirm","lang":"en"}
+{"text":"Okay, count me in","label":"confirm","lang":"en"}
+{"text":"Absolutely, I'll come","label":"confirm","lang":"en"}
+{"text":"Yes, definitely","label":"confirm","lang":"en"}
+{"text":"That works for me","label":"confirm","lang":"en"}
+{"text":"I'll be there on time","label":"confirm","lang":"en"}
+{"text":"Got it, thank you","label":"confirm","lang":"en"}
+{"text":"Yes, I received the notice","label":"confirm","lang":"en"}
+{"text":"Okay, I've noted the date","label":"confirm","lang":"en"}
+{"text":"I'll make the payment","label":"confirm","lang":"en"}
+{"text":"Yes, I'll pay by then","label":"confirm","lang":"en"}
+{"text":"Sure, no problem","label":"confirm","lang":"en"}
+{"text":"Alright, I'll come","label":"confirm","lang":"en"}
+{"text":"Yes, understood","label":"confirm","lang":"en"}
+{"text":"Sorry, I can't make it","label":"decline","lang":"en"}
+{"text":"No, I won't be able to attend","label":"decline","lang":"en"}
+{"text":"I'm travelling that day","label":"decline","lang":"en"}
+{"text":"I have another commitment","label":"decline","lang":"en"}
+{"text":"Unfortunately, I can't come","label":"decline","lang":"en"}
+{"text":"No, that date doesn't work","label":"decline","lang":"en"}
+{"text":"I'm busy that day","label":"decline","lang":"en"}
+{"text":"I won't be available","label":"decline","lang":"en"}
+{"text":"Sorry, something came up","label":"decline","lang":"en"}
+{"text":"No, I have other plans","label":"decline","lang":"en"}
+{"text":"I can't attend this time","label":"decline","lang":"en"}
+{"text":"I'm out of town","label":"decline","lang":"en"}
+{"text":"Can we do it tomorrow instead?","label":"reschedule","lang":"en"}
+{"text":"Could we move it to next week?","label":"reschedule","lang":"en"}
+{"text":"I'm unavailable at that time, but another time works","label":"reschedule","lang":"en"}
+{"text":"Can we schedule it for the evening?","label":"reschedule","lang":"en"}
+{"text":"Please give me another date","label":"reschedule","lang":"en"}
+{"text":"Tomorrow would be better for me","label":"reschedule","lang":"en"}
+{"text":"Can we postpone it by a day?","label":"reschedule","lang":"en"}
+{"text":"How about next Monday?","label":"reschedule","lang":"en"}
+{"text":"Could you change the appointment time?","label":"reschedule","lang":"en"}
+{"text":"Not today, maybe later this week","label":"reschedule","lang":"en"}
+{"text":"I'm busy right now, call me later","label":"call_later","lang":"en"}
+{"text":"Please call back in an hour","label":"call_later","lang":"en"}
+{"text":"I can't talk at the moment","label":"call_later","lang":"en"}
+{"text":"Can you call me this evening?","label":"call_later","lang":"en"}
+{"text":"I'm in a meeting, call later","label":"call_later","lang":"en"}
+{"text":"Give me a few minutes and call again","label":"call_later","lang":"en"}
+{"text":"I'll talk to you later","label":"call_later","lang":"en"}
+{"text":"Please try again after lunch","label":"call_later","lang":"en"}
+{"text":"Don't call me again","label":"stop_calling","lang":"en"}
+{"text":"Remove my number from your list","label":"stop_calling","lang":"en"}
+{"text":"I don't want any more calls","label":"stop_calling","lang":"en"}
+{"text":"Please stop contacting me","label":"stop_calling","lang":"en"}
+{"text":"Hello, who's speaking?","label":"unclear","lang":"en"}
+{"text":"Sorry, what was that?","label":"unclear","lang":"en"}
+{"text":"What is this about?","label":"unclear","lang":"en"}
+{"text":"I don't understand","label":"unclear","lang":"en"}
+{"text":"Hmm, I'm not sure","label":"unclear","lang":"en"}
+{"text":"Can you explain that again?","label":"unclear","lang":"en"}
+{"text":"Where are you calling from?","label":"unclear","lang":"en"}
+{"text":"Wait, which event is this?","label":"unclear","lang":"en"}
+{"text":"Maybe, I'll have to check","label":"unclear","lang":"en"}
+{"text":"Hello? Are you there?","label":"unclear","lang":"en"}

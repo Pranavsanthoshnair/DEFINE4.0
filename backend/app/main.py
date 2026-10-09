@@ -10,7 +10,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.api.routes import health, campaigns, contacts, calls, analytics, webhooks
+from app.api.routes import health, campaigns, contacts, calls, analytics, webhooks, admin
+from app.api.routes import capabilities, sessions, telegram_webhook, audio
+from app.api.compat_router import compat_router
 from app.telephony.router import router as telephony_router
 
 log = structlog.get_logger()
@@ -48,7 +50,17 @@ def create_app() -> FastAPI:
     app.include_router(calls.router, prefix="/api/v1/calls", tags=["calls"])
     app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
     app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["webhooks"])
+    app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+    app.include_router(capabilities.router, prefix="/api/v1", tags=["capabilities"])
+    app.include_router(sessions.router, prefix="/api/v1/sessions", tags=["sessions"])
+    app.include_router(audio.router, prefix="/api/v1", tags=["audio"])  # public — telephony fetch
+    app.include_router(
+        telegram_webhook.router,
+        prefix="/api/v1/telegram",
+        tags=["telegram"],
+    )
     app.include_router(telephony_router, tags=["telephony"])
+    app.include_router(compat_router)  # /api/* aliases for frontend client
 
     return app
 

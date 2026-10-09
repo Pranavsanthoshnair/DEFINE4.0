@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 services:
   ai:
     build:
@@ -6,4 +7,189 @@ services:
       MODELS_DIR: /models
     volumes:
       - ./ai/models:/models:ro
+=======
+# docker-compose.yml — Veylo PR 002
+# Owner: Member 4 | CONTRACTS.md §12
+# Compose project name: pr002  |  Network: pr002_net
+# All DB/Redis/AI ports are internal only.
+# API binds to 127.0.0.1:8100, Web to 127.0.0.1:8101 (reverse-proxied by host Caddy).
+>>>>>>> d2a8de363314e600ad7f0c85c7b70488120b3bf7
 
+name: pr002
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-api-image: &api-image
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+  image: pr002-api:latest
+  env_file: .env
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+  logging: *default-logging
+
+services:
+  # ── Postgres 16 ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    container_name: pr002-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pr002
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: pr002
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pr002_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pr002 -d pr002"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+  # ── Redis 7 ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7
+    container_name: pr002-redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+    volumes:
+      - redisdata:/data
+    networks:
+      - pr002_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+  # ── API — FastAPI / uvicorn ─────────────────────────────────────────────────
+  api:
+    <<: *api-image
+    container_name: pr002-api
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8100
+      --workers 2
+    ports:
+      - "127.0.0.1:8100:8100"
+    volumes:
+      - media:/data/media
+      - recordings:/data/recordings
+    networks:
+      - pr002_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8100/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ── Worker — Celery default queue ──────────────────────────────────────────
+  worker:
+    <<: *api-image
+    container_name: pr002-worker
+    command: >
+      celery -A app.celery_app worker
+      -Q default
+      -c 4
+      --loglevel=info
+    volumes:
+      - media:/data/media
+      - recordings:/data/recordings
+    networks:
+      - pr002_net
+
+  # ── Beat — Celery scheduler ────────────────────────────────────────────────
+  beat:
+    <<: *api-image
+    container_name: pr002-beat
+    command: celery -A app.celery_app beat --loglevel=info
+    networks:
+      - pr002_net
+
+  # ── AI service ────────────────────────────────────────────────────────────
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    image: pr002-ai:latest
+    container_name: pr002-ai
+    restart: unless-stopped
+    environment:
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN}
+      STT_MODEL: ${STT_MODEL:-faster-whisper-small}
+      TTS_ENGINE: ${TTS_ENGINE:-edge}
+      LLM_FALLBACK: ${LLM_FALLBACK:-none}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OMP_NUM_THREADS: "4"
+    volumes:
+      - models:/root/.cache/huggingface
+    networks:
+      - pr002_net
+    mem_limit: 12g
+    cpus: 4
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8200/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    logging: *default-logging
+
+  # ── Web — Next.js standalone ───────────────────────────────────────────────
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: runner
+    image: pr002-web:latest
+    container_name: pr002-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE_URL: ${PUBLIC_BASE_URL}
+      NEXT_PUBLIC_USE_MOCKS: "false"
+    ports:
+      - "127.0.0.1:8101:3000"
+    networks:
+      - pr002_net
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:3000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
+volumes:
+  pgdata:
+  redisdata:
+  media:
+  recordings:
+  models:
+
+# ── Network ──────────────────────────────────────────────────────────────────
+networks:
+  pr002_net:
+    name: pr002_net
+    driver: bridge
