@@ -55,7 +55,7 @@ export default function CampaignFilters() {
 
         <Link
           href="/campaigns/new"
-          className="btn-3d inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-mono font-bold uppercase tracking-wider bg-brand-red hover:bg-brand-red-hover !text-white rounded-md transition-colors shadow-md hover:shadow-lg"
+          className="btn-3d inline-flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider bg-stone-900 hover:bg-stone-800 !text-white rounded-md transition-colors shadow-md hover:shadow-lg"
         >
           <span className="text-sm leading-none">+</span> New Campaign
         </Link>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ export default function CampaignWizard() {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
   const [csvError, setCsvError] = useState<string | null>(null);
   const [recipientFile, setRecipientFile] = useState<File | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Form State
   const [formData, setFormData] = useState({
@@ -39,10 +40,24 @@ export default function CampaignWizard() {
 
   const updateField = (key: string, value: any) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
+    if (validationErrors[key]) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
   };
 
   const handleFileSelect = (file: File | null) => {
     setCsvError(null);
+    if (validationErrors.recipientsFile) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.recipientsFile;
+        return next;
+      });
+    }
     setRecipientFile(file);
     if (!file) {
       updateField("recipientsFile", "");
@@ -65,6 +80,28 @@ export default function CampaignWizard() {
       updateField("recipientCount", Math.max(0, rows));
     };
     reader.readAsText(file);
+  };
+
+  const validateStep = (step: number) => {
+    const errors: Record<string, string> = {};
+    if (step === 0) {
+      if (!formData.title.trim()) errors.title = "Campaign title is required";
+      if (!formData.eventType) errors.eventType = "Event type is required";
+      if (!formData.date) errors.date = "Date is required";
+      if (!formData.time) errors.time = "Time is required";
+      if (!formData.venue.trim()) errors.venue = "Venue is required";
+    } else if (step === 1) {
+      if (!recipientFile && !formData.recipientsFile) errors.recipientsFile = "Please upload a recipients CSV file";
+      if (!formData.primaryLanguage) errors.primaryLanguage = "Primary language is required";
+    } else if (step === 2) {
+      if (!formData.voice) errors.voice = "Voice engine profile is required";
+      if (!formData.scriptText.trim()) errors.scriptText = "Voice script is required";
+    } else if (step === 3) {
+      if (!formData.concurrency) errors.concurrency = "Concurrency is required";
+      if (!formData.maxRetries) errors.maxRetries = "Max retries is required";
+    }
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   // ── Submit (real API — CONTRACTS.md §6) ───────────────────────────────────
@@ -130,6 +167,8 @@ export default function CampaignWizard() {
   };
 
   const handleNext = () => {
+    if (!validateStep(currentStep)) return;
+    
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -142,6 +181,12 @@ export default function CampaignWizard() {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  const renderError = (field: string) => (
+    validationErrors[field] ? (
+      <p className="text-[11px] text-red-600 mt-1.5 font-mono bg-red-50/50 px-2 py-1 rounded border border-red-100">{validationErrors[field]}</p>
+    ) : null
+  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -195,8 +240,9 @@ export default function CampaignWizard() {
                   placeholder="e.g., Annual Tech Summit VIP Invitation"
                   value={formData.title}
                   onChange={(e) => updateField("title", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.title ? "border-red-300" : "border-stone-300"}`}
                 />
+                {renderError("title")}
               </div>
 
               <div>
@@ -204,13 +250,14 @@ export default function CampaignWizard() {
                 <select
                   value={formData.eventType}
                   onChange={(e) => updateField("eventType", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red bg-white"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red bg-white ${validationErrors.eventType ? "border-red-300" : "border-stone-300"}`}
                 >
                   <option>Invitation</option>
                   <option>Reminder</option>
                   <option>Update</option>
                   <option>Feedback</option>
                 </select>
+                {renderError("eventType")}
               </div>
 
               <div>
@@ -219,8 +266,9 @@ export default function CampaignWizard() {
                   type="date"
                   value={formData.date}
                   onChange={(e) => updateField("date", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.date ? "border-red-300" : "border-stone-300"}`}
                 />
+                {renderError("date")}
               </div>
 
               <div>
@@ -229,8 +277,9 @@ export default function CampaignWizard() {
                   type="time"
                   value={formData.time}
                   onChange={(e) => updateField("time", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.time ? "border-red-300" : "border-stone-300"}`}
                 />
+                {renderError("time")}
               </div>
 
               <div>
@@ -250,8 +299,9 @@ export default function CampaignWizard() {
                   placeholder="e.g., Grand Hyatt Ballroom, Mumbai"
                   value={formData.venue}
                   onChange={(e) => updateField("venue", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.venue ? "border-red-300" : "border-stone-300"}`}
                 />
+                {renderError("venue")}
               </div>
             </div>
           </div>
@@ -264,7 +314,7 @@ export default function CampaignWizard() {
               <p className="text-xs text-stone-500 mt-1">Upload contacts CSV or select a saved contact audience.</p>
             </div>
 
-            <div className="border-2 border-dashed border-stone-200 rounded-xl p-8 text-center bg-stone-50/50 hover:bg-stone-50 transition-colors">
+            <div className={`border-2 border-dashed rounded-xl p-8 text-center bg-stone-50/50 hover:bg-stone-50 transition-colors ${validationErrors.recipientsFile ? "border-red-300 bg-red-50/10" : "border-stone-200"}`}>
               <div className="w-12 h-12 bg-red-50 text-brand-red rounded-full flex items-center justify-center mx-auto mb-3 font-mono text-lg font-bold">
                 CSV
               </div>
@@ -290,6 +340,9 @@ export default function CampaignWizard() {
               {csvError && (
                 <p className="mt-3 text-xs text-red-600 font-mono">{csvError}</p>
               )}
+              {validationErrors.recipientsFile && !csvError && (
+                <p className="mt-3 text-xs text-red-600 font-mono">{validationErrors.recipientsFile}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-200">
@@ -298,7 +351,7 @@ export default function CampaignWizard() {
                 <select
                   value={formData.primaryLanguage}
                   onChange={(e) => updateField("primaryLanguage", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white ${validationErrors.primaryLanguage ? "border-red-300" : "border-stone-300"}`}
                 >
                   <option>Hindi</option>
                   <option>English</option>
@@ -310,6 +363,7 @@ export default function CampaignWizard() {
                   <option>Gujarati</option>
                   <option>Malayalam</option>
                 </select>
+                {renderError("primaryLanguage")}
               </div>
 
               <div>
@@ -340,7 +394,7 @@ export default function CampaignWizard() {
                 <select
                   value={formData.voice}
                   onChange={(e) => updateField("voice", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.voice ? "border-red-300" : "border-stone-300"}`}
                 >
                   <option>Sarvam - Hindi Natural (Female - Bulbul)</option>
                   <option>Sarvam - Hindi Formal (Male - Arjun)</option>
@@ -348,6 +402,7 @@ export default function CampaignWizard() {
                   <option>ElevenLabs - Multilingual v2 (Roger)</option>
                   <option>OpenAI - TTS-1-HD (Nova)</option>
                 </select>
+                {renderError("voice")}
               </div>
 
               <div>
@@ -370,8 +425,9 @@ export default function CampaignWizard() {
                   rows={5}
                   value={formData.scriptText}
                   onChange={(e) => updateField("scriptText", e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm font-sans border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className={`w-full px-3.5 py-2.5 text-sm font-sans border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.scriptText ? "border-red-300" : "border-stone-300"}`}
                 />
+                {renderError("scriptText")}
               </div>
 
               <div className="flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-200">
@@ -403,13 +459,14 @@ export default function CampaignWizard() {
                 <select
                   value={formData.concurrency}
                   onChange={(e) => updateField("concurrency", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.concurrency ? "border-red-300" : "border-stone-300"}`}
                 >
                   <option value="1">1 channel (Testing / Slow)</option>
                   <option value="5">5 channels (Standard)</option>
                   <option value="10">10 channels (High Throughput)</option>
                   <option value="25">25 channels (Enterprise Bulk)</option>
                 </select>
+                {renderError("concurrency")}
               </div>
 
               <div>
@@ -417,13 +474,14 @@ export default function CampaignWizard() {
                 <select
                   value={formData.maxRetries}
                   onChange={(e) => updateField("maxRetries", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.maxRetries ? "border-red-300" : "border-stone-300"}`}
                 >
                   <option value="0">No retry</option>
                   <option value="1">1 retry (after 15 mins)</option>
                   <option value="2">2 retries (after 15m, 1h)</option>
                   <option value="3">3 retries (adaptive)</option>
                 </select>
+                {renderError("maxRetries")}
               </div>
             </div>
 
@@ -477,7 +535,7 @@ export default function CampaignWizard() {
             disabled={isSubmitting}
             className={`btn-3d px-8 py-2.5 text-sm font-mono font-bold uppercase tracking-wider rounded-lg shadow-md transition-all flex items-center justify-center gap-2 min-w-[200px] ${
               isSubmitting
-                ? "bg-brand-red/80 text-white/90 cursor-wait"
+                ? "bg-brand-red/80 text-white/90 cursor-wait opacity-80"
                 : "bg-brand-red hover:bg-brand-red-hover text-white hover:shadow-lg"
             }`}
           >

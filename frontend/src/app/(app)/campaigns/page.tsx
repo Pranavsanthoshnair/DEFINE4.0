@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import CampaignFilters from "@/components/ui/interactive/CampaignFilters";
 
