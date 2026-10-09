@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+coverage
+*.log
+.git
+.env*
+Dockerfile
+README.md
