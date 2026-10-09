@@ -50,6 +50,7 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
   const [campaigns, setCampaigns]         = useState<CampaignOption[]>([]);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>(initialCampaignId ?? "");
   const [campaignsLoading, setCampaignsLoading]     = useState(false);
+  const [campaignsError, setCampaignsError]         = useState<string | null>(null);
 
   // Resolve which campaign is active
   const campaignId   = initialCampaignId ?? selectedCampaignId;
@@ -68,10 +69,14 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
   useEffect(() => {
     if (initialCampaignId) return;          // already have one
     setCampaignsLoading(true);
+    setCampaignsError(null);
     fetch(`${API}/api/v1/campaigns/?limit=50`)
-      .then(r => r.ok ? r.json() : [])
-      .then(d => setCampaigns(Array.isArray(d) ? d : []))
-      .catch(() => {})
+      .then(r => {
+        if (!r.ok) throw new Error("Failed to load campaigns");
+        return r.json();
+      })
+      .then(d => setCampaigns(Array.isArray(d) ? d : (d?.items ?? d?.campaigns ?? [])))
+      .catch((e) => setCampaignsError(e.message))
       .finally(() => setCampaignsLoading(false));
   }, [initialCampaignId]);
 
@@ -198,6 +203,8 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
             </label>
             {campaignsLoading ? (
               <div style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#8A9BB0", padding: "9px 0" }}>Loading campaigns…</div>
+            ) : campaignsError ? (
+              <div style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#EA1D2C", padding: "9px 0" }}>{campaignsError}</div>
             ) : campaigns.length === 0 ? (
               <div style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#EA1D2C", padding: "9px 0" }}>No campaigns found — create one first.</div>
             ) : (

@@ -53,10 +53,12 @@ export default function CampaignsPage() {
   const [simulatorId, setSimulatorId]   = useState<string | null>(null);
   const [launchTarget, setLaunchTarget] = useState<Campaign | null>(null);
   const [addContactsCampaign, setAddContactsCampaign] = useState<Campaign | null>(null);
+  const [isAddContactsOpen, setIsAddContactsOpen] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName]       = useState("");
   const [newLang, setNewLang]       = useState("en");
   const [creating, setCreating]     = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Load campaigns ─────────────────────────────────────────────────────
@@ -107,6 +109,7 @@ export default function CampaignsPage() {
   const createCampaign = async () => {
     if (!newName.trim()) return;
     setCreating(true);
+    setCreateError(null);
     try {
       const res = await fetch(`${API}/api/v1/campaigns/`, {
         method: "POST",
@@ -119,7 +122,7 @@ export default function CampaignsPage() {
       setShowCreate(false);
       setNewName("");
     } catch (e) {
-      alert(e instanceof Error ? e.message : "Create failed");
+      setCreateError(e instanceof Error ? e.message : "Create failed");
     } finally {
       setCreating(false);
     }
@@ -163,6 +166,11 @@ export default function CampaignsPage() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(10,14,20,.5)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <div style={{ background: "#fff", borderRadius: 16, padding: "28px 32px", width: 400, maxWidth: "90vw", boxShadow: "0 24px 60px rgba(0,0,0,.2)" }}>
             <h2 style={{ fontFamily: "Manrope, sans-serif", fontWeight: 800, fontSize: 20, margin: "0 0 20px", color: "#17263A" }}>New Campaign</h2>
+            {createError && (
+              <div style={{ padding: "10px 14px", background: "#FFF1F2", color: "#DC2626", borderRadius: 8, fontSize: 13, fontWeight: 600, marginBottom: 16, border: "1px solid #FECDD3" }}>
+                {createError}
+              </div>
+            )}
             <label style={{ display: "block", fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 13, color: "#5A6E84", marginBottom: 6 }}>Campaign Name</label>
             <input
               value={newName}
@@ -186,10 +194,10 @@ export default function CampaignsPage() {
               <option value="mr">Marathi</option>
             </select>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={createCampaign} disabled={creating} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "11px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 14, cursor: creating ? "not-allowed" : "pointer" }}>
+              <button onClick={createCampaign} disabled={creating} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "11px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 14, cursor: creating ? "not-allowed" : "pointer", opacity: creating ? 0.7 : 1 }}>
                 {creating ? "Creating…" : "Create Campaign"}
               </button>
-              <button onClick={() => setShowCreate(false)} style={{ padding: "11px 16px", background: "transparent", border: "1.5px solid #e2e8f0", borderRadius: 8, fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
+              <button onClick={() => { setShowCreate(false); setCreateError(null); setNewName(""); }} style={{ padding: "11px 16px", background: "transparent", border: "1.5px solid #e2e8f0", borderRadius: 8, fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
             </div>
           </div>
         </div>
@@ -230,7 +238,7 @@ export default function CampaignsPage() {
                       {/* Add Contacts */}
                       <button
                         title="Add contacts to this campaign"
-                        onClick={() => setAddContactsCampaign(c)}
+                        onClick={() => { setAddContactsCampaign(c); setIsAddContactsOpen(true); }}
                         style={{ padding: "6px 12px", background: "rgba(183,216,245,.3)", border: "1px solid rgba(23,38,58,.1)", borderRadius: 6, fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 11, cursor: "pointer", color: "#17263A" }}
                       >
                         👤 Add Contacts
@@ -285,12 +293,14 @@ export default function CampaignsPage() {
       />
 
       {/* Add contacts drawer — single or bulk CSV */}
-      <AddContactsDrawer
-        campaignId={addContactsCampaign?.id ?? null}
-        campaignName={addContactsCampaign?.name}
-        onClose={() => setAddContactsCampaign(null)}
-        onSuccess={() => { setAddContactsCampaign(null); load(); }}
-      />
+      {isAddContactsOpen && (
+        <AddContactsDrawer
+          campaignId={addContactsCampaign?.id ?? null}
+          campaignName={addContactsCampaign?.name}
+          onClose={() => { setAddContactsCampaign(null); setIsAddContactsOpen(false); }}
+          onSuccess={() => { setAddContactsCampaign(null); setIsAddContactsOpen(false); load(); }}
+        />
+      )}
     </div>
   );
 }
