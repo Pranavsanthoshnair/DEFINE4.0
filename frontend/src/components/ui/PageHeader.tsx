@@ -6,15 +6,10 @@ interface PageHeaderProps {
   subtitle?: string;
   tagline?: string;
   bubble?: string;
-  /** "boy" | "girl" — which mascot to show. Omit to hide mascot. */
   mascot?: "boy" | "girl";
   action?: React.ReactNode;
 }
 
-/**
- * The blue page header (.ph) from the reference design.
- * Includes the decorative network SVG, speech bubble, and mascot image.
- */
 export default function PageHeader({
   eyebrow,
   title,
@@ -25,80 +20,77 @@ export default function PageHeader({
   action,
 }: PageHeaderProps) {
   return (
-    <div className="ph" style={{ paddingRight: mascot ? 220 : 28 }}>
-      {/* Decorative network SVG (top-right) */}
+    <div
+      className="relative overflow-hidden rounded-2xl mb-5 flex items-center justify-between"
+      style={{
+        background: "rgba(183,216,245,.38)",
+        border: "1px solid rgba(183,216,245,.6)",
+        padding: "24px 28px",
+        minHeight: 120,
+        gap: 16,
+      }}
+    >
+      {/* Subtle decorative lines — desktop only */}
       <svg
         viewBox="0 0 420 160"
         preserveAspectRatio="xMaxYMid slice"
         aria-hidden="true"
+        className="hidden md:block"
         style={{
-          position: "absolute", right: mascot ? 190 : 0,
-          top: 0, height: "100%",
-          width: "min(34%, 320px)",
-          pointerEvents: "none", zIndex: 1,
+          position: "absolute", right: mascot ? 180 : 0,
+          top: 0, height: "100%", width: "30%",
+          pointerEvents: "none", zIndex: 1, opacity: 0.5,
         }}
       >
-        <path className="net-path" d="M120 90 C190 20 300 20 390 50"/>
-        <path className="net-path" d="M120 90 C220 100 320 110 400 120"/>
-        <path className="net-path" d="M120 90 C180 150 260 160 330 150"/>
-        <circle className="net-node" cx="120" cy="90" r="6"/>
-        <circle className="net-node" cx="390" cy="50" r="5"/>
-        <circle className="net-node" cx="400" cy="120" r="5"/>
-        <circle className="net-node" cx="330" cy="150" r="5"/>
-        <circle className="net-pulse" r="4">
-          <animateMotion dur="4.5s" repeatCount="indefinite" path="M120 90 C190 20 300 20 390 50"/>
-        </circle>
-        <circle className="net-pulse" r="4">
-          <animateMotion dur="5.5s" begin="1s" repeatCount="indefinite" path="M120 90 C220 100 320 110 400 120"/>
-        </circle>
-        <circle className="net-pulse" r="4">
-          <animateMotion dur="5s" begin="2s" repeatCount="indefinite" path="M120 90 C180 150 260 160 330 150"/>
-        </circle>
+        <path stroke="#17263A" strokeWidth="1" fill="none" strokeDasharray="4 4" d="M120 80 C190 20 300 20 390 50" />
+        <path stroke="#17263A" strokeWidth="1" fill="none" strokeDasharray="4 4" d="M120 80 C220 100 320 110 400 120" />
+        <circle fill="#EA1D2C" cx="120" cy="80" r="5" opacity="0.7" />
+        <circle fill="#17263A" cx="390" cy="50" r="4" opacity="0.4" />
+        <circle fill="#17263A" cx="400" cy="120" r="4" opacity="0.4" />
       </svg>
 
-      {/* Floating yellow dot */}
-      <span
-        aria-hidden="true"
-        style={{
-          position: "absolute", right: "18%", top: 16,
-          width: 30, height: 30, borderRadius: "50%",
-          background: "var(--yellow)", zIndex: 1,
-          animation: "float 6s ease-in-out infinite",
-        }}
-      />
-
-      {/* Main text content */}
-      <div className="ph-inner">
-        {eyebrow && <p className="eye" style={{ textTransform: "uppercase" }}>{eyebrow}</p>}
-        <h2 style={{
-          font: "800 clamp(28px,4vw,44px)/1 'Manrope'",
-          letterSpacing: "-.05em", margin: "0 0 6px",
-          position: "relative", zIndex: 0,
-        }}>
+      {/* Main text */}
+      <div className="relative z-10 flex-1 min-w-0">
+        {eyebrow && (
+          <p className="flex items-center gap-2 mb-1" style={{ font: "600 11px/1 'Manrope', sans-serif", letterSpacing: ".1em", textTransform: "uppercase", color: "#5A6E84" }}>
+            <span style={{ width: 18, height: 1.5, background: "#EA1D2C", display: "inline-block", flex: "none" }} />
+            {eyebrow}
+          </p>
+        )}
+        <h1 style={{ font: "800 clamp(22px,3.5vw,38px)/1.1 'Manrope', sans-serif", letterSpacing: "-.04em", margin: "0 0 6px", color: "#17263A" }}>
           {title}
-        </h2>
-        {subtitle && <p style={{ margin: 0, color: "#33465C" }}>{subtitle}</p>}
-        {tagline && <em className="cal">{tagline}</em>}
+        </h1>
+        {subtitle && <p style={{ margin: "0 0 8px", color: "#33465C", fontSize: 14 }}>{subtitle}</p>}
+        {tagline && <em style={{ fontFamily: "'Caveat', cursive", fontSize: 18, color: "#EA1D2C", fontStyle: "italic" }}>{tagline}</em>}
+        {action && <div className="mt-4">{action}</div>}
       </div>
 
-      {/* Action slot */}
-      {action && (
-        <div style={{ position: "relative", zIndex: 3 }}>
-          {action}
-        </div>
-      )}
-
-      {/* Mascot + speech bubble */}
+      {/* Mascot — hidden on small screens */}
       {mascot && (
-        <div className="mascot-wrap" aria-hidden="true">
-          {bubble && <span className="speech-bubble">{bubble}</span>}
+        <div className="hidden sm:flex flex-col items-center relative z-10 flex-none" style={{ gap: 4 }}>
+          {bubble && (
+            <span
+              style={{
+                background: "#fff",
+                border: "1.5px solid #17263A",
+                borderRadius: "12px 12px 12px 4px",
+                padding: "4px 10px",
+                fontSize: 11,
+                fontWeight: 700,
+                fontFamily: "Manrope, sans-serif",
+                whiteSpace: "nowrap",
+                boxShadow: "2px 2px 0 #17263A",
+              }}
+            >
+              {bubble}
+            </span>
+          )}
           <Image
             src={mascot === "boy" ? "/veylo-boy.png" : "/veylo-girl.png"}
             alt=""
-            width={100}
-            height={130}
-            className="mascot"
-            style={{ objectFit: "contain" }}
+            width={90}
+            height={110}
+            style={{ objectFit: "contain", objectPosition: "bottom" }}
             priority={false}
           />
         </div>

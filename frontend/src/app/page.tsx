@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import Sidebar from "@/components/layout/Sidebar";
 import SplitText from "@/components/motion/SplitText";
 import Reveal from "@/components/motion/Reveal";
 import Tilt from "@/components/motion/Tilt";
@@ -18,36 +17,42 @@ export default function LandingPage() {
       <div className="blob blob-1" aria-hidden="true" />
       <div className="blob blob-2" aria-hidden="true" />
 
-      {/* Mobile top header bar */}
+      {/* Landing page brand header — logo only, no sidebar */}
       <header
         style={{
-          display: "none",
           position: "fixed",
-          inset: "0 0 auto 0",
+          top: 0,
+          left: 0,
           zIndex: 20,
-          justifyContent: "space-between",
+          padding: "18px 24px",
+          display: "flex",
           alignItems: "center",
-          padding: "10px 16px",
-          background: "rgba(255,253,248,.94)",
-          borderBottom: "1px solid rgba(23,38,58,.1)",
+          gap: 8,
         }}
-        className="mobile-top"
       >
-        <span style={{ font: "800 20px 'Manrope'", letterSpacing: "-.03em" }}>
-          Vey<b style={{ color: "var(--red)" }}>lo</b>
-        </span>
-        <Link href="/overview" className="vbtn vbtn-red vbtn-sm" style={{ textDecoration: "none" }}>
-          NEW
+        <Link
+          href="/"
+          style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}
+          aria-label="Veylo home"
+        >
+          <svg viewBox="0 0 32 32" fill="none" stroke="#17263A" strokeWidth="2" strokeLinecap="round" width="28" height="28" aria-hidden="true">
+            <path d="M9 19a10 10 0 0 1 14 0M5 14a16 16 0 0 1 22 0"/>
+            <circle cx="16" cy="24" r="3.2" fill="#E10600" stroke="none"/>
+            <circle cx="5" cy="14" r="2" fill="#FFD700"/>
+            <circle cx="27" cy="14" r="2" fill="#FFD700"/>
+            <circle cx="16" cy="6" r="2" fill="#FFD700"/>
+          </svg>
+          <span style={{ font: "800 19px 'Manrope'", letterSpacing: "-.03em" }}>
+            Vey<b style={{ color: "var(--red)", fontWeight: 800 }}>lo</b>
+          </span>
         </Link>
       </header>
 
-      {/* Navigation Rail Sidebar */}
-      <Sidebar />
+
 
       {/* Main Hero & Content Grid */}
       <main
         style={{
-          marginLeft: 224,
           padding: "var(--gap)",
           position: "relative",
           zIndex: 1,

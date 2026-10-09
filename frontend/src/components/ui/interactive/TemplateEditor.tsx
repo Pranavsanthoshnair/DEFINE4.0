@@ -74,19 +74,20 @@ export default function TemplateEditor() {
         ))}
       </div>
 
-      {/* Editor Box */}
-      <div className="bg-white rounded-xl border border-stone-200 p-6 space-y-4 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-stone-900">
-            Voice Script Template - <span className="text-brand-red capitalize">{kind}</span> ({lang})
+      {/* Editor Box with 3D Depth */}
+      <div className="card-3d bg-white rounded-xl border border-stone-200 p-6 space-y-5 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
+          <h3 className="text-sm font-semibold text-stone-900 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-brand-red animate-ping" />
+            Voice Script Template - <span className="text-brand-red font-bold capitalize">{kind}</span> ({lang})
           </h3>
-          <div className="flex gap-1">
+          <div className="flex flex-wrap gap-1">
             {["{name}", "{event_name}", "{date}", "{time}", "{venue}", "{rsvp_link}"].map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => insertTag(tag)}
-                className="text-[11px] font-mono px-2 py-0.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded border border-stone-200"
+                className="btn-3d text-[11px] font-mono px-2 py-0.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded border border-stone-200 transition-transform"
               >
                 +{tag}
               </button>
@@ -95,11 +96,40 @@ export default function TemplateEditor() {
         </div>
 
         <textarea
-          rows={6}
+          rows={5}
           value={scriptText}
           onChange={(e) => setScriptText(e.target.value)}
-          className="w-full p-3 font-mono text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+          className="w-full p-3.5 font-mono text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all"
         />
+
+        {/* 3D Audio Synthesis Visualizer Preview */}
+        <div className="flex items-center justify-between p-4 bg-stone-950 text-white rounded-xl border border-stone-800 shadow-inner">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 h-6">
+              {[0.4, 0.9, 0.6, 1, 0.5, 0.8, 0.3, 0.7, 0.5].map((scale, i) => (
+                <span
+                  key={i}
+                  className="w-1 bg-brand-red rounded-full animate-pulse"
+                  style={{
+                    height: `${Math.round(scale * 22)}px`,
+                    animationDuration: `${0.6 + (i % 4) * 0.2}s`,
+                  }}
+                />
+              ))}
+            </div>
+            <div className="text-xs font-mono">
+              <span className="text-stone-400">Neural Engine:</span> <strong className="text-white">Sarvam Indic TTS (48kHz 3D Spatial Audio)</strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => alert(`Simulating 3D audio speech synthesis in ${lang}...`)}
+            className="btn-3d px-3 py-1.5 bg-stone-800 hover:bg-stone-700 !text-white text-xs font-mono rounded-lg border border-stone-700 shadow-sm flex items-center gap-1.5"
+          >
+            <span>▶</span> Listen 3D Preview
+          </button>
+        </div>
 
         <div className="flex items-center justify-between pt-2">
           <div className="text-xs text-stone-500 font-mono">
@@ -108,12 +138,12 @@ export default function TemplateEditor() {
 
           <div className="flex items-center gap-3">
             {saved && (
-              <span className="text-xs font-mono text-emerald-700 font-medium">Template Saved!</span>
+              <span className="text-xs font-mono text-emerald-700 font-bold animate-bounce">✓ Template Saved!</span>
             )}
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-mono font-semibold uppercase tracking-wider rounded-lg transition-colors shadow-sm"
+              className="btn-3d px-5 py-2 bg-stone-900 hover:bg-stone-800 !text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg transition-transform shadow-md hover:shadow-lg"
             >
               Save Template
             </button>
