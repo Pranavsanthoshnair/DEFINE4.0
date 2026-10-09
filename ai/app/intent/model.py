@@ -63,7 +63,9 @@ class OnnxIntentModel:
 
             # Load temperature calibration
             import yaml
-            models_yaml = model_dir.parent / "models.yaml"
+            # models.yaml is packaged with the AI application, while weights
+            # are mounted separately at /models.
+            models_yaml = Path(__file__).resolve().parents[2] / "models.yaml"
             if models_yaml.exists():
                 cfg = yaml.safe_load(models_yaml.read_text())
                 self._temperature = cfg.get("intent_temperature", 1.0)

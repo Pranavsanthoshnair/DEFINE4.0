@@ -1,7 +1,8 @@
 # ── Sarvam AI provider routing ──────────────────────────────────────────────
 # Primary provider for the Veylo AI MVP.
-# No local model weights are downloaded or required.
-
+# Architecture: local MuRIL intent classification; Sarvam provides STT,
+# translation and TTS. No local Whisper or IndicTrans2 weights are enabled.
+intent_temperature: 0.06954866647720337
 provider: sarvam
 
 sarvam:
@@ -41,7 +42,9 @@ tts_voices:
 # Uses deterministic rules as primary classifier.
 # MuRIL/ONNX model is NOT required for the MVP — removed.
 intent:
-  primary: rules              # rules → (optionally) llm
+  primary: rules -> model -> llm
+  model: google/muril-base-cased
+  runtime: onnxruntime-int8
   labels:
     - confirm
     - decline
@@ -66,9 +69,8 @@ audio:
   optimal_sample_rate_hz: 16000   # Sarvam recommends 16kHz; sends 8kHz telephony is fine
 
 # ── Removed local model weights (not needed for Sarvam MVP) ─────────────────
-# The following were used in the local-model architecture (pre-Sarvam):
-#   faster_whisper:    replaced by Sarvam Saaras v4
-#   muril_intent_onnx: removed — rules + optional LLM fallback used instead
-#   indictrans2:       replaced by Sarvam Mayura v1
-#   edge_tts:          replaced by Sarvam Bulbul v2
-# No weights need to be downloaded. No /models volume needed in Docker.
+# Local-model policy:
+#   muril_intent_onnx: enabled for intent classification
+#   faster_whisper:    disabled; Sarvam Saaras v4 remains STT
+#   indictrans2:       disabled; Sarvam Mayura v1 remains translation
+#   edge_tts:          disabled; Sarvam Bulbul v2 remains TTS
