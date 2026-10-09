@@ -84,7 +84,7 @@ services:
         sync: false
       - key: GROQ_API_KEY
         sync: false
-      - key: INTERNAL_TOKEN
+      - key: AI_INTERNAL_TOKEN
         sync: false          # must match backend AI_INTERNAL_TOKEN
       - key: LLM_FALLBACK
         value: none

@@ -26,7 +26,7 @@ class Settings(BaseSettings):
 
     # ── Stub mode ────────────────────────────────────────────────────────────
     # Set AI_STUB=true so M1/M2 are never blocked before credentials are ready
-    ai_stub: bool = True
+    ai_stub: bool = False
 
     # ── Sarvam AI ─────────────────────────────────────────────────────────────
     # Primary provider for STT, translate, and TTS.
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     sarvam_api_key: str = ""
     sarvam_stt_model: str = "saaras:v4"
     sarvam_translate_model: str = "mayura:v1"
-    sarvam_tts_model: str = "bulbul:v2"
+    sarvam_tts_model: str = "bulbul:v3"
     # Sample rate for TTS output — 8000 Hz for Exotel telephony
     sarvam_tts_sample_rate: int = 8000
 
