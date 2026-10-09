@@ -136,23 +136,10 @@ _INTENT_LABELS = {
 
 
 async def _classify_text(text: str, language: str = "en") -> tuple[str, Optional[float], str]:
-    """Returns (intent, confidence, method)."""
-    try:
-        ai = get_ai_client()
-        result = await ai.intent(
-            text=text,
-            language=language,
-            allowed_intents=list(_INTENT_LABELS.keys()),
-        )
-        return result.intent, result.confidence, result.source or "rules"
-    except Exception:
-        # Keyword fallback
-        t = text.lower()
-        if any(w in t for w in ["yes", "confirm", "attend", "coming", "ആണ്", "हाँ", "ஆம்"]):
-            return "confirm", None, "keyword_fallback"
-        if any(w in t for w in ["no", "can't", "won't", "not", "ഇല്ല", "नहीं", "இல்லை"]):
-            return "decline", None, "keyword_fallback"
-        return "unclear", None, "keyword_fallback"
+    """Returns (intent, confidence, method) using the unified cascade."""
+    from app.services.intent_service import classify_intent
+    intent, confidence, method = await classify_intent(text=text, language=language)
+    return intent, confidence, method
 
 
 # ── Update handlers ───────────────────────────────────────────────────────────

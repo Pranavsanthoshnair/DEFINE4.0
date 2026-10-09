@@ -156,6 +156,58 @@ async def update_campaign(campaign_id: str, payload: CampaignCreate):
         )
 
 
+@router.post("/{campaign_id}/launch", status_code=status.HTTP_202_ACCEPTED)
+async def launch_campaign(
+    campaign_id: str,
+    channel: Optional[str] = None,
+    max_contacts: int = 500,
+):
+    """
+    Launch a campaign on the best available channel.
+
+    Channel auto-selection:
+      1. Exotel / Twilio (if credentials configured)
+      2. Telegram (if TELEGRAM_BOT_TOKEN set)
+      3. Browser voice simulator (always available)
+
+    Pass ?channel=telephony|browser|telegram to override.
+    """
+    from app.services.campaign_engine import run_campaign
+    try:
+        result = await run_campaign(
+            campaign_id=campaign_id,
+            channel=channel or "auto",
+            max_contacts=max_contacts,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+
+    if "error" in result:
+        raise HTTPException(status_code=400, detail=result["error"])
+    return result
+
+
+@router.get("/{campaign_id}/channel")
+async def get_campaign_channel(campaign_id: str):
+    """Return which execution channel would be selected for this campaign."""
+    from app.services.campaign_engine import detect_channel
+    from app.telephony.providers.factory import active_provider_name
+    channel = detect_channel()
+    return {
+        "campaign_id": campaign_id,
+        "selected_channel": channel,
+        "telephony_provider": active_provider_name(),
+        "telegram_configured": bool(settings.telegram_bot_token),
+        "elevenlabs_configured": bool(settings.elevenlabs_api_key),
+        "reason": {
+            "telephony": "Exotel or Twilio credentials detected",
+            "telegram": "TELEGRAM_BOT_TOKEN set, no telephony credentials",
+            "browser": "No telephony or Telegram configured — always available",
+        }.get(channel, "unknown"),
+    }
+
+
+
 @router.delete("/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_campaign(campaign_id: str):
     """Delete a campaign by ID."""
