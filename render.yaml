@@ -1,0 +1,90 @@
+services:
+  # ── Backend (FastAPI) ───────────────────────────────────────────────────────
+  backend:
+    name: veylo-backend
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: PUBLIC_BASE_URL
+        sync: false          # set in Render dashboard: https://veylo-backend.onrender.com
+      - key: CORS_ORIGINS
+        sync: false          # JSON array, e.g. ["https://your-app.vercel.app"]
+      - key: WEB_ORIGIN
+        sync: false          # https://your-app.vercel.app
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+
+      # Supabase — set in Render dashboard
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+      # Exotel — set in Render dashboard
+      - key: CALL_PROVIDER
+        value: exotel
+      - key: EXOTEL_SID
+        sync: false
+      - key: EXOTEL_API_KEY
+        sync: false
+      - key: EXOTEL_API_TOKEN
+        sync: false
+      - key: EXOTEL_SUBDOMAIN
+        sync: false
+      - key: EXOTEL_CALLER_ID
+        sync: false
+      - key: WEBHOOK_BASE_URL
+        sync: false          # same as PUBLIC_BASE_URL
+
+      # AI service (internal)
+      - key: AI_BASE_URL
+        sync: false          # https://veylo-ai.onrender.com
+      - key: AI_INTERNAL_TOKEN
+        generateValue: true
+
+      # Storage
+      - key: MEDIA_DIR
+        value: /tmp/media
+      - key: RECORDINGS_DIR
+        value: /tmp/recordings
+
+  # ── AI Service (FastAPI) ────────────────────────────────────────────────────
+  ai:
+    name: veylo-ai
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: ai
+    buildCommand: pip install -e ".[test]"
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: AI_STUB
+        value: false
+      - key: STT_PROVIDER
+        value: auto
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: INTERNAL_TOKEN
+        sync: false          # must match backend AI_INTERNAL_TOKEN
+      - key: LLM_FALLBACK
+        value: none
