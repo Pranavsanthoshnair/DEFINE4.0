@@ -167,3 +167,73 @@ async def delete_campaign(campaign_id: str):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",
         )
+
+
+@router.post("/{campaign_id}/prepare-audio", status_code=status.HTTP_202_ACCEPTED)
+async def prepare_campaign_audio(
+    campaign_id: str,
+    voice_id: Optional[str] = None,
+    language: Optional[str] = None,
+):
+    """
+    Pre-generate all ElevenLabs TTS audio for a campaign.
+
+    Generates: greeting, prompt, reprompt, all acknowledgements, goodbye, voicemail.
+    Stores audio URLs in the campaign row (audio_urls JSONB column).
+    Updates campaign status to 'ready'.
+
+    These URLs are served via GET /api/v1/audio/{token} and played
+    during live Twilio/Exotel calls — the caller hears ElevenLabs voice,
+    NOT the provider's built-in TTS.
+    """
+    try:
+        sb = get_supabase()
+        # Fetch campaign
+        camp_resp = sb.table(_TABLE).select("id,name,language,status").eq("id", campaign_id).single().execute()
+        if not camp_resp.data:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+
+        campaign = camp_resp.data
+        lang = language or campaign.get("language", "en")
+        name = campaign.get("name", "this event")
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Database error: {exc}")
+
+    # Generate audio (async — may take 5-15 seconds for 10 segments)
+    from app.services.tts_service import generate_campaign_audio
+    try:
+        audio_urls = await generate_campaign_audio(
+            campaign_id=campaign_id,
+            campaign_name=name,
+            language=lang,
+            voice_id=voice_id,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"TTS generation failed: {exc}. Ensure ELEVENLABS_API_KEY is set.",
+        )
+
+    # Persist audio URLs and mark campaign ready
+    try:
+        sb = get_supabase()
+        sb.table(_TABLE).update({
+            "audio_urls": audio_urls,
+            "status": "ready",
+        }).eq("id", campaign_id).execute()
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Failed to save audio URLs: {exc}")
+
+    segments_generated = sum(1 for v in audio_urls.values() if v)
+    return {
+        "campaign_id": campaign_id,
+        "status": "ready",
+        "segments_generated": segments_generated,
+        "total_segments": len(audio_urls),
+        "voice": voice_id or "default (Sarah)",
+        "language": lang,
+        "message": f"Generated {segments_generated}/{len(audio_urls)} audio segments using ElevenLabs. Campaign is ready to call.",
+    }
