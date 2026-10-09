@@ -90,6 +90,7 @@ pnpm-debug.log*
 coverage/
 lcov.info
 junit.xml
+ai/tests/tts_out/
 
 # ── Misc ─────────────────────────────────────────────────────────────────────
 *.bak
