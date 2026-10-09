@@ -8,30 +8,43 @@ export default function SettingsForm() {
   const [testResult, setTestResult] = useState<string | null>(null);
 
   const [settings, setSettings] = useState({
-    exotelSid: "AC_veylo_live_99812",
-    exotelApiKey: "••••••••••••••••••••••••",
-    exotelToken: "••••••••••••••••••••••••",
-    exotelCallerId: "+91 80 4719 3200",
-    sarvamApiKey: "••••••••••••••••••••••••",
-    elevenLabsKey: "••••••••••••••••••••••••",
-    openaiKey: "••••••••••••••••••••••••",
-    concurrencyCap: "20",
+    exotelSid: "",
+    exotelApiKey: "",
+    exotelToken: "",
+    exotelCallerId: "",
+    sarvamApiKey: "",
+    elevenLabsKey: "",
+    openaiKey: "",
+    concurrencyCap: "10",
     callingHoursStart: "09:00",
     callingHoursEnd: "21:00",
-    webhookUrl: "https://api.veylo.live/v1/telephony/events",
+    webhookUrl: "",
   });
 
   const update = (k: string, v: string) => {
     setSettings((p) => ({ ...p, [k]: v }));
   };
 
-  const handleTestConnection = () => {
+  const handleTestConnection = async () => {
     setTesting(true);
     setTestResult(null);
-    setTimeout(() => {
-      setTesting(false);
-      setTestResult("Exotel PRI Trunk OK - 200 ms ping, CallerID Verified");
-    }, 800);
+    try {
+      const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+      const res = await fetch(`${API}/api/v1/capabilities`);
+      if (res.ok) {
+        const data = await res.json();
+        const lines = Object.entries(data)
+          .filter(([, v]) => v)
+          .map(([k]) => k)
+          .join(", ");
+        setTestResult(`✅ Backend connected. Active: ${lines || "none"}`);
+      } else {
+        setTestResult(`❌ Backend returned ${res.status}`);
+      }
+    } catch {
+      setTestResult("❌ Could not reach backend at " + (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"));
+    }
+    setTesting(false);
   };
 
   const handleSave = (e: React.FormEvent) => {

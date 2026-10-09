@@ -1,16 +1,15 @@
-import type { Metadata } from "next";
+"use client";
+
 import PageHeader from "@/components/ui/PageHeader";
+import { useDemo } from "@/context/DemoModeContext";
 
-export const metadata: Metadata = { title: "Team & Permissions — Veylo" };
-
-const MEMBERS = [
-  { name: "Nisha Thomas",  email: "nisha@techsummit.example",  role: "Admin" },
-  { name: "Arjun Pillai",  email: "arjun@techsummit.example",  role: "Campaign manager" },
-  { name: "Mira Das",      email: "mira@techsummit.example",   role: "Viewer" },
+const DEMO_MEMBERS = [
+  { name: "Nisha Thomas",  email: "nisha@techsummit.org",  role: "Admin" },
+  { name: "Arjun Pillai",  email: "arjun@techsummit.org",  role: "Campaign manager" },
+  { name: "Mira Das",      email: "mira@techsummit.org",   role: "Viewer" },
 ];
 
 const ROLES = ["Admin", "Campaign manager", "Viewer"];
-
 const ROLE_DESC: Record<string, string> = {
   Admin:              "Everything, including team and settings",
   "Campaign manager": "Create, launch and retry campaigns; manage contacts",
@@ -18,14 +17,17 @@ const ROLE_DESC: Record<string, string> = {
 };
 
 export default function TeamPage() {
+  const { isDemo } = useDemo();
+  const members = isDemo ? DEMO_MEMBERS : [];
+
   return (
     <div className="page-in" style={{ maxWidth: 1180, margin: "0 auto", padding: "30px 28px 60px" }}>
       <PageHeader
         eyebrow="team & permissions"
         title="Team & Permissions"
-        subtitle="Roles decide who can launch calls and see contact data."
+        subtitle={isDemo ? "Demo mode — showing sample team." : "Roles decide who can launch calls and see contact data."}
         tagline="Hands that share the work."
-        bubble="Meet the crew"
+        bubble={isDemo ? "Demo 🎭" : "Your team"}
         mascot="girl"
       />
 
@@ -36,24 +38,30 @@ export default function TeamPage() {
             <span style={{ width: 18, height: 1.5, background: "var(--red)", display: "inline-block" }} />
             Members
           </h3>
-          <div style={{ overflowX: "auto" }}>
-            <table className="vtable">
-              <tbody>
-                {MEMBERS.map((m) => (
-                  <tr key={m.email}>
-                    <td>
-                      <b style={{ font: "700 13px 'Manrope'" }}>{m.name}</b>
-                      <br />
-                      <small style={{ color: "#5B6B7D" }}>{m.email}</small>
-                    </td>
-                    <td>
-                      <span className="vchip vchip-callback">{m.role}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {members.length === 0 ? (
+            <p style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#8A9BB0", margin: 0 }}>
+              No team members yet. Invite someone using the form →
+            </p>
+          ) : (
+            <div style={{ overflowX: "auto" }}>
+              <table className="vtable">
+                <tbody>
+                  {members.map((m) => (
+                    <tr key={m.email}>
+                      <td>
+                        <b style={{ font: "700 13px 'Manrope'" }}>{m.name}</b>
+                        <br />
+                        <small style={{ color: "#5B6B7D" }}>{m.email}</small>
+                      </td>
+                      <td>
+                        <span className="vchip vchip-callback">{m.role}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Right stack */}
@@ -66,7 +74,7 @@ export default function TeamPage() {
             </h3>
             <label style={{ display: "block", font: "700 12px 'Manrope'", marginBottom: 14 }}>
               Email
-              <input type="email" className="vfield" style={{ marginTop: 5, fontWeight: 400 }} placeholder="colleague@example.com" />
+              <input type="email" className="vfield" style={{ marginTop: 5, fontWeight: 400 }} placeholder="colleague@yourorg.com" />
             </label>
             <label style={{ display: "block", font: "700 12px 'Manrope'", marginBottom: 14 }}>
               Role

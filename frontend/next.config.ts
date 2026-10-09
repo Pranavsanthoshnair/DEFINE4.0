@@ -1,10 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Clean config — experimental flags removed for Vercel compatibility
   reactStrictMode: true,
-  images: {
-    unoptimized: false,
+  // Tailwind v4 requires this loader for Turbopack to process @import "tailwindcss"
+  turbopack: {
+    rules: {
+      "*.css": {
+        loaders: ["@tailwindcss/turbopack"],
+        as: "*.css",
+      },
+    },
   },
 };
 
