@@ -213,10 +213,11 @@ async def execute_place_call(campaign_contact_id: UUID) -> None:
         )
 
         from app.telephony.providers.base import PlaceCallRequest
+        default_caller = settings.twilio_phone_number if provider.name == "twilio" else settings.exotel_caller_id
         req = PlaceCallRequest(
             call_id=call_id,
             to_number=phone,
-            caller_id=campaign.caller_id or settings.exotel_caller_id,
+            caller_id=campaign.caller_id or default_caller,
             status_callback_url=status_callback_url,
             flow_url=flow_url,
             custom_field=str(call_id),

@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
-from app.db.supabase_client import get_supabase
+from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()
 
@@ -55,6 +55,8 @@ async def list_campaigns(
     offset: int = Query(0, ge=0),
 ):
     """List campaigns with pagination."""
+    if not is_supabase_configured():
+        return []
     try:
         sb = get_supabase()
         resp = (
@@ -107,6 +109,8 @@ async def create_campaign(payload: CampaignCreate):
 @router.get("/{campaign_id}", response_model=CampaignOut)
 async def get_campaign(campaign_id: str):
     """Retrieve a single campaign by ID."""
+    if not is_supabase_configured():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
     try:
         sb = get_supabase()
         resp = (

@@ -17,15 +17,26 @@ from app.telephony.providers.base import CallProvider
 log = structlog.get_logger()
 
 
+def _is_valid_cred(val: str) -> bool:
+    if not val or not val.strip():
+        return False
+    v = val.strip().lower()
+    return not (v.startswith("your-") or v.startswith("change-") or "example" in v or v == "placeholder")
+
+
 def _exotel_ready() -> bool:
-    return all([settings.exotel_api_key, settings.exotel_api_token, settings.exotel_sid])
+    return all([
+        _is_valid_cred(settings.exotel_api_key),
+        _is_valid_cred(settings.exotel_api_token),
+        _is_valid_cred(settings.exotel_sid),
+    ])
 
 
 def _twilio_ready() -> bool:
     return all([
-        settings.twilio_account_sid,
-        settings.twilio_auth_token,
-        settings.twilio_phone_number,
+        _is_valid_cred(settings.twilio_account_sid),
+        _is_valid_cred(settings.twilio_auth_token),
+        _is_valid_cred(settings.twilio_phone_number),
     ])
 
 

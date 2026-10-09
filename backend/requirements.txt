@@ -14,8 +14,9 @@ psycopg2-binary==2.9.10
 # Supabase
 supabase==2.12.0          # compatible with httpx>=0.26
 
-# HTTP client (for Exotel + AI APIs)
+# Telephony (Exotel + Twilio)
 httpx>=0.26.0,<0.29.0
+twilio>=9.0.0
 respx>=0.21.0             # M2: mock httpx in tests
 
 # Task queue (M2)
