@@ -133,20 +133,23 @@ async def run(base_url: str, *, dry_run: bool) -> int:
     failures = 0
     async with httpx.AsyncClient(base_url=base_url.rstrip("/"), timeout=60.0) as client:
         for language in LANGUAGES:
-            translate = await client.post(
-                "/v1/translate",
-                headers=_headers(),
-                json={
-                    "segments": segments,
-                    "source_language": "en",
-                    "target_language": language,
-                },
-            )
-            if translate.is_error:
-                print(f"FAIL translate {language}: HTTP {translate.status_code}", file=sys.stderr)
-                failures += len(SEGMENT_KEYS)
-                continue
-            translated = translate.json().get("segments", {})
+            if language == "en":
+                translated = segments
+            else:
+                translate = await client.post(
+                    "/v1/translate",
+                    headers=_headers(),
+                    json={
+                        "segments": segments,
+                        "source_language": "en",
+                        "target_language": language,
+                    },
+                )
+                if translate.is_error:
+                    print(f"FAIL translate {language}: HTTP {translate.status_code}", file=sys.stderr)
+                    failures += len(SEGMENT_KEYS)
+                    continue
+                translated = translate.json().get("segments", {})
             for key, source in segments.items():
                 text = translated.get(key, "")
                 missing = [token for token in ("{org_name}", "{event_name}", "{date}", "{venue}") if token in source and token not in text]

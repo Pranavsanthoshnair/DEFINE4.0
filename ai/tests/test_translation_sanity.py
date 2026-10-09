@@ -22,6 +22,10 @@ def test_translation_sanity_accepts_hindi_script_and_preserved_token() -> None:
     assert not failures
 
 
+def test_english_source_can_be_checked_as_identity_without_provider_call() -> None:
+    assert not translation_sanity.check_segment("Please confirm", "Please confirm", "en")
+
+
 def test_translation_sanity_reports_missing_placeholder_and_target_script() -> None:
     failures = translation_sanity.check_segment(
         "Hello {event_name}", "Hello there", "ta"

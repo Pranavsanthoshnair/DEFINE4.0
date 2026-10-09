@@ -96,20 +96,26 @@ async def run(base_url: str, *, dry_run: bool, output: Path | None) -> int:
     async with httpx.AsyncClient(base_url=base_url.rstrip("/"), timeout=60.0) as client:
         for name, segments in presets.items():
             for language in TARGET_LANGUAGES:
-                response = await client.post(
-                    "/v1/translate",
-                    headers=_headers(),
-                    json={
-                        "segments": segments,
-                        "source_language": "en",
-                        "target_language": language,
-                    },
-                )
-                if response.is_error:
-                    print(f"FAIL {name}/{language}: translate HTTP {response.status_code}", file=sys.stderr)
-                    results.append(CheckResult(name, language, "*", False, (f"translate HTTP {response.status_code}",)))
-                    continue
-                translated = response.json().get("segments", {})
+                if language == "en":
+                    # English is already the source language. Treating it as
+                    # identity avoids spending provider quota and avoids a
+                    # provider-specific 422 for en -> en.
+                    translated = segments
+                else:
+                    response = await client.post(
+                        "/v1/translate",
+                        headers=_headers(),
+                        json={
+                            "segments": segments,
+                            "source_language": "en",
+                            "target_language": language,
+                        },
+                    )
+                    if response.is_error:
+                        print(f"FAIL {name}/{language}: translate HTTP {response.status_code}", file=sys.stderr)
+                        results.append(CheckResult(name, language, "*", False, (f"translate HTTP {response.status_code}",)))
+                        continue
+                    translated = response.json().get("segments", {})
                 for key, source in segments.items():
                     failures = check_segment(source, translated.get(key, ""), language)
                     result = CheckResult(name, language, key, not failures, failures)
