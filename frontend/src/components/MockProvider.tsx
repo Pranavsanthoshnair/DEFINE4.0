@@ -23,7 +23,10 @@ export default function MockProvider({ children }: { children: React.ReactNode }
       // Start MSW worker
       import("../../mocks/handlers")
         .then(async ({ handlers }) => {
-          const { setupWorker } = await import("msw/browser");
+          const { setupWorker } = await import(
+            /* webpackIgnore: true */
+            "msw/browser"
+          );
           const worker = setupWorker(...handlers);
           await worker.start({ quiet: true });
           setReady(true);
