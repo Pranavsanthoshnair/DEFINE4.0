@@ -1,3 +1,9 @@
-# TODO: Docker Compose configuration (Member 4 - Phase 0)
-# See CONTRACTS.md section 12 for service definitions
+services:
+  ai:
+    build:
+      context: ./ai
+    environment:
+      MODELS_DIR: /models
+    volumes:
+      - ./models:/models:ro
 
