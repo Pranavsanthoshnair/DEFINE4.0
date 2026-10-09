@@ -81,14 +81,26 @@ class TwilioProvider(CallProvider):
         from_number = _normalize_phone_for_twilio(req.caller_id or self._caller_id)
         to_number = _normalize_phone_for_twilio(req.to_number)
 
-        payload = {
+        payload: dict[str, Any] = {
             "From": from_number,
             "To": to_number,
-            "Url": req.flow_url,
-            "StatusCallback": req.status_callback_url,
-            "StatusCallbackEvent": ["initiated", "ringing", "answered", "completed"],
             "Timeout": req.time_limit_sec,
         }
+
+        if req.twiml:
+            payload["Twiml"] = req.twiml
+        elif req.flow_url and not req.flow_url.startswith("http://localhost"):
+            payload["Url"] = req.flow_url
+        else:
+            # When testing locally without a public tunnel, deliver direct spoken prompt
+            payload["Twiml"] = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<Response><Say language="en-IN">Hello! This is a test call from Veylo outbound campaign platform. Your telephony integration is working successfully.</Say></Response>'
+            )
+
+        if req.status_callback_url and not req.status_callback_url.startswith("http://localhost"):
+            payload["StatusCallback"] = req.status_callback_url
+            payload["StatusCallbackEvent"] = ["initiated", "ringing", "answered", "completed"]
 
         url = f"{self._base_url}/Calls.json"
 
