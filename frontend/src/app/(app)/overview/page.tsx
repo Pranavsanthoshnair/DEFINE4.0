@@ -16,7 +16,7 @@ const KPI = [
 
 export default function OverviewPage() {
   return (
-    <div className="page-in" style={{ maxWidth: 1180, margin: "0 auto", padding: "30px 28px 60px" }}>
+    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
       <PageHeader
         eyebrow="overview"
         title={<Suspense fallback="Welcome back"><Greeting suffix="Org" /></Suspense>}
@@ -31,8 +31,8 @@ export default function OverviewPage() {
         }
       />
 
-      {/* KPI row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: "var(--gap)", marginBottom: "var(--gap)" }}>
+      {/* KPI row — 2 cols mobile, 4 cols desktop */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: "var(--gap)", marginBottom: "var(--gap)" }}>
         {KPI.map((k, i) => (
           <div
             key={k.label}
@@ -50,8 +50,9 @@ export default function OverviewPage() {
         ))}
       </div>
 
-      {/* Two-column content */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.5fr) minmax(0,1fr)", gap: "var(--gap)" }}>
+      {/* Content grid — stacks on mobile, 2-col on md+ */}
+      <div className="overview-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "var(--gap)" }}>
+        <style>{`@media(min-width:768px){.overview-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)!important}}`}</style>
         {/* Left stack */}
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--gap)" }}>
           <div className="glass" style={{ padding: "18px 20px" }}>
@@ -106,8 +107,8 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* Yellow CTA banner */}
-      <div className="yb" style={{ marginTop: "var(--gap)" }}>
+      {/* CTA banner — stacks on mobile */}
+      <div className="yb" style={{ marginTop: "var(--gap)", flexWrap: "wrap", gap: 16 }}>
         <div>
           <h3>Every call. Every language.</h3>
           <em className="cal">with a human voice</em>
