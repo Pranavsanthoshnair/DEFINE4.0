@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     # whisper_model_size: str = "small"
     # indictrans_model: str = "ai4bharat/indictrans2-en-indic-dist-200M"
     # tts_engine: str = "stub"
-    # models_dir: str = "/models"
+    models_dir: str = "/models"
 
 
 settings = Settings()
