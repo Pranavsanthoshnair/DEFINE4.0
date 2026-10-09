@@ -80,7 +80,6 @@ async def create_contact(body: ContactIn):
             "phone_last4": phone_last4,
             "language": body.language,
             "segment": body.segment,
-            "notes": body.notes,
             "consent": True,
             "consent_source": "single_import",
             "consent_at": now,
