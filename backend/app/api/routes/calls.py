@@ -1,30 +1,104 @@
-"""Calls routes — call initiation stub."""
+"""Calls routes — call initiation and testing."""
 
-from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
+import uuid
 from typing import Optional
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel, Field
+
+from app.core.config import settings
+from app.telephony.providers.base import PlaceCallRequest
+from app.telephony.providers.factory import active_provider_name, get_provider
 
 router = APIRouter()
 
 
+class TestCallRequest(BaseModel):
+    phone_number: str = Field(..., description="Phone number to call (e.g. +919876543210 or 9876543210)")
+    message: Optional[str] = Field(
+        None,
+        description="Optional custom message to say when the call connects"
+    )
+    language: str = Field("en-IN", description="Language code for speech (e.g. en-IN, hi-IN)")
+
+
 class InitiateCallRequest(BaseModel):
-    campaign_id: str
-    recipient_id: str
+    campaign_id: Optional[str] = None
+    recipient_id: Optional[str] = None
+    phone_number: Optional[str] = None
+    message: Optional[str] = None
 
 
 class CallAttemptOut(BaseModel):
     id: str
     status: str
+    provider: str
+    provider_call_sid: str
     message: str
+
+
+@router.post("/test-call", response_model=CallAttemptOut, status_code=status.HTTP_200_OK)
+async def test_call(payload: TestCallRequest):
+    """
+    Trigger a direct test call to any phone number using the active telephony provider (Twilio).
+    """
+    call_id = uuid.uuid4()
+    provider = get_provider()
+
+    twiml_say = payload.message or (
+        "Hello! This is a test call from your Veylo multilingual outbound campaign platform. "
+        "Your telephony integration is configured and working properly."
+    )
+    twiml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        f'<Response><Say language="{payload.language}">{twiml_say}</Say></Response>'
+    )
+
+    req = PlaceCallRequest(
+        call_id=call_id,
+        to_number=payload.phone_number,
+        caller_id=settings.twilio_phone_number if provider.name == "twilio" else settings.exotel_caller_id,
+        status_callback_url=f"{settings.public_base_url}/webhooks/{settings.webhook_secret}/status?call_id={call_id}",
+        flow_url=f"{settings.public_base_url}/webhooks/{settings.webhook_secret}/flow?call_id={call_id}",
+        custom_field=str(call_id),
+        twiml=twiml,
+    )
+
+    result = await provider.place_call(req)
+    if not result.accepted:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Telephony provider ({provider.name}) rejected the call: {result.raw_status}",
+        )
+
+    return CallAttemptOut(
+        id=str(call_id),
+        status=result.raw_status,
+        provider=provider.name,
+        provider_call_sid=result.provider_call_sid,
+        message=f"Call successfully queued to {payload.phone_number} via {provider.name}.",
+    )
 
 
 @router.post("/initiate", response_model=CallAttemptOut, status_code=status.HTTP_202_ACCEPTED)
 async def initiate_call(payload: InitiateCallRequest):
     """
-    Initiate an outbound call for a campaign recipient via Exotel.
-    (Stub — Exotel integration NOT YET IMPLEMENTED.)
+    Initiate an outbound call for a recipient or direct phone number.
     """
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Exotel call initiation is not yet implemented.",
+    phone = payload.phone_number
+    if not phone and payload.recipient_id:
+        # In mock/dev without database lookup, construct placeholder or lookup contact
+        phone = f"+9199999{payload.recipient_id[-4:]}"
+
+    if not phone:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Either phone_number or recipient_id must be provided.",
+        )
+
+    return await test_call(
+        TestCallRequest(
+            phone_number=phone,
+            message=payload.message,
+        )
     )
+

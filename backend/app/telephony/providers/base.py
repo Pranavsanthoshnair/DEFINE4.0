@@ -50,11 +50,12 @@ CallStep = Play | Gather | Record | Hangup
 class PlaceCallRequest:
     call_id: UUID
     to_number: str            # E.164, decrypted only inside this call
-    caller_id: str            # ExoPhone
+    caller_id: str            # ExoPhone or Twilio number
     status_callback_url: str
     flow_url: str             # URL the provider fetches when the callee answers
     custom_field: str         # str(call_id), echoed back by the provider
     time_limit_sec: int = 120
+    twiml: str | None = None  # Optional direct TwiML payload (e.g. for localhost dev)
 
 
 @dataclass
