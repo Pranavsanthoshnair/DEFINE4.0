@@ -135,6 +135,8 @@ async def generate_campaign_audio(
     audio_urls: dict[str, str] = {}
     tts_provider = "elevenlabs" if elevenlabs.is_available() else "ai_service"
 
+    last_error: str | None = None
+
     for segment_key, text in scripts.items():
         try:
             if tts_provider == "elevenlabs":
@@ -162,13 +164,18 @@ async def generate_campaign_audio(
             )
 
         except Exception as exc:
+            last_error = str(exc)
             log.error(
                 "campaign_audio_generation_failed",
                 campaign_id=campaign_id,
                 segment=segment_key,
-                error=str(exc),
+                error=last_error,
             )
             audio_urls[segment_key] = ""   # flow engine handles empty URLs gracefully
+
+    # If every segment failed, surface the error so the caller knows what went wrong
+    if last_error and not any(v for v in audio_urls.values()):
+        raise RuntimeError(f"TTS failed for all segments ({tts_provider}): {last_error}")
 
     return audio_urls
 
