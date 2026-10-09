@@ -5,6 +5,7 @@ import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import BrowserCallSimulator from "@/components/campaigns/BrowserCallSimulator";
 import LaunchDrawer from "@/components/campaigns/LaunchDrawer";
+import AddContactsDrawer from "@/components/campaigns/AddContactsDrawer";
 import { useDemo } from "@/context/DemoModeContext";
 import { DEMO_CAMPAIGNS } from "@/lib/demo-data";
 
@@ -47,17 +48,15 @@ function StatusBadge({ status }: { status: string }) {
 export default function CampaignsPage() {
   const { isDemo } = useDemo();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [simulatorId, setSimulatorId] = useState<string | null>(null);
+  const [loading, setLoading]     = useState(true);
+  const [error, setError]         = useState<string | null>(null);
+  const [simulatorId, setSimulatorId]   = useState<string | null>(null);
   const [launchTarget, setLaunchTarget] = useState<Campaign | null>(null);
-  const [csvCampaignId, setCsvCampaignId] = useState<string | null>(null);
-  const [csvStatus, setCsvStatus] = useState<string | null>(null);
+  const [addContactsCampaign, setAddContactsCampaign] = useState<Campaign | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newLang, setNewLang] = useState("en");
-  const [creating, setCreating] = useState(false);
-  const csvRef = useRef<HTMLInputElement>(null);
+  const [newName, setNewName]       = useState("");
+  const [newLang, setNewLang]       = useState("en");
+  const [creating, setCreating]     = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Load campaigns ─────────────────────────────────────────────────────
@@ -136,32 +135,7 @@ export default function CampaignsPage() {
     setLaunchTarget(campaign);
   };
 
-  // ── CSV import ──────────────────────────────────────────────────────────
-
-  const handleCsv = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !csvCampaignId) return;
-    setCsvStatus("Uploading\u2026");
-    const form = new FormData();
-    form.append("file", file);
-    try {
-      // Correct path: /api/v1/contacts/import (not import-csv)
-      const res = await fetch(`${API}/api/v1/contacts/import?campaign_id=${csvCampaignId}`, {
-        method: "POST",
-        body: form,
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.detail ?? `HTTP ${res.status}`);
-      }
-      const data = await res.json();
-      setCsvStatus(`\u2705 Imported ${data.imported ?? data.total ?? "?"} contacts`);
-      await load();
-    } catch (e) {
-      setCsvStatus(e instanceof Error ? `\u274c ${e.message}` : "\u274c Import failed");
-    }
-    if (csvRef.current) csvRef.current.value = "";
-  };
+  // ── CSV import — now handled inside AddContactsDrawer ──────────────────
 
   // ── Render ──────────────────────────────────────────────────────────────
 
@@ -221,13 +195,6 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      {/* CSV status */}
-      {csvStatus && (
-        <div style={{ background: csvStatus.startsWith("✅") ? "#f0fdf4" : "#fef2f2", border: `1px solid ${csvStatus.startsWith("✅") ? "#86efac" : "#fca5a5"}`, borderRadius: 8, padding: "10px 16px", marginBottom: 16, fontFamily: "Manrope, sans-serif", fontSize: 13, fontWeight: 600, color: csvStatus.startsWith("✅") ? "#16a34a" : "#dc2626" }}>
-          {csvStatus}
-        </div>
-      )}
-
       {/* Campaigns table */}
       <div style={{ background: "#fff", borderRadius: 16, border: "1px solid rgba(23,38,58,.08)", overflow: "hidden", boxShadow: "0 1px 4px rgba(23,38,58,.06)", marginBottom: 24 }}>
         {loading ? (
@@ -260,13 +227,13 @@ export default function CampaignsPage() {
                   <td style={{ padding: "14px 16px", fontFamily: "Manrope, monospace", fontSize: 12, color: "#5A6E84" }}>{c.rate ?? "—"}</td>
                   <td style={{ padding: "14px 16px", textAlign: "right" }}>
                     <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" }}>
-                      {/* CSV Import */}
+                      {/* Add Contacts */}
                       <button
-                        title="Import contacts from CSV"
-                        onClick={() => { setCsvCampaignId(c.id); setCsvStatus(null); csvRef.current?.click(); }}
-                        style={{ padding: "6px 12px", background: "rgba(183,216,245,.3)", border: "1px solid rgba(23,38,58,.1)", borderRadius: 6, fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 11, cursor: "pointer", color: "#17263A" }}
+                        title="Add contacts to this campaign"
+                        onClick={() => setAddContactsCampaign(c)}
+                        style={{ padding: "6px 12px", background: "rgba(183,216,245,.3)", border: "1px solid rgba(23,38,58,.1)", borderRadius: 6, fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 11, cursor: "pointer", color: "#17263A" }}
                       >
-                        📥 CSV
+                        👤 Add Contacts
                       </button>
                       {/* Launch */}
                       {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
@@ -310,22 +277,19 @@ export default function CampaignsPage() {
         )}
       </div>
 
-      {/* Hidden file input */}
-      <input ref={csvRef} type="file" accept=".csv" style={{ display: "none" }} onChange={handleCsv} />
-
-      {/* Instructions */}
-      <div style={{ background: "rgba(183,216,245,.2)", borderRadius: 12, padding: "16px 20px", fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#5A6E84", border: "1px solid rgba(183,216,245,.4)" }}>
-        <strong style={{ color: "#17263A" }}>How it works:</strong>
-        {" "}Create a campaign → import contacts from CSV → click 🚀 Launch → ElevenLabs voice calls each contact → AI classifies their response → results appear in analytics.
-        <br />
-        <span style={{ fontSize: 11, opacity: 0.8 }}>Press Space×5 to toggle demo mode · Click 📞 Simulate to test the browser call flow</span>
-      </div>
-
-      {/* Custom launch drawer — no browser alerts */}
+      {/* Custom launch drawer */}
       <LaunchDrawer
         campaign={launchTarget}
         onClose={() => setLaunchTarget(null)}
         onSuccess={() => { setLaunchTarget(null); load(); }}
+      />
+
+      {/* Add contacts drawer — single or bulk CSV */}
+      <AddContactsDrawer
+        campaignId={addContactsCampaign?.id ?? null}
+        campaignName={addContactsCampaign?.name}
+        onClose={() => setAddContactsCampaign(null)}
+        onSuccess={() => { setAddContactsCampaign(null); load(); }}
       />
     </div>
   );
