@@ -325,14 +325,24 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
         try:
             camp_resp = (
                 sb.table("campaigns")
-                .select("name,audio_urls")
+                .select("name,brief")
                 .eq("id", campaign_id)
                 .single()
                 .execute()
             )
             if camp_resp.data:
                 campaign_name = camp_resp.data.get("name", campaign_name)
-                audio_urls = camp_resp.data.get("audio_urls") or {}
+                # Try audio_urls column first, fall back to brief JSON
+                raw_audio = camp_resp.data.get("audio_urls")
+                if not raw_audio:
+                    import json as _json
+                    brief_str = camp_resp.data.get("brief") or ""
+                    try:
+                        brief_data = _json.loads(brief_str) if isinstance(brief_str, str) and brief_str.startswith("{") else {}
+                        raw_audio = brief_data.get("audio_urls")
+                    except Exception:
+                        raw_audio = None
+                audio_urls = raw_audio or {}
         except Exception as exc:
             log.warning("flow_campaign_lookup_failed", error=str(exc))
 

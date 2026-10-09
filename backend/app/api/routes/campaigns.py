@@ -350,12 +350,21 @@ async def prepare_campaign_audio(
         )
 
     # Persist audio URLs and mark campaign ready
+    # audio_urls is stored as a JSON string in the 'brief' field if the
+    # audio_urls column doesn't exist yet — add it via Supabase SQL editor:
+    #   ALTER TABLE campaigns ADD COLUMN IF NOT EXISTS audio_urls JSONB;
     try:
         sb = get_supabase()
-        sb.table(_TABLE).update({
-            "audio_urls": audio_urls,
-            "status": "ready",
-        }).eq("id", campaign_id).execute()
+        update_payload: dict = {"status": "ready"}
+        try:
+            sb.table(_TABLE).update({**update_payload, "audio_urls": audio_urls}).eq("id", campaign_id).execute()
+        except Exception:
+            # audio_urls column not yet added — store URLs serialised in brief as fallback
+            import json as _json
+            sb.table(_TABLE).update({
+                **update_payload,
+                "brief": _json.dumps({"audio_urls": audio_urls}),
+            }).eq("id", campaign_id).execute()
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Failed to save audio URLs: {exc}")
 
