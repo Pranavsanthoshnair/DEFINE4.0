@@ -88,12 +88,20 @@ export default function CampaignsPage() {
       return;
     }
     try {
-      const res = await fetch(`${API}/api/v1/campaigns/`, { headers: { Accept: "application/json" } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const res = await fetch(`${API}/api/v1/campaigns/`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`HTTP ${res.status}: ${body.slice(0, 120)}`);
+      }
       const data = await res.json();
       setCampaigns(Array.isArray(data) ? data : (data.items ?? data.campaigns ?? []));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load");
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Failed to load";
+      // Ignore AbortError (timeout) silently — show empty state
+      if ((e as Error)?.name !== "AbortError") setError(msg);
     } finally {
       setLoading(false);
     }
@@ -140,17 +148,19 @@ export default function CampaignsPage() {
   // ── Launch campaign ─────────────────────────────────────────────────────
 
   const launch = async (id: string) => {
-    if (isDemo) { alert("🎭 Demo mode — launch disabled. Press Space×5 to exit."); return; }
+    if (isDemo) { alert("🎭 Demo mode — launch disabled. Press Space\u00d75 to exit."); return; }
     setLaunching(id);
     try {
-      // Pre-generate ElevenLabs audio
-      await fetch(`${API}/api/v1/campaigns/${id}/prepare-audio`, { method: "POST" });
-      // Launch
-      const res = await fetch(`${API}/api/v1/campaigns/${id}/launch`, { method: "POST" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const result = await res.json();
+      const res = await fetch(`${API}/api/v1/campaigns/${id}/launch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.detail ?? `Launch failed (${res.status})`);
+      }
       await load();
-      alert(`✅ Launched! Channel: ${result.channel ?? "auto"}`);
+      alert(`\u2705 Campaign launched! AI calls will start automatically.`);
     } catch (e) {
       alert(e instanceof Error ? e.message : "Launch failed");
     } finally {
@@ -163,20 +173,24 @@ export default function CampaignsPage() {
   const handleCsv = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !csvCampaignId) return;
-    setCsvStatus("Uploading…");
+    setCsvStatus("Uploading\u2026");
     const form = new FormData();
     form.append("file", file);
     try {
-      const res = await fetch(`${API}/api/v1/contacts/import-csv?campaign_id=${csvCampaignId}`, {
+      // Correct path: /api/v1/contacts/import (not import-csv)
+      const res = await fetch(`${API}/api/v1/contacts/import?campaign_id=${csvCampaignId}`, {
         method: "POST",
         body: form,
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.detail ?? `HTTP ${res.status}`);
+      }
       const data = await res.json();
-      setCsvStatus(`✅ Imported ${data.imported ?? "?"} contacts`);
+      setCsvStatus(`\u2705 Imported ${data.imported ?? data.total ?? "?"} contacts`);
       await load();
     } catch (e) {
-      setCsvStatus(e instanceof Error ? `❌ ${e.message}` : "❌ Import failed");
+      setCsvStatus(e instanceof Error ? `\u274c ${e.message}` : "\u274c Import failed");
     }
     if (csvRef.current) csvRef.current.value = "";
   };
