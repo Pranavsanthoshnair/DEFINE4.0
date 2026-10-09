@@ -77,7 +77,7 @@ class Settings(BaseSettings):
 
     # ── ElevenLabs ────────────────────────────────────────────────────────
     elevenlabs_api_key: str = ""
-    elevenlabs_voice_id: str = "Rachel"   # default voice
+    elevenlabs_voice_id: str = "EXAVITQu4vr4xnSDxMaL"  # Sarah — verified on free tier
     elevenlabs_model_id: str = "eleven_multilingual_v2"
 
     # ── Telegram ──────────────────────────────────────────────────────────
