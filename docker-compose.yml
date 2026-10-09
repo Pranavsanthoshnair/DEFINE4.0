@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-services:
-  ai:
-    build:
-      context: ./ai
-    environment:
-      MODELS_DIR: /models
-    volumes:
-      - ./ai/models:/models:ro
-=======
 # docker-compose.yml — Veylo PR 002
 # Owner: Member 4 | CONTRACTS.md §12
 # Compose project name: pr002  |  Network: pr002_net
 # All DB/Redis/AI ports are internal only.
 # API binds to 127.0.0.1:8100, Web to 127.0.0.1:8101 (reverse-proxied by host Caddy).
->>>>>>> d2a8de363314e600ad7f0c85c7b70488120b3bf7
-
 name: pr002
 
 x-logging: &default-logging
@@ -133,6 +121,7 @@ services:
     restart: unless-stopped
     environment:
       AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN}
+      MODELS_DIR: /models
       STT_MODEL: ${STT_MODEL:-faster-whisper-small}
       TTS_ENGINE: ${TTS_ENGINE:-edge}
       LLM_FALLBACK: ${LLM_FALLBACK:-none}
@@ -140,7 +129,7 @@ services:
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       OMP_NUM_THREADS: "4"
     volumes:
-      - models:/root/.cache/huggingface
+      - ./ai/models:/models:ro
     networks:
       - pr002_net
     mem_limit: 12g
@@ -186,7 +175,6 @@ volumes:
   redisdata:
   media:
   recordings:
-  models:
 
 # ── Network ──────────────────────────────────────────────────────────────────
 networks:
