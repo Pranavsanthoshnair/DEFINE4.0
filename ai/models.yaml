@@ -47,8 +47,7 @@ tts_voices:
   gu: pooja_gu_conversational
 
 # ── Intent classifier ────────────────────────────────────────────────────────
-# Uses deterministic rules as primary classifier.
-# MuRIL/ONNX model is NOT required for the MVP — removed.
+# Uses deterministic rules, then the local MuRIL ONNX model.
 intent:
   primary: rules -> model -> llm
   model: google/muril-base-cased
@@ -60,7 +59,7 @@ intent:
     - call_later
     - stop_calling
     - unclear
-  confidence_threshold: 0.6  # below this → return unclear
+  confidence_threshold: 0.7  # below this → return unclear
 
 # ── Audio format notes ───────────────────────────────────────────────────────
 # Exotel delivers recordings as:

@@ -11,9 +11,11 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import struct
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import AsyncGenerator
 
 import structlog
@@ -52,6 +54,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     global _model_status
 
     log.info("ai_service_starting", stub=settings.ai_stub, port=settings.port)
+
+    from app.models_registry import load_models_yaml
+    models_config = load_models_yaml(Path(__file__).resolve().parents[1] / "models.yaml")
+    yaml_threshold = models_config.get("intent", {}).get("confidence_threshold")
+    if yaml_threshold is not None and "INTENT_CONFIDENCE_THRESHOLD" not in os.environ:
+        settings.intent_confidence_threshold = float(yaml_threshold)
 
     if settings.ai_stub:
         log.info("ai_service_stub_mode_active")
