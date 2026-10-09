@@ -3,13 +3,13 @@
 /**
  * AddContactsDrawer
  * Slide-up panel with two modes:
- *   • Single — add one contact with full details (name, phone, language, segment, notes)
+ *   • Single — add one contact with full details
  *   • Bulk CSV — drag-drop or pick a file
  *
- * Both modes POST to /api/v1/contacts/import or /api/v1/contacts/ depending on mode.
+ * When campaignId is null the drawer shows a campaign picker first.
  */
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -37,12 +37,35 @@ interface Props {
 
 type Tab = "single" | "csv";
 
-export default function AddContactsDrawer({ campaignId, campaignName, onClose, onSuccess }: Props) {
+type CampaignOption = { id: string; name: string };
+
+export default function AddContactsDrawer({ campaignId: initialCampaignId, campaignName: initialCampaignName, onClose, onSuccess }: Props) {
   const [tab, setTab]             = useState<Tab>("single");
   const [status, setStatus]       = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage]     = useState<string>("");
   const [dragOver, setDragOver]   = useState(false);
   const csvRef = useRef<HTMLInputElement>(null);
+
+  // ── Campaign picker (when no campaignId passed) ────────────────────────
+  const [campaigns, setCampaigns]         = useState<CampaignOption[]>([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>(initialCampaignId ?? "");
+  const [campaignsLoading, setCampaignsLoading]     = useState(false);
+
+  // Resolve which campaign is active
+  const campaignId   = initialCampaignId ?? selectedCampaignId;
+  const campaignName = initialCampaignId
+    ? (initialCampaignName ?? "")
+    : (campaigns.find(c => c.id === selectedCampaignId)?.name ?? "");
+
+  useEffect(() => {
+    if (initialCampaignId) return;          // already have one
+    setCampaignsLoading(true);
+    fetch(`${API}/api/v1/campaigns/?limit=50`)
+      .then(r => r.ok ? r.json() : [])
+      .then(d => setCampaigns(Array.isArray(d) ? d : []))
+      .catch(() => {})
+      .finally(() => setCampaignsLoading(false));
+  }, [initialCampaignId]);
 
   // ── Single contact form state ──────────────────────────────────────────
   const [name, setName]       = useState("");
@@ -51,8 +74,6 @@ export default function AddContactsDrawer({ campaignId, campaignName, onClose, o
   const [segment, setSegment] = useState("General");
   const [notes, setNotes]     = useState("");
 
-  if (!campaignId) return null;
-
   const reset = () => {
     setStatus("idle"); setMessage("");
     setName(""); setPhone(""); setLang("en"); setSegment("General"); setNotes("");
@@ -60,6 +81,7 @@ export default function AddContactsDrawer({ campaignId, campaignName, onClose, o
 
   // ── Submit single contact ──────────────────────────────────────────────
   const submitSingle = async () => {
+    if (!campaignId) { setMessage("Please select a campaign first."); setStatus("error"); return; }
     if (!phone.trim()) { setMessage("Phone number is required."); setStatus("error"); return; }
     setStatus("loading"); setMessage("");
     try {
@@ -88,6 +110,7 @@ export default function AddContactsDrawer({ campaignId, campaignName, onClose, o
 
   // ── Submit CSV ─────────────────────────────────────────────────────────
   const submitCsv = async (file: File) => {
+    if (!campaignId) { setStatus("error"); setMessage("Please select a campaign first."); return; }
     setStatus("loading"); setMessage("Uploading…");
     const form = new FormData();
     form.append("file", file);
@@ -153,11 +176,36 @@ export default function AddContactsDrawer({ campaignId, campaignName, onClose, o
               Add Contacts
             </div>
             <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em" }}>
-              {campaignName ?? "Campaign"}
+              {campaignName || "Select a campaign"}
             </h2>
           </div>
           <button onClick={onClose} style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}>✕</button>
         </div>
+
+        {/* Campaign picker — only shown when no campaign was pre-selected */}
+        {!initialCampaignId && (
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: "block", fontFamily: "Manrope, sans-serif", fontSize: 11, fontWeight: 700, color: "#8A9BB0", letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 6 }}>
+              Campaign <span style={{ color: "#EA1D2C" }}>*</span>
+            </label>
+            {campaignsLoading ? (
+              <div style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#8A9BB0", padding: "9px 0" }}>Loading campaigns…</div>
+            ) : campaigns.length === 0 ? (
+              <div style={{ fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#EA1D2C", padding: "9px 0" }}>No campaigns found — create one first.</div>
+            ) : (
+              <select
+                value={selectedCampaignId}
+                onChange={e => setSelectedCampaignId(e.target.value)}
+                style={{ width: "100%", border: "1.5px solid rgba(23,38,58,.12)", borderRadius: 8, padding: "9px 13px", fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#17263A", boxSizing: "border-box" }}
+              >
+                <option value="">— Select campaign —</option>
+                {campaigns.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
 
         {/* Tabs */}
         <div style={{ display: "flex", gap: 4, background: "#F1F5F9", borderRadius: 10, padding: 4, marginBottom: 22 }}>

@@ -4,7 +4,7 @@ import PageHeader from "@/components/ui/PageHeader";
 import { useDemo } from "@/context/DemoModeContext";
 import { DEMO_CONTACTS } from "@/lib/demo-data";
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import AddContactsDrawer from "@/components/campaigns/AddContactsDrawer";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
@@ -32,8 +32,9 @@ export default function ContactsPage() {
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState<string | null>(null);
   const [search, setSearch]     = useState("");
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
     if (isDemo) { setContacts(DEMO_CONTACTS); setLoading(false); return; }
     setLoading(true);
     setError(null);
@@ -42,7 +43,9 @@ export default function ContactsPage() {
       .then(d => setContacts(Array.isArray(d) ? d : (d.items ?? [])))
       .catch(e => { if (e?.name !== "AbortError") setError(String(e)); })
       .finally(() => setLoading(false));
-  }, [isDemo]);
+  };
+
+  useEffect(() => { load(); }, [isDemo]);
 
   const filtered = contacts.filter(c =>
     !search ||
@@ -60,9 +63,12 @@ export default function ContactsPage() {
         mascot="girl"
         bubble={isDemo ? "Demo 🎭" : "Real data 🔴"}
         action={
-          <Link href="/campaigns" style={{ background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
-            📥 Import CSV
-          </Link>
+          <button
+            onClick={() => setShowAddDrawer(true)}
+            style={{ background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+          >
+            + Add Contacts
+          </button>
         }
       />
 
@@ -87,7 +93,7 @@ export default function ContactsPage() {
           <div style={{ padding: "56px 24px", textAlign: "center", fontFamily: "Manrope, sans-serif" }}>
             <p style={{ fontSize: 15, fontWeight: 700, color: "#17263A", margin: "0 0 8px" }}>{search ? "No matches" : "No contacts yet"}</p>
             <p style={{ fontSize: 13, color: "#8A9BB0", margin: 0 }}>
-              {search ? "Try a different search." : <><Link href="/campaigns" style={{ color: "#EA1D2C", fontWeight: 600 }}>Upload a campaign CSV</Link> to add contacts.</>}
+              {search ? "Try a different search." : <><button onClick={() => setShowAddDrawer(true)} style={{ background: "none", border: "none", color: "#EA1D2C", fontWeight: 600, cursor: "pointer", fontSize: 13, padding: 0 }}>Add your first contact</button> to get started.</>}
             </p>
           </div>
         ) : (
@@ -127,6 +133,15 @@ export default function ContactsPage() {
       <div style={{ marginTop: 12, fontFamily: "Manrope, sans-serif", fontSize: 12, color: "#8A9BB0" }}>
         {filtered.length} contact{filtered.length !== 1 ? "s" : ""}{search ? " matching" : ""} · {isDemo ? "Demo data" : "Live from Supabase"}
       </div>
+
+      {/* Add contacts drawer — standalone mode with campaign picker */}
+      {showAddDrawer && (
+        <AddContactsDrawer
+          campaignId={null}
+          onClose={() => setShowAddDrawer(false)}
+          onSuccess={() => { setShowAddDrawer(false); load(); }}
+        />
+      )}
     </div>
   );
 }
