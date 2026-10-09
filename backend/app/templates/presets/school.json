@@ -1,0 +1,21 @@
+{
+  "name": "School Parent Notice",
+  "use_case": "school",
+  "variables": [{"key":"notice","label":"Notice text","required":true},{"key":"date","label":"Date","required":true}],
+  "script": {
+    "greeting": "Hello. This is an important message from {org_name}.",
+    "prompt": "{notice}. Press one to acknowledge. Press two if you would like us to call you back later. Press nine to stop calls.",
+    "reprompt": "Please press one to acknowledge this message.",
+    "ack_confirm": "Thank you. The message has been acknowledged.",
+    "ack_decline": "Thank you.",
+    "ack_reschedule": "Thank you.",
+    "ack_call_later": "Thank you. We will call you again later.",
+    "ack_stop": "Understood. We will not call you again.",
+    "ack_unclear": "Sorry, we could not record your response. We may try again later.",
+    "voicemail": "Hello, this is {org_name}. We have an important notice: {notice}. Please contact us.",
+    "goodbye": "Thank you. Goodbye."
+  },
+  "dtmf_map": {"1":"confirm","2":"call_later","9":"stop_calling"},
+  "speech_enabled": true,
+  "voicemail_policy": "leave_message"
+}

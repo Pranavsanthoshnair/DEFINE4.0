@@ -1,0 +1,21 @@
+{
+  "name": "Payment Reminder",
+  "use_case": "payment",
+  "variables": [{"key":"amount","label":"Amount due","required":true},{"key":"due_date","label":"Due date","required":true}],
+  "script": {
+    "greeting": "Hello. This is a call from {org_name} regarding an outstanding payment.",
+    "prompt": "A payment of {amount} is due on {due_date}. Press one if you will make the payment, two if you need more time.",
+    "reprompt": "Please press one if you will pay or two if you need more time.",
+    "ack_confirm": "Thank you. We look forward to receiving your payment.",
+    "ack_decline": "Thank you for letting us know.",
+    "ack_reschedule": "Thank you. We will follow up.",
+    "ack_call_later": "Thank you. We will call you again later.",
+    "ack_stop": "Understood. We will not call you again.",
+    "ack_unclear": "Sorry, we could not record your response. We may try again later.",
+    "voicemail": "Hello, this is {org_name}. A payment of {amount} is due on {due_date}. Please contact us.",
+    "goodbye": "Thank you. Goodbye."
+  },
+  "dtmf_map": {"1":"confirm","2":"call_later","9":"stop_calling"},
+  "speech_enabled": false,
+  "voicemail_policy": "skip_and_retry"
+}

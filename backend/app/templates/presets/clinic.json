@@ -1,0 +1,21 @@
+{
+  "name": "Clinic Appointment Reminder",
+  "use_case": "clinic",
+  "variables": [{"key":"date","label":"Appointment date","required":true},{"key":"time","label":"Appointment time","required":true}],
+  "script": {
+    "greeting": "Hello. This is a call from {org_name} about your appointment.",
+    "prompt": "You have an appointment on {date} at {time}. Press one to confirm, two to reschedule. Press nine to stop calls.",
+    "reprompt": "Please press one to confirm your appointment or two to reschedule.",
+    "ack_confirm": "Thank you. Your appointment is confirmed.",
+    "ack_decline": "Thank you. Your appointment has been noted as cancelled.",
+    "ack_reschedule": "Thank you. We will contact you to arrange another time.",
+    "ack_call_later": "Thank you. We will call you again later.",
+    "ack_stop": "Understood. We will not call you again.",
+    "ack_unclear": "Sorry, we could not record your response. We may try again later.",
+    "voicemail": "Hello, this is {org_name}. You have an appointment on {date} at {time}. Please call us to confirm.",
+    "goodbye": "Thank you. Goodbye."
+  },
+  "dtmf_map": {"1":"confirm","2":"reschedule","9":"stop_calling"},
+  "speech_enabled": true,
+  "voicemail_policy": "leave_message"
+}

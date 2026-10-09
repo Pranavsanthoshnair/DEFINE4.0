@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     secret_key: str = "change-me-in-production"
     public_base_url: str = "http://localhost:8000"
     org_name: str = "Demo Institute"
+    admin_email: str = "admin@example.com"
+    admin_password: str = "change_this_admin_password_123"
 
     # ── CORS ────────────────────────────────────────────────────────────────
     cors_origins: List[str] = ["http://localhost:3000"]
