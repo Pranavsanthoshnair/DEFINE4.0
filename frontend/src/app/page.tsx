@@ -5,6 +5,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import SplitText from "@/components/motion/SplitText";
 import Reveal from "@/components/motion/Reveal";
 import Tilt from "@/components/motion/Tilt";
+import MultilingualSphere from "@/components/landing/MultilingualSphere";
 
 export const metadata: Metadata = {
   title: "Veylo — AI Calling Campaign Platform",
@@ -146,38 +147,8 @@ export default function LandingPage() {
               {/* Floating sun */}
               <span className="sun" aria-hidden="true" />
 
-              {/* Network SVG */}
-              <svg
-                viewBox="0 0 764 560"
-                preserveAspectRatio="xMidYMid slice"
-                aria-hidden="true"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-              >
-                <path id="lp1" className="net-path" d="M382 250 C 450 120, 600 90, 690 130"/>
-                <path id="lp2" className="net-path" d="M382 250 C 500 250, 620 290, 720 320"/>
-                <path id="lp3" className="net-path" d="M382 250 C 450 380, 560 430, 650 450"/>
-                <path id="lp4" className="net-path" d="M382 250 C 300 360, 180 440, 110 470"/>
-                <circle className="net-node" cx="690" cy="130" r="6"/>
-                <circle className="net-node" cx="720" cy="320" r="6"/>
-                <circle className="net-node" cx="650" cy="450" r="6"/>
-                <circle className="net-node" cx="110" cy="470" r="6"/>
-                <text className="net-label" x="625" y="115">Malayalam</text>
-                <text className="net-label" x="660" y="306">English</text>
-                <text className="net-label" x="605" y="474">Hindi</text>
-                <text className="net-label" x="70"  y="496">Tamil</text>
-                <circle className="net-pulse" r="4">
-                  <animateMotion dur="4.5s" repeatCount="indefinite"><mpath href="#lp1"/></animateMotion>
-                </circle>
-                <circle className="net-pulse" r="4">
-                  <animateMotion dur="5.5s" begin="1s" repeatCount="indefinite"><mpath href="#lp2"/></animateMotion>
-                </circle>
-                <circle className="net-pulse" r="4">
-                  <animateMotion dur="5s" begin="2s" repeatCount="indefinite"><mpath href="#lp3"/></animateMotion>
-                </circle>
-                <circle className="net-pulse" r="4">
-                  <animateMotion dur="6s" begin=".5s" repeatCount="indefinite"><mpath href="#lp4"/></animateMotion>
-                </circle>
-              </svg>
+              {/* Three.js Multilingual Sphere Animation */}
+              <MultilingualSphere />
 
               {/* Phone mockup */}
               <div

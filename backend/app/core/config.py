@@ -41,11 +41,18 @@ class Settings(BaseSettings):
     # ── Redis / Celery ───────────────────────────────────────────────────────
     redis_url: str = "redis://localhost:6379/0"
 
-    # ── Security ─────────────────────────────────────────────────────────────
+    # ── Security & Blueprint Differentiators (H2, H3, H4) ────────────────────
     jwt_secret: str = "change-me-jwt-secret"
     data_enc_key: str = ""          # base64 32 bytes — AES-256-GCM
     phone_hmac_key: str = ""        # base64 32 bytes — HMAC-SHA256
+    phone_hash_key: str = ""        # base64 32 bytes — lookup HMAC
+    bloom_hmac_key: str = "change-me-bloom-hmac-key-secret-32b"  # Keyed Bloom filter HMAC key (H2)
+    master_kek: str = "change-me-master-kek-32bytes-secret!!"    # Envelope encryption KEK (H3)
+    keystore_dir: str = "/data/keystore"                         # Separate key-store path (H3)
     webhook_secret: str = "change-me-webhook-secret-32chars!!"
+    sim_clock: bool = False                                      # Fast simulated clock (H14, H19)
+    cost_per_minute: float = 0.60                                # Estimated INR telephony rate (H8)
+    calling_window_default: str = "09:00-21:00"
 
     # ── Storage ──────────────────────────────────────────────────────────────
     media_dir: str = "/data/media"
