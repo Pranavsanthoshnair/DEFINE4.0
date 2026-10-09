@@ -237,6 +237,8 @@ async def launch_campaign(
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+    if "warning" in result:
+        raise HTTPException(status_code=400, detail=result["warning"])
     return result
 
 

@@ -77,7 +77,7 @@ def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
         sb.table(_CONTACTS_TABLE)
         .select("*, contacts(phone_enc, phone_last4, language)")
         .eq("campaign_id", campaign_id)
-        .eq("status", "pending")
+        .eq("state", "pending")
         .limit(limit)
         .execute()
     )
@@ -367,7 +367,7 @@ async def run_campaign(
     contacts = _get_contacts(campaign_id, limit=max_contacts)
     if not contacts:
         return {
-            "warning": "No pending contacts. Upload a CSV first via POST /api/v1/contacts/import",
+            "error": "No pending contacts found. Add contacts first via 'Add Contacts' button.",
             "campaign_id": campaign_id,
         }
 
@@ -375,7 +375,7 @@ async def run_campaign(
     effective_channel = detect_channel() if channel == "auto" else channel
     log.info("campaign_engine_channel", campaign_id=campaign_id, channel=effective_channel)
 
-    # Update status
+    # Only mark running AFTER we confirmed there are contacts to call
     _update_campaign_status(campaign_id, "running")
 
     try:
