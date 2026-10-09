@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
@@ -35,11 +35,7 @@ const NAV_GROUPS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const reducedMotion = useReducedMotion();
-
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [indicatorTop, setIndicatorTop] = useState<number | null>(null);
-  const navContainerRef = useRef<HTMLDivElement>(null);
-  const activeLinkRef = useRef<HTMLAnchorElement | null>(null);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -57,28 +53,12 @@ export default function Sidebar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mobileOpen]);
 
-  // Measure active item position for vertical signal track indicator
-  useEffect(() => {
-    const updateIndicator = () => {
-      if (activeLinkRef.current && navContainerRef.current) {
-        const navRect = navContainerRef.current.getBoundingClientRect();
-        const linkRect = activeLinkRef.current.getBoundingClientRect();
-        const top = linkRect.top - navRect.top + linkRect.height / 2 - 6; // 6px indicator radius
-        setIndicatorTop(top);
-      }
-    };
-
-    updateIndicator();
-    window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
-  }, [pathname]);
-
   const navContent = (
-    <div ref={navContainerRef} className="relative flex flex-col h-full">
+    <div className="flex flex-col h-full">
       {/* Brand Logo */}
       <Link
         href="/"
-        className="flex items-center gap-2 mb-6 no-underline"
+        className="flex items-center gap-2 mb-5 no-underline"
         style={{ textDecoration: "none" }}
         aria-label="Veylo home"
       >
@@ -94,60 +74,84 @@ export default function Sidebar() {
         </span>
       </Link>
 
-      {/* Vertical Signal Track */}
-      <div
-        className="absolute left-[13px] top-16 bottom-16 w-[2px] bg-[var(--blue)] pointer-events-none"
-        aria-hidden="true"
-      >
-        {/* Sliding Active Indicator Dot */}
-        {indicatorTop !== null && (
-          <div
-            className="absolute left-[-5px] w-3 h-3 rounded-full bg-[var(--red)] border-2 border-white shadow-md z-10"
-            style={{
-              transform: `translateY(${indicatorTop}px)`,
-              transition: reducedMotion ? "none" : "transform 0.38s cubic-bezier(0.3, 0.8, 0.2, 1)",
-            }}
-          >
-            {/* Soft Looping Pulse Ring */}
-            {!reducedMotion && (
-              <span
-                className="absolute -inset-1.5 rounded-full border border-[var(--red)] pointer-events-none"
-                style={{
-                  animation: "pulseRing 2s cubic-bezier(0, 0, 0.2, 1) infinite",
-                }}
-              />
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Nav Groups */}
       <div className="flex-1 overflow-y-auto pr-1">
         {NAV_GROUPS.map((group) => (
-          <div key={group.label} className="mb-4">
+          <div key={group.label} className="mb-3">
             <p
-              className="select-none text-[10px] font-bold tracking-[.14em] text-[#6A7A8C] mb-1.5 ml-7 uppercase"
+              className="select-none"
+              style={{
+                font: "700 10px 'Manrope'",
+                letterSpacing: ".14em",
+                color: "#6A7A8C",
+                margin: "16px 10px 6px 34px",
+              }}
             >
               {group.label}
             </p>
 
-            <nav aria-label={group.label.toLowerCase()}>
+            <nav className="relative" aria-label={group.label.toLowerCase()}>
+              {/* Vertical signal track line inside group */}
+              <span
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  left: 14,
+                  top: 0,
+                  bottom: 0,
+                  width: 2,
+                  background: "var(--blue)",
+                }}
+              />
+
               {group.items.map((item) => {
                 const active = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
 
                 return (
                   <Link
                     key={item.href}
-                    ref={active ? activeLinkRef : null}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`group flex items-center gap-3 relative ml-7 my-1 px-2.5 py-2 rounded-lg no-underline text-sm font-semibold transition-all duration-200 ${
-                      active
-                        ? "text-[var(--ink)] bg-[var(--white)] shadow-[inset_0_0_0_1px_rgba(23,38,58,.1)]"
-                        : "text-[#4A5B6E] hover:text-[var(--red)] hover:bg-white/40"
-                    }`}
+                    className="group flex items-center gap-3 relative"
+                    style={{
+                      margin: "0 0 2px 28px",
+                      padding: "9px 10px",
+                      borderRadius: 0,
+                      textDecoration: "none",
+                      font: "600 14px 'Manrope'",
+                      color: active ? "var(--ink)" : "#4A5B6E",
+                      background: active ? "var(--white)" : "transparent",
+                      boxShadow: active ? "inset 0 0 0 1px rgba(23,38,58,.1)" : "none",
+                      transition: ".2s",
+                    }}
                   >
-                    {/* SVG Icon (Shifts 4px toward track and turns red on hover) */}
+                    {/* Active Track Signal Dot */}
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        style={{
+                          position: "absolute",
+                          left: -17,
+                          top: "50%",
+                          marginTop: -4,
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          background: "var(--red)",
+                        }}
+                      >
+                        {!reducedMotion && (
+                          <span
+                            className="absolute -inset-1 rounded-full border border-[var(--red)] pointer-events-none"
+                            style={{
+                              animation: "pulseRing 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+                            }}
+                          />
+                        )}
+                      </span>
+                    )}
+
+                    {/* SVG Icon */}
                     <svg
                       viewBox="0 0 24 24"
                       width="19"
@@ -157,7 +161,8 @@ export default function Sidebar() {
                       strokeWidth="1.7"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className={`flex-none transition-transform duration-200 ${
+                      style={{ flex: "none" }}
+                      className={`transition-all duration-200 ${
                         active ? "text-[var(--red)]" : "group-hover:-translate-x-1 group-hover:text-[var(--red)]"
                       }`}
                       aria-hidden="true"
@@ -167,7 +172,7 @@ export default function Sidebar() {
 
                     <span>{item.label}</span>
 
-                    {/* Active Campaign Pulsing Red Dot */}
+                    {/* Running Campaign Pulsing Red Dot */}
                     {item.hasActivePulse && (
                       <span className="relative flex h-2 w-2 ml-auto">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--red)] opacity-75" />
@@ -183,12 +188,32 @@ export default function Sidebar() {
       </div>
 
       {/* Account Widget */}
-      <div className="mt-auto pt-4 border-t border-slate-200/50">
-        <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[rgba(183,216,245,.3)] text-xs font-semibold">
-          <span className="w-8 h-8 rounded-full bg-[var(--ink)] text-white flex items-center justify-center font-bold flex-none text-[11px]">
+      <div className="mt-auto pt-3">
+        <div
+          className="flex items-center gap-2"
+          style={{
+            padding: 10,
+            borderRadius: 12,
+            background: "rgba(183,216,245,.3)",
+            font: "600 13px/1.3 'Manrope'",
+          }}
+        >
+          <span
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: "50%",
+              background: "var(--ink)",
+              color: "var(--white)",
+              display: "grid",
+              placeItems: "center",
+              fontSize: 12,
+              flex: "none",
+            }}
+          >
             TS
           </span>
-          <span className="truncate">Tech Summit Org</span>
+          <span>Tech Summit Org</span>
         </div>
       </div>
     </div>
@@ -196,9 +221,9 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Desktop Navigation Rail Sidebar */}
+      {/* Desktop Sidebar Rail */}
       <aside
-        className="fixed inset-y-0 left-0 z-20 hidden lg:flex flex-col"
+        className="fixed inset-y-0 left-0 z-20 hidden lg:flex flex-col overflow-y-auto"
         style={{
           width: 224,
           padding: "26px 16px",
@@ -212,9 +237,9 @@ export default function Sidebar() {
         {navContent}
       </aside>
 
-      {/* Mobile Menu Button Header Bar */}
+      {/* Mobile Bar Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <Link href="/" className="font-extrabold text-lg tracking-tight">
+        <Link href="/" className="font-extrabold text-lg tracking-tight no-underline">
           Vey<b className="text-[var(--red)]">lo</b>
         </Link>
         <button
@@ -233,17 +258,14 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Mobile Drawer & Dimmed Scrim */}
+      {/* Mobile Drawer & Scrim */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-40 flex">
-          {/* Dimmed Scrim */}
           <div
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
-
-          {/* Drawer Content */}
           <div
             className="relative w-64 max-w-[80vw] bg-white h-full p-6 shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out"
             style={{
@@ -255,7 +277,7 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* Layout Spacer for Desktop Rail */}
+      {/* Desktop Layout Spacer */}
       <div className="hidden lg:block flex-none" style={{ width: 224 }} aria-hidden="true" />
     </>
   );
