@@ -121,6 +121,7 @@ services:
     restart: unless-stopped
     environment:
       AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN}
+      AI_STUB: ${AI_STUB:-false}
       MODELS_DIR: /models
       STT_MODEL: ${STT_MODEL:-faster-whisper-small}
       TTS_ENGINE: ${TTS_ENGINE:-edge}

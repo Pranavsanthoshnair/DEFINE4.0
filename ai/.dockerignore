@@ -1,0 +1,13 @@
+.env
+.env.*
+models/
+.venv/
+.pytest-tmp/
+.pytest_cache/
+veylo_ai.egg-info/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+tests/
+**/tests/
+ml/intent/data/

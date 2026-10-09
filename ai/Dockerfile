@@ -30,6 +30,7 @@ RUN pip install --no-cache-dir \
     onnxruntime \
     transformers \
     sentencepiece \
+    "sarvamai>=0.1.36" \
     pytest==8.3.4 \
     pytest-asyncio==0.24.0
 
@@ -44,7 +45,7 @@ USER veylo
 # Models volume (mount with actual weights at runtime)
 VOLUME ["/models"]
 
-ENV AI_STUB=true \
+ENV AI_STUB=false \
     PORT=8200 \
     MODELS_DIR=/models \
     PYTHONUNBUFFERED=1 \
