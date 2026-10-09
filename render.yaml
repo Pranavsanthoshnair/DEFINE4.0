@@ -39,7 +39,7 @@ services:
 
       # Exotel — set in Render dashboard
       - key: CALL_PROVIDER
-        value: exotel
+        value: auto
       - key: EXOTEL_SID
         sync: false
       - key: EXOTEL_API_KEY
@@ -52,6 +52,30 @@ services:
         sync: false
       - key: WEBHOOK_BASE_URL
         sync: false          # same as PUBLIC_BASE_URL
+
+      # Twilio (optional alternative telephony)
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_PHONE_NUMBER
+        sync: false
+
+      # ElevenLabs TTS (optional — browser simulator quality)
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_VOICE_ID
+        value: Rachel
+      - key: ELEVENLABS_MODEL_ID
+        value: eleven_multilingual_v2
+
+      # Telegram Bot (optional)
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: TELEGRAM_MODE
+        value: webhook
 
       # AI service (internal)
       - key: AI_BASE_URL
