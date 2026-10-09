@@ -27,6 +27,9 @@ RUN pip install --no-cache-dir \
     pyyaml \
     soundfile \
     numpy \
+    onnxruntime \
+    transformers \
+    sentencepiece \
     pytest==8.3.4 \
     pytest-asyncio==0.24.0
 

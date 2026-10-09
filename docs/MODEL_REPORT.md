@@ -12,12 +12,11 @@
 | Groq Whisper | whisper-large-v3-turbo | Groq API | Secondary STT / benchmark | OpenAI Whisper MIT | Groq servers |
 | Sarvam Mayura | v1 | Sarvam AI API | Translation (en <-> Indic) | Sarvam commercial ToS | Sarvam servers |
 | Sarvam Bulbul | v3 | Sarvam AI API | TTS (all demo languages) | Sarvam commercial ToS | Sarvam servers |
-| Intent rules lexicon | — | Local | Primary intent classification | MIT (project code) | Our server |
-| MuRIL intent ONNX | — | — | Fine-tuned intent model | **DEFERRED** — see section 3 | — |
+| Intent rules lexicon | — | Local | First-stage intent classification | MIT (project code) | Our server |
+| MuRIL intent ONNX | google/muril-base-cased, INT8 | Local | Second-stage intent classification | Model terms | Our server |
 
-> No model weights are downloaded or stored locally. The AI service makes
-> API calls to Sarvam and Groq. The only local processing is deterministic
-> intent rules and placeholder protection.
+> MuRIL weights and tokenizer files are mounted from the local `/models`
+> directory. Sarvam remains the provider for STT, translation and TTS.
 
 ---
 
@@ -76,11 +75,15 @@ Input text
     |  confidence >= 0.9 -> return immediately
     |  confidence < 0.9 -> continue
     v
-[2] LLM fallback (optional — LLM_FALLBACK=none by default)
+[2] MuRIL intent ONNX model (local, INT8)
+    | available -> return model prediction
+    | unavailable -> continue
+    v
+[3] LLM fallback (optional — LLM_FALLBACK=none by default)
     |  enabled: Groq or Gemini API call
     |  disabled: skip
     v
-[3] Return "unclear" at confidence 0.0
+[4] Return "unclear" at confidence 0.0
 ```
 
 ### Lexicon Coverage
@@ -92,31 +95,49 @@ Input text
 | Malayalam | 8 phrases (Script + Romanised) | 5 phrases | 3 phrases | 3 phrases | 3 phrases |
 | Tamil | 8 phrases (Script + Romanised) | 5 phrases | 3 phrases | 3 phrases | 3 phrases |
 
-### Decision Distribution (synthetic test)
+### Decision Distribution
 
 | Stage | Share of utterances |
 |---|---|
-| Rules (confidence >= 0.9) | ~85% of clearly labelled utterances |
-| Rules (ambiguous -> unclear) | ~10% |
-| LLM fallback | 0% (disabled by default) |
-| Returned as unclear | ~5% |
+| Rules | Not measured: no handwritten test set is present |
+| Model | Not measured: no handwritten test set is present |
+| LLM fallback | 0% when `LLM_FALLBACK=none` |
+| Returned as unclear | Not measured: no handwritten test set is present |
 
-### Fine-tuned MuRIL ONNX Model — DEFERRED
+### Fine-tuned MuRIL ONNX Model
 
-**Decision:** MuRIL fine-tuning is deferred for the hackathon MVP per the spec:
-*"If time is short: skip fine-tuning and ship rules plus LLM fallback."*
-The rules-based pipeline handles all 4 demo languages reliably.
+The local model is loaded from `/models/intent/model.onnx`; its tokenizer is
+loaded from the same folder with network access disabled. Sarvam remains the
+provider for STT, translation and TTS.
 
-**Code is ready:** `ai/app/intent/model.py` has the ONNX inference skeleton.
-`ai/ml/intent/` has stubbed scripts for data generation, training, and ONNX export.
+Calibration and reported synthetic-test metrics from
+`ai/models/intent/training_report.json`:
 
-**To fine-tune post-hackathon:**
-1. Run `ai/ml/intent/generate_data.py` (uses Groq LLaMA for data generation)
-2. Run `ai/ml/intent/train.py` on Colab GPU (MuRIL base, 4 epochs)
-3. Run `ai/ml/intent/export_onnx.py` (dynamic int8 quantisation)
-4. Copy `model.onnx` into the service; set `INTENT_MODEL_PATH`
+| Metric | Reported value |
+|---|---:|
+| Reported calibrated temperature | 0.5270116329193115 |
+| In-distribution synthetic accuracy | 0.9791666666666666 |
+| In-distribution synthetic macro F1 | 0.9793119644925757 |
+| English accuracy | 1.0 |
+| Hindi accuracy | 1.0 |
+| Malayalam accuracy | 0.9347231715652767 |
+| Tamil accuracy | 0.9832915622389308 |
 
-**Target metrics:** macro F1 >= 0.90 on synthetic test, >= 0.80 on hand-written test.
+The retrained artifact measures 0.775 accuracy and 0.7846994251349524 macro
+F1 on the checked-in `ml/intent/data/test.jsonl`. Per-language accuracy is
+English 0.8167, Hindi 0.8500, Malayalam 0.6500, and Tamil 0.7833. This split
+has 18/240 (7.5%) case/whitespace/punctuation-normalized near-duplicate texts
+in the training set, so this result is not claimed as a clean held-out,
+non-leaky evaluation.
+
+The report's separate hand-test result is accuracy 0.6463414634146342 and
+macro F1 0.6174669019079332. Its provenance and exact source split should be
+retained with the training artifacts.
+
+At the configured temperature 0.527, 194/240 (80.83%) repository-test
+predictions exceeded 0.6 confidence: 159/186 (85.48%) correct predictions
+and 35/54 (64.81%) incorrect predictions. This is a diagnostic on the
+repository test split, not a quality metric.
 
 ---
 
@@ -212,7 +233,7 @@ Measured on `STT_PROVIDER=auto`, 8 kHz WAV synthetic fixtures, LAN network.
 ### Current Limitations
 
 1. Synthetic fixtures only — WER not measured on real phone call audio
-2. MuRIL model deferred — intent is rules-only for hackathon
+2. The ONNX artifact/report and checked-in test split are not yet reproducible against each other
 3. Groq hallucinates on silence — needs VAD pre-filter for production
 4. Only `ritu` voice tested for ml-IN and ta-IN
 5. LLM fallback inactive by default — ambiguous utterances return `unclear`
@@ -220,7 +241,7 @@ Measured on `STT_PROVIDER=auto`, 8 kHz WAV synthetic fixtures, LAN network.
 ### Next Steps (post-hackathon)
 
 1. Record real human audio fixtures (3 speakers per language, with consent)
-2. Fine-tune MuRIL on Colab; export ONNX int8; load in service
+2. Reconcile the ONNX artifact, training report and checked-in test split
 3. Add silero-VAD pre-filter before Groq STT path
 4. Enable LLM fallback for production intent quality
 5. Evaluate language-specific Bulbul voices for Malayalam and Tamil

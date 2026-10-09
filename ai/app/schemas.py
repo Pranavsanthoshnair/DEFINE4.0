@@ -27,12 +27,16 @@ class STTResponse(BaseModel):
 IntentLabel = Literal[
     "confirm", "decline", "reschedule", "call_later", "stop_calling", "unclear"
 ]
-IntentSource = Literal["rules", "model", "llm"]
+IntentSource = Literal["rules", "model", "llm", "tap"]
 
 
 class IntentRequest(BaseModel):
     text: str = Field(max_length=2000)
     language: str = Field(min_length=2, max_length=2)
+    chosen_intent: IntentLabel | None = Field(
+        default=None,
+        description="Intent selected directly by a caller-facing tap",
+    )
     allowed_intents: list[IntentLabel] = Field(
         default=[
             "confirm", "decline", "reschedule",
@@ -93,3 +97,15 @@ ModelStatus = Literal["loaded", "stub", "unavailable"]
 class HealthResponse(BaseModel):
     status: Literal["ok", "degraded"]
     models: dict[str, ModelStatus]
+
+
+class SelfCheckResponse(BaseModel):
+    """Internal deployment diagnostics. Contains no credential values."""
+
+    onnx_model_loaded: bool
+    tokenizer_local: bool
+    intent_temperature: float
+    intent_threshold: float
+    stt_mode: dict[str, str]
+    sarvam_api_key_configured: bool
+    ffmpeg_present: bool

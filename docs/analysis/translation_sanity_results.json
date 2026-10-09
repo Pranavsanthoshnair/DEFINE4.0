@@ -1,0 +1,758 @@
+[
+  {
+    "preset": "clinic",
+    "language": "en",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 422"
+    ]
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "hi",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ml",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "clinic",
+    "language": "ta",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "en",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 422"
+    ]
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "hi",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ml",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "payment",
+    "language": "ta",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "en",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 422"
+    ]
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "hi",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ml",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "greeting",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "prompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "reprompt",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_confirm",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_decline",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_reschedule",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_call_later",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_stop",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "ack_unclear",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "voicemail",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "school",
+    "language": "ta",
+    "segment": "goodbye",
+    "ok": true,
+    "failures": []
+  },
+  {
+    "preset": "seminar",
+    "language": "en",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 422"
+    ]
+  },
+  {
+    "preset": "seminar",
+    "language": "hi",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 429"
+    ]
+  },
+  {
+    "preset": "seminar",
+    "language": "ml",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 429"
+    ]
+  },
+  {
+    "preset": "seminar",
+    "language": "ta",
+    "segment": "*",
+    "ok": false,
+    "failures": [
+      "translate HTTP 429"
+    ]
+  }
+]

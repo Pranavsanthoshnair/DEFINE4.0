@@ -24,6 +24,8 @@ import base64
 import io
 import time
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
 import structlog
@@ -135,6 +137,24 @@ def _from_bcp47(bcp47: str | None) -> str:
     return _BCP47_TO_ISO.get(bcp47, bcp47[:2])
 
 
+@lru_cache(maxsize=1)
+def _stt_modes() -> dict[str, str]:
+    """Read optional Saaras output modes without exposing credentials."""
+    try:
+        import yaml
+        path = Path(__file__).resolve().parents[2] / "models.yaml"
+        config = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        return config.get("stt_mode", {}) or {}
+    except Exception as exc:
+        log.warning("stt_mode_config_unavailable", error=str(exc))
+        return {}
+
+
+def _stt_mode_for(language: str | None) -> str | None:
+    mode = _stt_modes().get(language or "")
+    return mode if mode in ("translit", "codemix") else None
+
+
 # ── STT ───────────────────────────────────────────────────────────────────────
 
 def _stt_sync(
@@ -143,6 +163,7 @@ def _stt_sync(
     language_code: str,
     input_audio_codec: str | None,
     keyterms: list[str],
+    mode: str | None,
 ) -> STTResult:
     """Synchronous Sarvam STT call — run in executor."""
     client = _get_client()
@@ -161,6 +182,8 @@ def _stt_sync(
         kwargs["input_audio_codec"] = input_audio_codec
     if keyterms:
         kwargs["keyterms"] = keyterms
+    if mode:
+        kwargs["mode"] = mode
 
     try:
         t0 = time.monotonic()
@@ -215,6 +238,7 @@ async def transcribe(
         language_code,
         input_audio_codec,
         keyterms or [],
+        _stt_mode_for(language),
     )
 
 

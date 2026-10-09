@@ -43,7 +43,7 @@ class Settings(BaseSettings):
     exotel_audio_codec: str = "auto"
 
     # ── Intent ───────────────────────────────────────────────────────────────
-    intent_confidence_threshold: float = 0.6
+    intent_confidence_threshold: float = 0.7
     # Optional LLM fallback for intent when rules give no match: none | gemini | groq
     llm_fallback: Literal["none", "gemini", "groq"] = "none"
     gemini_api_key: str = ""
@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     # whisper_model_size: str = "small"
     # indictrans_model: str = "ai4bharat/indictrans2-en-indic-dist-200M"
     # tts_engine: str = "stub"
-    # models_dir: str = "/models"
+    models_dir: str = "/models"
 
 
 settings = Settings()

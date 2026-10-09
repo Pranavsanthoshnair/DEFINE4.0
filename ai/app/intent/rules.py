@@ -61,6 +61,15 @@ def _phrase_match(text: str, phrases: list[str]) -> bool:
     return False
 
 
+def _strong_stop_calling_match(text: str, phrases: list[str]) -> bool:
+    """Match multi-word opt-out phrases, excluding the weak bare ``stop`` cue."""
+    strong_phrases = [
+        phrase for phrase in phrases
+        if len(_normalise(phrase).split()) >= 2
+    ]
+    return _phrase_match(text, strong_phrases)
+
+
 def classify(
     text: str,
     language: str,
@@ -95,6 +104,14 @@ def classify(
         phrases = lexicon.get(label, [])
         if _phrase_match(normalised, [_normalise(p) for p in phrases]):
             matched.append(label)
+
+    # Explicit multi-word opt-out language wins over weak cues such as
+    # "busy", "no", "later", or a bare "stop". A bare "stop" remains
+    # ambiguous when another label also matches.
+    if "stop_calling" in allowed and _strong_stop_calling_match(
+        normalised, lexicon.get("stop_calling", [])
+    ):
+        return "stop_calling", 0.95
 
     if len(matched) == 1:
         # Negation check: if the text contains a strong negation word and the
