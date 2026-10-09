@@ -9,6 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from app.core.config import settings
 from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()
@@ -172,11 +173,12 @@ async def launch_campaign(
 
     Pass ?channel=telephony|browser|telegram to override.
     """
-    from app.services.campaign_engine import run_campaign
+    from app.services.campaign_engine import run_campaign, Channel
+    from typing import cast
     try:
         result = await run_campaign(
             campaign_id=campaign_id,
-            channel=channel or "auto",
+            channel=cast("Channel", channel or "auto"),
             max_contacts=max_contacts,
         )
     except Exception as exc:
