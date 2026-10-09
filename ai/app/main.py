@@ -307,12 +307,10 @@ async def _auto_stt(
     )
 
     winner = done.pop()
-    # Cancel the slower task
-    for t in pending:
-        t.cancel()
-
     try:
         result = winner.result()
+        for t in pending:
+            t.cancel()
         return result
     except Exception:
         # Winner failed — wait for the other one

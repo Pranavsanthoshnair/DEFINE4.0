@@ -45,9 +45,11 @@ def client():
     original_token = _settings.ai_internal_token
     original_stub = _settings.ai_stub
     original_key = _settings.sarvam_api_key
+    original_stt_provider = _settings.stt_provider
 
     _settings.ai_stub = False  # type: ignore[assignment]
     _settings.sarvam_api_key = "test-sarvam-key-12345"  # type: ignore[assignment]
+    _settings.stt_provider = "sarvam"  # type: ignore[assignment]
     _settings.ai_internal_token = TOKEN  # type: ignore[assignment]
 
     with TestClient(app) as c:
@@ -56,6 +58,7 @@ def client():
     # Restore original values so test_contract.py still works
     _settings.ai_stub = original_stub  # type: ignore[assignment]
     _settings.sarvam_api_key = original_key  # type: ignore[assignment]
+    _settings.stt_provider = original_stt_provider  # type: ignore[assignment]
     _settings.ai_internal_token = original_token  # type: ignore[assignment]
 
 
