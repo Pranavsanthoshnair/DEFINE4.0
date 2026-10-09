@@ -41,6 +41,27 @@ EXECUTION_TYPE = "BROWSER_VOICE"
 BROWSER_INTENTS = ["confirm", "decline", "reschedule", "call_later", "stop_calling", "unclear"]
 
 
+# ── Voices endpoint ───────────────────────────────────────────────────────────
+
+@router.get("/voices")
+async def list_voices():
+    """
+    Return available TTS voices — proxied safely from ElevenLabs.
+    API key never leaves the backend.
+    """
+    if not elevenlabs.is_available():
+        return {"provider": "none", "voices": [], "reason": "ELEVENLABS_API_KEY not configured"}
+    try:
+        voices = await elevenlabs.list_voices()
+        simplified = [
+            {"id": v["voice_id"], "name": v["name"], "description": v.get("description", "")}
+            for v in voices
+        ]
+        return {"provider": "elevenlabs", "voices": simplified}
+    except Exception as exc:
+        return {"provider": "elevenlabs", "voices": [], "reason": str(exc)}
+
+
 # ── Schemas ───────────────────────────────────────────────────────────────────
 
 class StartSessionRequest(BaseModel):
