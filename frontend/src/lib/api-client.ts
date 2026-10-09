@@ -118,6 +118,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 // Auth
 
 export const authApi = {
+  signup: async (email: string, password: string): Promise<LoginResponse> => {
+    const res = await request<LoginResponse>("/api/auth/signup", {
+      method: "POST",
+      body: { email, password },
+      public: true,
+    });
+    setToken(res.access_token);
+    return res;
+  },
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const res = await request<LoginResponse>("/api/auth/login", {
       method: "POST",

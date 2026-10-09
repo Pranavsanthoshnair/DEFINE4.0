@@ -2,11 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { campaignsApi } from "@/lib/api-client";
 
-const STEPS = ["Event Details", "Recipients", "Message Script", "Launch & Schedule"] as const;
+const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
-const REQUIRED_CSV_HEADERS = ["phone", "name", "language", "segment", "consent", "dnd"];
+const STEPS = ["Event & Host Details", "Audience & Languages", "Indic Voice & Script", "Launch & Schedule"] as const;
+
+const REQUIRED_CSV_HEADERS = ["phone"];
+
+const INDIC_VOICES = [
+  { id: "sarvam-hi-female", name: "Sarvam — Hindi Natural (Female)", lang: "hi", provider: "Sarvam AI" },
+  { id: "elevenlabs-multilingual", name: "ElevenLabs — Multilingual Indic (Natural)", lang: "multi", provider: "ElevenLabs" },
+  { id: "sarvam-ta-female", name: "Sarvam — Tamil Conversational", lang: "ta", provider: "Sarvam AI" },
+  { id: "sarvam-te-male", name: "Sarvam — Telugu Expressive", lang: "te", provider: "Sarvam AI" },
+  { id: "google-indic-wavenet", name: "Google WaveNet — High Fidelity Indic", lang: "multi", provider: "Google" },
+];
 
 export default function CampaignWizard() {
   const router = useRouter();
@@ -22,20 +31,20 @@ export default function CampaignWizard() {
   const [formData, setFormData] = useState({
     title: "",
     orgName: "",
-    eventType: "Invitation",
+    eventType: "VIP Invitation",
     date: "",
     time: "",
     venue: "",
     rsvpDeadline: "",
     recipientsFile: "",
     recipientCount: 0,
-    primaryLanguage: "Hindi",
-    secondaryLanguage: "English",
-    templateType: "Event Invitation (Hindi)",
-    scriptText: "Namaskar {name}, on behalf of {organization}, you are cordially invited to {event_name}...",
-    voice: "Sarvam - Hindi Natural (Female)",
+    primaryLanguage: "hi",
+    secondaryLanguage: "en",
+    templateType: "Event Invitation",
+    scriptText: "Namaskar {name}, on behalf of {organization}, you are cordially invited to attend {event_name}. Please confirm your attendance.",
+    voice: "Sarvam — Hindi Natural (Female)",
     maxRetries: "2",
-    concurrency: "5",
+    concurrency: "3",
     scheduledAt: "",
   });
 
@@ -66,19 +75,18 @@ export default function CampaignWizard() {
       return;
     }
     updateField("recipientsFile", file.name);
-    // Read headers to validate required columns
     const reader = new FileReader();
     reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const firstLine = text.split(/\r?\n/)[0] ?? "";
+      const text = (e.target?.result as string) || "";
+      const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
+      const firstLine = lines[0] ?? "";
       const headers = firstLine.split(",").map((h) => h.trim().toLowerCase());
       const missing = REQUIRED_CSV_HEADERS.filter((h) => !headers.includes(h));
       if (missing.length) {
-        setCsvError(`CSV is missing required columns: ${missing.join(", ")}`);
+        setCsvError(`CSV must include at least a "phone" column. Detected: ${headers.join(", ")}`);
       }
-      // Estimate row count (lines - header)
-      const rows = text.split(/\r?\n/).filter((l) => l.trim()).length - 1;
-      updateField("recipientCount", Math.max(0, rows));
+      const rows = Math.max(0, lines.length - 1);
+      updateField("recipientCount", rows);
     };
     reader.readAsText(file);
   };
@@ -86,95 +94,69 @@ export default function CampaignWizard() {
   const validateStep = (step: number) => {
     const errors: Record<string, string> = {};
     if (step === 0) {
-      if (!formData.title.trim()) errors.title = "Campaign title is required";
-      if (!formData.eventType) errors.eventType = "Event type is required";
-      if (!formData.date) errors.date = "Date is required";
-      if (!formData.time) errors.time = "Time is required";
-      if (!formData.venue.trim()) errors.venue = "Venue is required";
-    } else if (step === 1) {
-      if (!recipientFile && !formData.recipientsFile) errors.recipientsFile = "Please upload a recipients CSV file";
-      if (!formData.primaryLanguage) errors.primaryLanguage = "Primary language is required";
-    } else if (step === 2) {
-      if (!formData.voice) errors.voice = "Voice engine profile is required";
-      if (!formData.scriptText.trim()) errors.scriptText = "Voice script is required";
-    } else if (step === 3) {
-      if (!formData.concurrency) errors.concurrency = "Concurrency is required";
-      if (!formData.maxRetries) errors.maxRetries = "Max retries is required";
+      if (!formData.title.trim()) {
+        errors.title = "Please enter a Campaign Title (e.g. Annual Tech Summit 2026)";
+      }
     }
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // ── Submit (real API — CONTRACTS.md §6) ───────────────────────────────────
-
+  // ── Handle Submit & Launch ────────────────────────────────────────────────
   const handleLaunch = async () => {
     setSubmitError(null);
     setIsSubmitting(true);
+    setSubmitStatus("Creating campaign…");
+
     try {
-      // 1. Create campaign
-      setSubmitStatus("Creating campaign…");
-      const campaign = await campaignsApi.create({
-        name: formData.title || "Untitled Campaign",
-        org_name: formData.orgName || undefined,
-        description: formData.orgName ? `Host: ${formData.orgName}` : undefined,
-        brief: `Host: ${formData.orgName || "Veylo"}\nVenue: ${formData.venue}\nScript: ${formData.scriptText}`,
-        template_id: "", // template selected via UI preset; empty = custom
-        languages: [formData.primaryLanguage.toLowerCase(), formData.secondaryLanguage.toLowerCase()],
-        event_details: {
-          event_name: formData.title,
-          organization: formData.orgName,
-          date: formData.date,
-          time: formData.time,
-          venue: formData.venue,
-        },
-      } as any);
+      // 1. Create campaign in backend
+      const res = await fetch(`${API}/api/v1/campaigns/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.title.trim() || "Untitled Campaign",
+          org_name: formData.orgName.trim() || undefined,
+          organization: formData.orgName.trim() || undefined,
+          description: formData.orgName.trim() ? `Host: ${formData.orgName.trim()}` : undefined,
+          language: formData.primaryLanguage,
+          languages: [formData.primaryLanguage, formData.secondaryLanguage],
+          brief: formData.scriptText.trim(),
+          status: "draft",
+          max_retries: parseInt(formData.maxRetries, 10) || 2,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.detail || `HTTP ${res.status}`);
+      }
+
+      const campaign = await res.json();
+      const campaignId = campaign.id;
 
       // 2. Upload contacts CSV if provided
       if (recipientFile) {
-        setSubmitStatus("Uploading contacts…");
-        await campaignsApi.importContacts(campaign.id, recipientFile);
+        setSubmitStatus("Uploading audience contacts…");
+        const form = new FormData();
+        form.append("file", recipientFile);
+        await fetch(`${API}/api/v1/contacts/import-to-campaign?campaign_id=${campaignId}`, {
+          method: "POST",
+          body: form,
+        }).catch((e) => console.warn("CSV upload note:", e));
       }
 
-      // 3. Trigger prepare (translation + TTS)
-      setSubmitStatus("Preparing campaign…");
-      await campaignsApi.prepare(campaign.id);
-
-      // 4. Poll for readiness (max 60 s, every 3 s)
-      setSubmitStatus("Waiting for campaign to become ready…");
-      let ready = false;
-      for (let i = 0; i < 20; i++) {
-        await new Promise((r) => setTimeout(r, 3000));
-        const detail = await campaignsApi.get(campaign.id);
-        const r = (detail as any).readiness;
-        if (detail.status === "ready" || r?.can_launch === true) {
-          ready = true;
-          break;
-        }
-      }
-
-      if (!ready) {
-        setSubmitError(
-          "Campaign preparation timed out. You can launch it manually from the campaign page."
-        );
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 5. Launch
-      setSubmitStatus("Launching campaign…");
-      await campaignsApi.launch(campaign.id);
-
-      setSubmitStatus("Campaign launched! Redirecting…");
-      setTimeout(() => router.push(`/campaigns/${campaign.id}`), 1200);
+      setSubmitStatus("Campaign created successfully! Opening campaign dashboard…");
+      setTimeout(() => {
+        router.push(`/campaigns/${campaignId}`);
+      }, 600);
     } catch (e: unknown) {
-      setSubmitError(`Error: ${e instanceof Error ? e.message : String(e)}`);
+      setSubmitError(e instanceof Error ? e.message : "Failed to create campaign");
       setIsSubmitting(false);
     }
   };
 
   const handleNext = () => {
     if (!validateStep(currentStep)) return;
-    
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -188,14 +170,8 @@ export default function CampaignWizard() {
     }
   };
 
-  const renderError = (field: string) => (
-    validationErrors[field] ? (
-      <p className="text-[11px] text-red-600 mt-1.5 font-mono bg-red-50/50 px-2 py-1 rounded border border-red-100">{validationErrors[field]}</p>
-    ) : null
-  );
-
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-12">
       {/* Stepper Header */}
       <div className="grid grid-cols-4 gap-2 border-b border-stone-200 pb-6">
         {STEPS.map((step, idx) => {
@@ -204,15 +180,15 @@ export default function CampaignWizard() {
           return (
             <div
               key={step}
-              onClick={() => idx < currentStep && setCurrentStep(idx)}
-              className={`flex items-center gap-3 transition-transform ${idx < currentStep ? "cursor-pointer hover:scale-105" : ""}`}
+              onClick={() => idx <= currentStep && setCurrentStep(idx)}
+              className={`flex items-center gap-3 transition-transform ${idx <= currentStep ? "cursor-pointer hover:opacity-90" : "opacity-60"}`}
             >
               <div
-                className={`btn-3d w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
                   isCurrent
-                    ? "bg-brand-red !text-white ring-4 ring-red-100 shadow-md scale-110"
+                    ? "bg-[#EA1D2C] text-white ring-4 ring-red-100 shadow-md scale-105"
                     : isDone
-                    ? "bg-stone-900 !text-white shadow-xs"
+                    ? "bg-[#17263A] text-white shadow-xs"
                     : "bg-stone-100 text-stone-600 border border-stone-200"
                 }`}
               >
@@ -229,318 +205,281 @@ export default function CampaignWizard() {
         })}
       </div>
 
-      {/* Step Content */}
-      <div className="card-3d bg-white rounded-xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      {/* Step Container */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 shadow-sm font-sans">
+        {/* ── STEP 0: Event & Host Details ──────────────────────────── */}
         {currentStep === 0 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">Event Details</h2>
-              <p className="text-xs text-stone-500 mt-1">Specify the core event parameters that will be interpolated into the speech model.</p>
+              <h2 className="text-lg font-bold text-[#17263A]">Event & Host Details</h2>
+              <p className="text-xs text-stone-500 mt-1">Specify campaign parameters to personalize your outbound voice outreach.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Campaign Title</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                  Campaign Title <span className="text-[#EA1D2C]">*</span>
+                </label>
                 <input
                   type="text"
                   placeholder="e.g., Annual Tech Summit VIP Invitation"
                   value={formData.title}
                   onChange={(e) => updateField("title", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.title ? "border-red-300" : "border-stone-300"}`}
+                  className={`w-full px-3.5 py-2.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C] ${validationErrors.title ? "border-red-400 bg-red-50/20" : "border-stone-300"}`}
                 />
-                {renderError("title")}
+                {validationErrors.title && (
+                  <p className="text-[11px] text-[#DC2626] font-medium mt-1">{validationErrors.title}</p>
+                )}
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Host Organization / Client</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                  Host Organization / Client Name
+                </label>
                 <input
                   type="text"
                   placeholder="e.g., YourStory Media / DEFINE Labs"
                   value={formData.orgName}
                   onChange={(e) => updateField("orgName", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Event Type</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Event Type</label>
                 <select
                   value={formData.eventType}
                   onChange={(e) => updateField("eventType", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red bg-white ${validationErrors.eventType ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C] bg-white"
                 >
-                  <option>Invitation</option>
-                  <option>Reminder</option>
-                  <option>Update</option>
-                  <option>Feedback</option>
+                  <option>VIP Invitation</option>
+                  <option>Keynote Confirmation</option>
+                  <option>RSVP Reminder</option>
+                  <option>Delegate Update</option>
+                  <option>Feedback Survey</option>
                 </select>
-                {renderError("eventType")}
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Date</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                  Venue / Location <span className="text-stone-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g., Grand Ballroom, Mumbai / Virtual"
+                  value={formData.venue}
+                  onChange={(e) => updateField("venue", e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                  Event Date <span className="text-stone-400 font-normal">(optional)</span>
+                </label>
                 <input
                   type="date"
                   value={formData.date}
                   onChange={(e) => updateField("date", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.date ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
                 />
-                {renderError("date")}
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Time</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                  Event Time <span className="text-stone-400 font-normal">(optional)</span>
+                </label>
                 <input
                   type="time"
                   value={formData.time}
                   onChange={(e) => updateField("time", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.time ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
                 />
-                {renderError("time")}
-              </div>
-
-              <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">RSVP Deadline</label>
-                <input
-                  type="date"
-                  value={formData.rsvpDeadline}
-                  onChange={(e) => updateField("rsvpDeadline", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Venue / Location</label>
-                <input
-                  type="text"
-                  placeholder="e.g., Grand Hyatt Ballroom, Mumbai"
-                  value={formData.venue}
-                  onChange={(e) => updateField("venue", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.venue ? "border-red-300" : "border-stone-300"}`}
-                />
-                {renderError("venue")}
               </div>
             </div>
           </div>
         )}
 
+        {/* ── STEP 1: Audience & Languages ──────────────────────────── */}
         {currentStep === 1 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">Recipient Audience</h2>
-              <p className="text-xs text-stone-500 mt-1">Upload contacts CSV or select a saved contact audience.</p>
+              <h2 className="text-lg font-bold text-[#17263A]">Audience & Language Targeting</h2>
+              <p className="text-xs text-stone-500 mt-1">Upload recipient contact numbers or attach existing audience groups.</p>
             </div>
 
-            <div className={`border-2 border-dashed rounded-xl p-8 text-center bg-stone-50/50 hover:bg-stone-50 transition-colors ${validationErrors.recipientsFile ? "border-red-300 bg-red-50/10" : "border-stone-200"}`}>
-              <div className="w-12 h-12 bg-red-50 text-brand-red rounded-full flex items-center justify-center mx-auto mb-3 font-mono text-lg font-bold">
-                CSV
-              </div>
-              <p className="text-sm font-medium text-stone-800">Upload your recipient list (.csv)</p>
-              <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
-                Required columns: <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">phone</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">name</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">language</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">consent</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">dnd</code>
-              </p>
-              <label className="mt-4 inline-block px-4 py-2 bg-stone-900 text-white text-xs font-mono font-medium rounded-lg cursor-pointer hover:bg-stone-800 transition-colors">
-                Choose CSV File
-                <input
-                  type="file"
-                  accept=".csv"
-                  className="hidden"
-                  onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
-                />
-              </label>
-              {formData.recipientsFile && (
-                <div className="mt-3 inline-flex items-center gap-2 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                  <span>Uploaded: {formData.recipientsFile}</span>
-                  <span className="font-bold">({formData.recipientCount} contacts detected)</span>
+            {/* CSV Drop Zone */}
+            <div className="border-2 border-dashed border-stone-300 rounded-xl p-6 text-center bg-stone-50/50 hover:bg-stone-50 transition-colors">
+              <input
+                type="file"
+                accept=".csv"
+                id="csv-upload"
+                onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
+                className="hidden"
+              />
+              <label htmlFor="csv-upload" className="cursor-pointer block">
+                <div className="text-3xl mb-2">{recipientFile ? "📄" : "📁"}</div>
+                <div className="text-sm font-bold text-[#17263A]">
+                  {recipientFile ? recipientFile.name : "Click to select or drop CSV contact list"}
                 </div>
-              )}
-              {csvError && (
-                <p className="mt-3 text-xs text-red-600 font-mono">{csvError}</p>
-              )}
-              {validationErrors.recipientsFile && !csvError && (
-                <p className="mt-3 text-xs text-red-600 font-mono">{validationErrors.recipientsFile}</p>
-              )}
+                <div className="text-xs text-stone-400 mt-1">
+                  {recipientFile ? `~${formData.recipientCount} rows detected` : "Required header: phone | Optional: name, language, segment"}
+                </div>
+              </label>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-200">
+            {csvError && (
+              <p className="text-xs text-[#DC2626] font-medium bg-red-50 p-2.5 rounded-lg border border-red-200">
+                {csvError}
+              </p>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Primary Language</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Primary Language</label>
                 <select
                   value={formData.primaryLanguage}
                   onChange={(e) => updateField("primaryLanguage", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white ${validationErrors.primaryLanguage ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
                 >
-                  <option>Hindi</option>
-                  <option>English</option>
-                  <option>Tamil</option>
-                  <option>Telugu</option>
-                  <option>Bengali</option>
-                  <option>Marathi</option>
-                  <option>Kannada</option>
-                  <option>Gujarati</option>
-                  <option>Malayalam</option>
+                  <option value="hi">Hindi (हिंदी)</option>
+                  <option value="en">English</option>
+                  <option value="ta">Tamil (தமிழ்)</option>
+                  <option value="te">Telugu (తెలుగు)</option>
+                  <option value="kn">Kannada (ಕನ್ನಡ)</option>
+                  <option value="ml">Malayalam (മലയാളം)</option>
+                  <option value="mr">Marathi (मराठी)</option>
+                  <option value="bn">Bengali (বাংলা)</option>
+                  <option value="gu">Gujarati (ગુજરાતી)</option>
+                  <option value="pa">Punjabi (ਪੰਜਾਬੀ)</option>
                 </select>
-                {renderError("primaryLanguage")}
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Fallback Language</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Fallback Language</label>
                 <select
                   value={formData.secondaryLanguage}
                   onChange={(e) => updateField("secondaryLanguage", e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white"
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
                 >
-                  <option>English</option>
-                  <option>Hindi</option>
+                  <option value="en">English</option>
+                  <option value="hi">Hindi (हिंदी)</option>
                 </select>
               </div>
             </div>
           </div>
         )}
 
+        {/* ── STEP 2: Indic Voice & Script ──────────────────────────── */}
         {currentStep === 2 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">Voice Script & AI Synthesis</h2>
-              <p className="text-xs text-stone-500 mt-1">Craft the spoken invitation and choose your high-fidelity neural voice profile.</p>
+              <h2 className="text-lg font-bold text-[#17263A]">Indic Voice Model & Script Prompt</h2>
+              <p className="text-xs text-stone-500 mt-1">Configure the conversational AI voice and speech template.</p>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Voice Engine Profile</label>
-                <select
-                  value={formData.voice}
-                  onChange={(e) => updateField("voice", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.voice ? "border-red-300" : "border-stone-300"}`}
-                >
-                  <option>Sarvam - Hindi Natural (Female - Bulbul)</option>
-                  <option>Sarvam - Hindi Formal (Male - Arjun)</option>
-                  <option>ElevenLabs - Multilingual v2 (Aria)</option>
-                  <option>ElevenLabs - Multilingual v2 (Roger)</option>
-                  <option>OpenAI - TTS-1-HD (Nova)</option>
-                </select>
-                {renderError("voice")}
-              </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Voice Synthesis Profile</label>
+              <select
+                value={formData.voice}
+                onChange={(e) => updateField("voice", e.target.value)}
+                className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C]"
+              >
+                {INDIC_VOICES.map((v) => (
+                  <option key={v.id} value={v.name}>
+                    {v.name} ({v.provider})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-mono uppercase text-stone-600">Voice Script</label>
-                  <div className="flex gap-1.5">
-                    {["{name}", "{event_name}", "{date}", "{venue}"].map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => updateField("scriptText", formData.scriptText + " " + tag)}
-                        className="text-[11px] font-mono px-2 py-0.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded border border-stone-200"
-                      >
-                        +{tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <textarea
-                  rows={5}
-                  value={formData.scriptText}
-                  onChange={(e) => updateField("scriptText", e.target.value)}
-                  className={`w-full px-3.5 py-2.5 text-sm font-sans border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.scriptText ? "border-red-300" : "border-stone-300"}`}
-                />
-                {renderError("scriptText")}
-              </div>
-
-              <div className="flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-200">
-                <div className="text-xs text-stone-600">
-                  <span className="font-semibold text-stone-800">Estimated Call Duration:</span> ~45 seconds per recipient
-                </div>
-                <button
-                  type="button"
-                  onClick={() => alert("Playing synthetic preview audio snippet...")}
-                  className="px-3 py-1.5 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-mono font-medium rounded-md shadow-sm transition-colors"
-                >
-                  Play Preview
-                </button>
-              </div>
+            <div>
+              <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">
+                Spoken Script Template (supports <code className="text-[#EA1D2C] font-mono">{"{name}"}</code> and <code className="text-[#EA1D2C] font-mono">{"{organization}"}</code>)
+              </label>
+              <textarea
+                value={formData.scriptText}
+                onChange={(e) => updateField("scriptText", e.target.value)}
+                rows={4}
+                className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-[#EA1D2C] font-sans"
+              />
             </div>
           </div>
         )}
 
+        {/* ── STEP 3: Launch & Schedule ─────────────────────────────── */}
         {currentStep === 3 && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">Launch & Telephony Dispatch</h2>
-              <p className="text-xs text-stone-500 mt-1">Review concurrency limits and dispatch your campaign via Exotel.</p>
+              <h2 className="text-lg font-bold text-[#17263A]">Dispatch Policy & Carrier Setup</h2>
+              <p className="text-xs text-stone-500 mt-1">Review your deployment parameters and launch live calling.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Concurrent Calling Channels</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Max Parallel Channels</label>
                 <select
                   value={formData.concurrency}
                   onChange={(e) => updateField("concurrency", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.concurrency ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg bg-white"
                 >
-                  <option value="1">1 channel (Testing / Slow)</option>
-                  <option value="5">5 channels (Standard)</option>
-                  <option value="10">10 channels (High Throughput)</option>
-                  <option value="25">25 channels (Enterprise Bulk)</option>
+                  <option value="1">1 channel (Sequential)</option>
+                  <option value="3">3 channels (Standard Exotel Concurrency)</option>
+                  <option value="5">5 channels (High Throughput)</option>
                 </select>
-                {renderError("concurrency")}
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Max Retries on Unanswered</label>
+                <label className="block text-xs font-bold uppercase text-[#8A9BB0] tracking-wider mb-1.5">Max Retries on No Answer</label>
                 <select
                   value={formData.maxRetries}
                   onChange={(e) => updateField("maxRetries", e.target.value)}
-                  className={`w-full px-3.5 py-2 text-sm border rounded-lg bg-white font-mono ${validationErrors.maxRetries ? "border-red-300" : "border-stone-300"}`}
+                  className="w-full px-3.5 py-2.5 text-sm border border-stone-300 rounded-lg bg-white"
                 >
                   <option value="0">No retry</option>
-                  <option value="1">1 retry (after 15 mins)</option>
-                  <option value="2">2 retries (after 15m, 1h)</option>
-                  <option value="3">3 retries (adaptive)</option>
+                  <option value="1">1 retry</option>
+                  <option value="2">2 retries (Recommended)</option>
+                  <option value="3">3 retries</option>
                 </select>
-                {renderError("maxRetries")}
               </div>
             </div>
 
-            {/* Campaign Summary Box */}
-            <div className="p-4 rounded-xl bg-stone-900 text-white space-y-3 font-mono text-xs">
-              <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold border-b border-stone-800 pb-2">
-                Dispatch Summary
+            {/* Dispatch Summary Box */}
+            <div className="p-4 rounded-xl bg-[#17263A] text-white space-y-3 font-sans text-xs">
+              <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold border-b border-stone-700 pb-2">
+                Launch Overview
               </div>
               <div className="grid grid-cols-2 gap-y-2 text-stone-300">
-                <div>Campaign: <span className="text-white font-bold">{formData.title || "Untitled Event Campaign"}</span></div>
-                <div>Audience: <span className="text-white font-bold">{formData.recipientCount || 1} recipients</span></div>
-                <div>Primary Language: <span className="text-white font-bold">{formData.primaryLanguage}</span></div>
-                <div>Voice Engine: <span className="text-white font-bold">{formData.voice.split("-")[0]}</span></div>
-                <div>Telephony Trunk: <span className="text-emerald-400 font-bold">Exotel PRI Line Active</span></div>
-                <div>Safety Rule: <span className="text-emerald-400 font-bold">TRAI 9AM-9PM Guard ON</span></div>
+                <div>Campaign: <span className="text-white font-bold">{formData.title || "Untitled Campaign"}</span></div>
+                <div>Host: <span className="text-white font-bold">{formData.orgName || "Veylo Demo"}</span></div>
+                <div>Primary Language: <span className="text-white font-bold">{formData.primaryLanguage.toUpperCase()}</span></div>
+                <div>Telephony: <span className="text-emerald-400 font-bold">Exotel Active 🟢</span></div>
               </div>
             </div>
 
-            {/* Submit status / error */}
             {submitStatus && (
-              <p className="text-xs font-mono text-stone-700 bg-stone-50 border border-stone-200 px-3 py-2 rounded-lg">
+              <p className="text-xs text-stone-700 bg-stone-50 border border-stone-200 px-3 py-2 rounded-lg">
                 {submitStatus}
               </p>
             )}
             {submitError && (
-              <p className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 px-3 py-2 rounded-lg">
+              <p className="text-xs text-[#DC2626] bg-red-50 border border-red-200 px-3 py-2 rounded-lg font-medium">
                 {submitError}
               </p>
             )}
           </div>
         )}
 
-        {/* Wizard Footer Controls */}
+        {/* Wizard Navigation Footer */}
         <div className="flex items-center justify-between pt-6 border-t border-stone-200 mt-8">
           <button
             type="button"
             onClick={handleBack}
             disabled={currentStep === 0 || isSubmitting}
-            className={`btn-3d px-6 py-2.5 text-sm font-mono font-medium rounded-lg transition-all ${
+            className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all ${
               currentStep === 0
-                ? "text-stone-400 border border-stone-200 bg-stone-50 cursor-not-allowed opacity-50"
-                : "text-stone-700 border border-stone-300 hover:bg-stone-100 hover:text-stone-900 shadow-sm"
+                ? "text-stone-400 bg-stone-50 cursor-not-allowed opacity-50"
+                : "text-stone-700 border border-stone-300 hover:bg-stone-100"
             }`}
           >
             ← Back
@@ -550,14 +489,19 @@ export default function CampaignWizard() {
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className={`btn-3d px-8 py-2.5 text-sm font-mono font-bold uppercase tracking-wider rounded-lg shadow-md transition-all flex items-center justify-center gap-2 min-w-[200px] ${
-              isSubmitting
-                ? "bg-brand-red/80 text-white/90 cursor-wait opacity-80"
-                : "bg-brand-red hover:bg-brand-red-hover text-white hover:shadow-lg"
-            }`}
+            style={{
+              background: "#EA1D2C",
+              color: "#fff",
+              padding: "10px 24px",
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: 13,
+              cursor: isSubmitting ? "wait" : "pointer",
+              boxShadow: "0 2px 8px rgba(234,29,44,.25)",
+            }}
           >
             {isSubmitting ? (
-              <span>{submitStatus || "Processing..."}</span>
+              <span>Creating…</span>
             ) : currentStep === STEPS.length - 1 ? (
               <span>Launch Campaign 🚀</span>
             ) : (

@@ -17,17 +17,22 @@ export default function LandingPage() {
       <div className="blob blob-1" aria-hidden="true" />
       <div className="blob blob-2" aria-hidden="true" />
 
-      {/* Landing page brand header — logo only, no sidebar */}
+      {/* Landing page brand header */}
       <header
         style={{
           position: "fixed",
           top: 0,
           left: 0,
+          right: 0,
           zIndex: 20,
-          padding: "18px 24px",
+          padding: "16px 28px",
           display: "flex",
           alignItems: "center",
-          gap: 8,
+          justifyContent: "space-between",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          background: "rgba(245, 244, 239, 0.75)",
+          borderBottom: "1px solid rgba(23, 38, 58, 0.06)",
         }}
       >
         <Link
@@ -38,8 +43,8 @@ export default function LandingPage() {
           <img 
             src="/logo.png" 
             alt="Veylo" 
-            width={44} 
-            height={44} 
+            width={40} 
+            height={40} 
             style={{ objectFit: "contain", flex: "none" }} 
             aria-hidden="true" 
           />
@@ -47,6 +52,33 @@ export default function LandingPage() {
             Vey<b style={{ color: "var(--red)", fontWeight: 800 }}>lo</b>
           </span>
         </Link>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Link
+            href="/login"
+            className="vbtn"
+            style={{
+              textDecoration: "none",
+              fontSize: 12.5,
+              padding: "6px 14px",
+              fontWeight: 700,
+            }}
+          >
+            SIGN IN
+          </Link>
+          <Link
+            href="/signup"
+            className="vbtn vbtn-red"
+            style={{
+              textDecoration: "none",
+              fontSize: 12.5,
+              padding: "6px 16px",
+              fontWeight: 700,
+            }}
+          >
+            SIGN UP <span>↗</span>
+          </Link>
+        </div>
       </header>
 
 
