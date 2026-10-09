@@ -31,23 +31,47 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.db.models import User
 from app.db.session import get_db
+from app.db.supabase_client import get_supabase, is_supabase_configured
 
 log = structlog.get_logger()
 
 # ---------------------------------------------------------------------------
-# Password hashing
+# Password hashing (PBKDF2-HMAC-SHA256 with constant-time verification)
 # ---------------------------------------------------------------------------
-_pwd_ctx = CryptContext(schemes=["argon2"], deprecated="auto")
+import hashlib
+import hmac
+import secrets
 
 
 def get_password_hash(password: str) -> str:
-    """Return a argon2 hash of ``password``."""
-    return _pwd_ctx.hash(password)
+    """Return a secure PBKDF2-HMAC-SHA256 hash of ``password``."""
+    salt = secrets.token_hex(16)
+    key = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt.encode("utf-8"), 100_000)
+    return f"pbkdf2:sha256:100000${salt}${key.hex()}"
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Return True if ``plain`` matches the bcrypt ``hashed`` value."""
-    return _pwd_ctx.verify(plain, hashed)
+    """Return True if ``plain`` matches the ``hashed`` value."""
+    if hashed.startswith("pbkdf2:sha256:"):
+        try:
+            parts = hashed.split("$")
+            if len(parts) == 3:
+                salt = parts[1]
+                expected_key_hex = parts[2]
+                key = hashlib.pbkdf2_hmac("sha256", plain.encode("utf-8"), salt.encode("utf-8"), 100_000)
+                return hmac.compare_digest(key.hex(), expected_key_hex)
+        except Exception:
+            return False
+
+    # Also support plain sha256 or bcrypt if stored from seed
+    try:
+        if hashed.startswith("$argon2") or hashed.startswith("$2b$") or hashed.startswith("$2a$"):
+            _ctx = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
+            return _ctx.verify(plain, hashed)
+    except Exception:
+        pass
+
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +121,122 @@ def _check_rate_limit(ip: str) -> None:
 # FastAPI dependencies
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# In-memory user cache + seed
+# ---------------------------------------------------------------------------
+_users_by_email: dict[str, dict[str, Any]] = {}
+_users_by_id: dict[str, dict[str, Any]] = {}
+
+
+def _seed_admin_if_needed():
+    admin_email = (settings.admin_email or "admin@veylo.internal").lower()
+    if admin_email not in _users_by_email:
+        admin_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, admin_email))
+        record = {
+            "id": admin_id,
+            "email": admin_email,
+            "password_hash": get_password_hash(settings.admin_password or "dev-admin-pass"),
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        }
+        _users_by_email[admin_email] = record
+        _users_by_id[admin_id] = record
+
+
+_seed_admin_if_needed()
+
+
+async def _find_user_by_email(email: str, db: AsyncSession | None = None) -> dict[str, Any] | None:
+    """Find user record by email across in-memory cache, Supabase REST, or direct DB."""
+    email_clean = email.strip().lower()
+    _seed_admin_if_needed()
+
+    # 1. In-memory cache
+    if email_clean in _users_by_email:
+        return _users_by_email[email_clean]
+
+    # 2. Supabase REST
+    if is_supabase_configured():
+        try:
+            sb = get_supabase()
+            resp = sb.table("users").select("*").eq("email", email_clean).limit(1).execute()
+            if resp.data and len(resp.data) > 0:
+                row = resp.data[0]
+                _users_by_email[email_clean] = row
+                _users_by_id[str(row["id"])] = row
+                return row
+        except Exception as e:
+            log.debug("supabase_user_lookup_error", error=str(e))
+
+    # 3. Direct DB session
+    if db:
+        try:
+            result = await db.execute(select(User).where(User.email == email_clean))
+            user = result.scalar_one_or_none()
+            if user:
+                row = {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "password_hash": user.password_hash,
+                    "role": user.role,
+                    "created_at": user.created_at.isoformat() if user.created_at else None,
+                }
+                _users_by_email[email_clean] = row
+                _users_by_id[str(user.id)] = row
+                return row
+        except Exception as e:
+            log.debug("db_user_lookup_error", error=str(e))
+
+    return None
+
+
+async def _find_user_by_id(user_id: str, db: AsyncSession | None = None) -> dict[str, Any] | None:
+    """Find user record by user ID across in-memory cache, Supabase REST, or direct DB."""
+    _seed_admin_if_needed()
+
+    # 1. In-memory cache
+    if user_id in _users_by_id:
+        return _users_by_id[user_id]
+
+    # 2. Supabase REST
+    if is_supabase_configured():
+        try:
+            sb = get_supabase()
+            resp = sb.table("users").select("*").eq("id", user_id).limit(1).execute()
+            if resp.data and len(resp.data) > 0:
+                row = resp.data[0]
+                _users_by_email[row["email"].lower()] = row
+                _users_by_id[user_id] = row
+                return row
+        except Exception as e:
+            log.debug("supabase_user_id_lookup_error", error=str(e))
+
+    # 3. Direct DB session
+    if db:
+        try:
+            result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+            user = result.scalar_one_or_none()
+            if user:
+                row = {
+                    "id": str(user.id),
+                    "email": user.email,
+                    "password_hash": user.password_hash,
+                    "role": user.role,
+                    "created_at": user.created_at.isoformat() if user.created_at else None,
+                }
+                _users_by_email[user.email.lower()] = row
+                _users_by_id[user_id] = row
+                return row
+        except Exception as e:
+            log.debug("db_user_id_lookup_error", error=str(e))
+
+    return None
+
+
+# ---------------------------------------------------------------------------
+# FastAPI dependencies
+# ---------------------------------------------------------------------------
+
 async def get_current_user(
     token: Annotated[str | None, Depends(oauth2_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -123,11 +263,16 @@ async def get_current_user(
     except jwt.PyJWTError:
         raise credentials_exception
 
-    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
-    user = result.scalar_one_or_none()
-    if user is None:
+    user_data = await _find_user_by_id(user_id, db)
+    if user_data is None:
         raise credentials_exception
-    return user
+
+    return User(
+        id=uuid.UUID(user_data["id"]),
+        email=user_data["email"],
+        password_hash=user_data["password_hash"],
+        role=user_data.get("role", "organiser"),
+    )
 
 
 def require_role(role: str):
@@ -151,8 +296,14 @@ def require_role(role: str):
 # ---------------------------------------------------------------------------
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: str
     password: str
+
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+    role: str = "organiser"
 
 
 class TokenResponse(BaseModel):
@@ -179,6 +330,84 @@ _GENERIC_LOGIN_ERROR = HTTPException(
 )
 
 
+@router.post("/signup", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+async def signup(
+    request: Request,
+    body: SignupRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> TokenResponse:
+    """Register a new user account with email and password."""
+    ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(ip)
+
+    email_clean = body.email.strip().lower()
+    if not email_clean or "@" not in email_clean or "." not in email_clean:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"error": {"code": "invalid_email", "message": "Please enter a valid email address."}},
+        )
+
+    if len(body.password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={"error": {"code": "password_too_short", "message": "Password must be at least 6 characters long."}},
+        )
+
+    # Check if user already exists
+    existing = await _find_user_by_email(email_clean, db)
+    if existing is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": {"code": "email_exists", "message": "An account with this email already exists."}},
+        )
+
+    user_id = str(uuid.uuid4())
+    now_iso = datetime.now(timezone.utc).isoformat()
+    hashed_pwd = get_password_hash(body.password)
+    user_role = body.role if body.role in ("admin", "organiser") else "organiser"
+
+    user_record = {
+        "id": user_id,
+        "email": email_clean,
+        "password_hash": hashed_pwd,
+        "role": user_role,
+        "created_at": now_iso,
+    }
+
+    # Store in memory
+    _users_by_email[email_clean] = user_record
+    _users_by_id[user_id] = user_record
+
+    # Try storing in Supabase REST
+    if is_supabase_configured():
+        try:
+            sb = get_supabase()
+            sb.table("users").insert(user_record).execute()
+        except Exception as e:
+            log.debug("supabase_user_insert_notice", error=str(e))
+
+    # Try storing in direct DB
+    try:
+        new_user = User(
+            id=uuid.UUID(user_id),
+            email=email_clean,
+            password_hash=hashed_pwd,
+            role=user_role,
+        )
+        db.add(new_user)
+        await db.commit()
+    except Exception as e:
+        log.debug("db_user_insert_notice", error=str(e))
+
+    token = create_access_token({"sub": user_id})
+    log.info("signup_ok", user_id=user_id, role=user_role, email=email_clean)
+    return TokenResponse(
+        access_token=token,
+        token_type="bearer",
+        user={"id": user_id, "email": email_clean, "role": user_role},
+    )
+
+
 @router.post("/login", response_model=TokenResponse)
 async def login(
     request: Request,
@@ -193,25 +422,24 @@ async def login(
     ip = request.client.host if request.client else "unknown"
     _check_rate_limit(ip)
 
-    result = await db.execute(select(User).where(User.email == body.email))
-    user = result.scalar_one_or_none()
+    email_clean = body.email.strip().lower()
+    user = await _find_user_by_email(email_clean, db)
 
     # Constant-time: always attempt verification even on unknown email
-    # An argon2 dummy hash
     dummy_hash = "$argon2id$v=19$m=65536,t=3,p=4$qH1x5yY9M5q5u4zT3J7eQA$qG1x5yY9M5q5u4zT3J7eQAqH1x5yY9M5q5u4zT3J7eQA"
-    stored_hash = user.password_hash if user else dummy_hash
+    stored_hash = user["password_hash"] if user else dummy_hash
     password_ok = verify_password(body.password, stored_hash)
 
     if user is None or not password_ok:
         log.info("login_failed", ip=ip)
         raise _GENERIC_LOGIN_ERROR
 
-    token = create_access_token({"sub": str(user.id)})
-    log.info("login_ok", user_id=str(user.id), role=user.role)
+    token = create_access_token({"sub": str(user["id"])})
+    log.info("login_ok", user_id=str(user["id"]), role=user["role"])
     return TokenResponse(
         access_token=token,
         token_type="bearer",
-        user={"id": str(user.id), "email": user.email, "role": user.role},
+        user={"id": str(user["id"]), "email": user["email"], "role": user["role"]},
     )
 
 

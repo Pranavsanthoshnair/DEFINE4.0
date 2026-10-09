@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.api.routes import health, campaigns, contacts, calls, analytics, webhooks, admin
 from app.api.routes import capabilities, sessions, telegram_webhook, audio
 from app.api.compat_router import compat_router
+from app.security.auth import router as auth_router
 from app.telephony.router import router as telephony_router
 from app.templates.router import router as templates_router
 
@@ -56,6 +57,7 @@ def create_app() -> FastAPI:
 
     # ── Routers ─────────────────────────────────────────────────────────────
     app.include_router(health.router, tags=["health"])
+    app.include_router(auth_router)  # /api/auth (login, signup, me)
     app.include_router(campaigns.router, prefix="/api/v1/campaigns", tags=["campaigns"])
     app.include_router(contacts.router, prefix="/api/v1/contacts", tags=["contacts"])
     app.include_router(calls.router, prefix="/api/v1/calls", tags=["calls"])
