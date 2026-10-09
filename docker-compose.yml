@@ -5,5 +5,5 @@ services:
     environment:
       MODELS_DIR: /models
     volumes:
-      - ./models:/models:ro
+      - ./ai/models:/models:ro
 
