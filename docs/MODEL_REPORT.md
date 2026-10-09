@@ -115,23 +115,29 @@ Calibration and reported synthetic-test metrics from
 
 | Metric | Reported value |
 |---|---:|
-| Reported calibrated temperature | 0.06954866647720337 |
+| Reported calibrated temperature | 0.5270116329193115 |
 | In-distribution synthetic accuracy | 0.9791666666666666 |
-| In-distribution synthetic macro F1 | 0.9792624299489416 |
+| In-distribution synthetic macro F1 | 0.9793119644925757 |
 | English accuracy | 1.0 |
 | Hindi accuracy | 1.0 |
-| Malayalam accuracy | 0.9340434419381788 |
+| Malayalam accuracy | 0.9347231715652767 |
 | Tamil accuracy | 0.9832915622389308 |
 
-The repository test measures 0.675 accuracy and 0.6841828746085789 macro F1
-on the checked-in `ml/intent/data/test.jsonl`. This split has 18/240 (7.5%)
-case/whitespace/punctuation-normalized near-duplicate texts in the training
-set. The Colab train/validation/test files are not present locally, so the
-artifact and report/test split cannot yet be reconciled. The 0.675 result is
-not claimed as a clean held-out, non-leaky evaluation.
+The retrained artifact measures 0.775 accuracy and 0.7846994251349524 macro
+F1 on the checked-in `ml/intent/data/test.jsonl`. Per-language accuracy is
+English 0.8167, Hindi 0.8500, Malayalam 0.6500, and Tamil 0.7833. This split
+has 18/240 (7.5%) case/whitespace/punctuation-normalized near-duplicate texts
+in the training set, so this result is not claimed as a clean held-out,
+non-leaky evaluation.
 
-At temporary temperature 1.0, 0/240 predictions exceeded 0.6 confidence;
-this was a diagnostic on the repository test split, not a quality metric.
+The report's separate hand-test result is accuracy 0.6463414634146342 and
+macro F1 0.6174669019079332. Its provenance and exact source split should be
+retained with the training artifacts.
+
+At the configured temperature 0.527, 194/240 (80.83%) repository-test
+predictions exceeded 0.6 confidence: 159/186 (85.48%) correct predictions
+and 35/54 (64.81%) incorrect predictions. This is a diagnostic on the
+repository test split, not a quality metric.
 
 ---
 
