@@ -311,7 +311,7 @@ export default function LandingPage() {
             <div
               style={{
                 position: "relative",
-                background: "#2a2320",
+                background: "var(--blue)",
                 overflow: "hidden",
                 display: "flex",
                 alignItems: "flex-end",
@@ -320,28 +320,33 @@ export default function LandingPage() {
               role="img"
               aria-label="Veylo presenter character"
             >
-              {/* Subtle stage spotlight */}
-              <div
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "radial-gradient(ellipse at 50% 0%, rgba(255,215,0,.22) 0%, transparent 65%)",
-                  pointerEvents: "none",
-                }}
-              />
+              {/* Decorative yellow circle — top-right accent */}
+              <span aria-hidden="true" style={{
+                position: "absolute", top: 18, right: 18,
+                width: 38, height: 38, borderRadius: "50%",
+                background: "var(--yellow)", opacity: .7,
+                pointerEvents: "none",
+              }} />
+              {/* Decorative yellow circle — bottom-left accent */}
+              <span aria-hidden="true" style={{
+                position: "absolute", bottom: 22, left: 14,
+                width: 22, height: 22, borderRadius: "50%",
+                background: "var(--yellow)", opacity: .5,
+                pointerEvents: "none",
+              }} />
               <Image
                 src="/veylo-boy.png"
                 alt="Veylo presenter"
-                width={180}
-                height={220}
+                width={200}
+                height={260}
                 style={{
                   objectFit: "contain",
                   objectPosition: "bottom center",
                   position: "relative",
                   zIndex: 1,
-                  maxHeight: "90%",
+                  height: "82%",
                   width: "auto",
+                  maxWidth: "90%",
                 }}
                 priority
               />
