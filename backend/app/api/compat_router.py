@@ -50,8 +50,8 @@ async def get_overview():
     """Dashboard overview — aggregates for the KPI cards."""
     try:
         sb = get_supabase()
-        campaigns_resp = sb.table("campaigns").select("id", count="exact").execute()
-        contacts_resp = sb.table("contacts").select("id", count="exact").execute()
+        campaigns_resp = sb.table("campaigns").select("id", count="exact").execute()  # type: ignore[arg-type]
+        contacts_resp = sb.table("contacts").select("id", count="exact").execute()    # type: ignore[arg-type]
         calls_resp = sb.table("calls").select("status,outcome").execute()
         calls = calls_resp.data or []
 
@@ -60,7 +60,7 @@ async def get_overview():
         callbacks = sum(1 for c in calls if c.get("outcome") == "call_later")
         retry_resp = (
             sb.table("campaign_contacts")
-            .select("id", count="exact")
+            .select("id", count="exact")  # type: ignore[arg-type]
             .eq("status", "pending")
             .execute()
         )

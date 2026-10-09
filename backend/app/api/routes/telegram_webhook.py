@@ -146,8 +146,12 @@ async def _classify_text(text: str, language: str = "en") -> tuple[str, Optional
 
 async def _handle_voice(chat_id: int, voice: dict, language: str = "en") -> None:
     """Download voice note → STT → classify → persist → reply."""
-    file_id = voice.get("file_id")
-    file_size = voice.get("file_size", 0)
+    file_id: Optional[str] = voice.get("file_id")
+    file_size: int = voice.get("file_size", 0)
+
+    if not file_id:
+        await _send_message(chat_id, "⚠️ Could not read voice note file ID. Please try again.")
+        return
 
     if file_size > _MAX_VOICE_BYTES:
         await _send_message(chat_id, "⚠️ Voice note too large (max 8 MB). Please send a shorter message.")
