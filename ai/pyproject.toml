@@ -1,2 +1,62 @@
-# TODO: AI service pyproject.toml (Member 3 - Phase 0)
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
 
+[project]
+name = "veylo-ai"
+version = "0.2.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.115.5",
+    "uvicorn[standard]==0.32.1",
+    "pydantic==2.10.3",
+    "pydantic-settings==2.6.1",
+    "python-dotenv==1.0.1",
+    "python-multipart==0.0.20",
+    "structlog==24.4.0",
+    "httpx>=0.26.0,<0.29.0",
+    "pyyaml>=6.0",
+    # Sarvam AI SDK — primary provider for STT, translate, TTS
+    "sarvamai>=0.1.36",
+    # Audio utilities (lightweight — no ML weights)
+    "soundfile>=0.12",
+    "numpy>=1.26",
+    # ── Local ML deps — NOT required for the Sarvam MVP ─────────────────────
+    # Uncomment only if you re-enable local model paths:
+    # "faster-whisper>=1.0.3",      # replaced by Sarvam Saaras v4
+    # "silero-vad>=5.1",             # replaced by Sarvam VAD
+    # "ctranslate2>=4.0",
+    # "edge-tts>=6.1.12",           # replaced by Sarvam Bulbul v2
+    # "onnxruntime>=1.19",           # MuRIL ONNX intent model — not needed for MVP
+    # "transformers>=4.44",          # MuRIL — not needed for MVP
+    # "optimum[onnxruntime]>=1.22",
+    # "torch" (CPU wheel),
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.24.0",
+    "pytest-cov>=5.0",
+]
+ml = [
+    # Install only on a GPU machine for offline model training (Colab etc.)
+    "torch",
+    "transformers",
+    "optimum[onnxruntime]",
+    "datasets",
+    "scikit-learn",
+    "jiwer",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]

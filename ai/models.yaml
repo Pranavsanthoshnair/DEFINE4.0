@@ -1,3 +1,74 @@
-# AI service model registry (Member 3)
-# Pin model names, versions, checksums here
+# ── Sarvam AI provider routing ──────────────────────────────────────────────
+# Primary provider for the Veylo AI MVP.
+# No local model weights are downloaded or required.
 
+provider: sarvam
+
+sarvam:
+  stt_model: saaras:v4        # Sarvam Saaras v4 — best accuracy on Indian languages
+  translate_model: mayura:v1  # Sarvam Mayura v1 — 23 Indic languages
+  tts_model: bulbul:v2        # Sarvam Bulbul v2 — natural Indic TTS
+
+# ── STT language support (via Sarvam Saaras v4) ──────────────────────────────
+# Language codes (ISO-639-1) mapped to Sarvam BCP-47 language codes.
+# Sarvam Saaras v4 supports all 22 scheduled Indian languages + English.
+stt_routing:
+  en: sarvam/saaras:v4
+  hi: sarvam/saaras:v4
+  ml: sarvam/saaras:v4
+  ta: sarvam/saaras:v4
+  te: sarvam/saaras:v4
+  kn: sarvam/saaras:v4
+  bn: sarvam/saaras:v4
+  mr: sarvam/saaras:v4
+  gu: sarvam/saaras:v4
+
+# ── TTS voices (Sarvam Bulbul v2) ───────────────────────────────────────────
+# One voice per language suitable for outbound calling campaigns.
+# Full voice list: https://docs.sarvam.ai → TTS → voices
+tts_voices:
+  en: sanchita_en_customer
+  hi: ritu_hi_customer
+  ml: anushka             # generic; Sarvam ml-specific persona not yet released
+  ta: gokul_ta_narration
+  te: kavitha_te_conversation
+  kn: chaitra_kn_conversation
+  bn: roopa_bn_conversational
+  mr: ritu_mr_narration
+  gu: pooja_gu_conversational
+
+# ── Intent classifier ────────────────────────────────────────────────────────
+# Uses deterministic rules as primary classifier.
+# MuRIL/ONNX model is NOT required for the MVP — removed.
+intent:
+  primary: rules              # rules → (optionally) llm
+  labels:
+    - confirm
+    - decline
+    - reschedule
+    - call_later
+    - stop_calling
+    - unclear
+  confidence_threshold: 0.6  # below this → return unclear
+
+# ── Audio format notes ───────────────────────────────────────────────────────
+# Exotel delivers recordings as:
+#   - MP3 (most common)
+#   - WAV 8kHz mono PCM16
+# Sarvam Saaras v4 natively accepts both. No resampling required.
+# For raw PCM (rare), set EXOTEL_AUDIO_CODEC=pcm_s16le in .env.
+# Maximum audio size accepted by Veylo AI: 5 MB.
+# Sarvam REST API is best-suited for audio < 30 seconds.
+audio:
+  max_size_mb: 5
+  exotel_formats: ["mp3", "wav"]
+  sarvam_formats: ["wav", "mp3", "aac", "aiff", "ogg", "opus", "flac", "mp4", "m4a", "amr", "wma", "webm"]
+  optimal_sample_rate_hz: 16000   # Sarvam recommends 16kHz; sends 8kHz telephony is fine
+
+# ── Removed local model weights (not needed for Sarvam MVP) ─────────────────
+# The following were used in the local-model architecture (pre-Sarvam):
+#   faster_whisper:    replaced by Sarvam Saaras v4
+#   muril_intent_onnx: removed — rules + optional LLM fallback used instead
+#   indictrans2:       replaced by Sarvam Mayura v1
+#   edge_tts:          replaced by Sarvam Bulbul v2
+# No weights need to be downloaded. No /models volume needed in Docker.
