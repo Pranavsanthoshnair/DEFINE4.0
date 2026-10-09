@@ -1,0 +1,391 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const STEPS = ["Event Details", "Recipients", "Message Script", "Launch & Schedule"] as const;
+
+export default function CampaignWizard() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    title: "",
+    eventType: "Invitation",
+    date: "",
+    time: "",
+    venue: "",
+    rsvpDeadline: "",
+    recipientsFile: "",
+    recipientCount: 0,
+    primaryLanguage: "Hindi",
+    secondaryLanguage: "English",
+    templateType: "Event Invitation (Hindi)",
+    scriptText: "Namaskar {name}, aapko {event_name} mein aamantrit kiya jata hai...",
+    voice: "Sarvam - Hindi Natural (Female)",
+    maxRetries: "2",
+    concurrency: "5",
+    scheduledAt: "",
+  });
+
+  const updateField = (key: string, value: any) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        router.push("/campaigns");
+      }, 1000);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-8">
+      {/* Stepper Header */}
+      <div className="grid grid-cols-4 gap-2 border-b border-stone-200 pb-6">
+        {STEPS.map((step, idx) => {
+          const isDone = idx < currentStep;
+          const isCurrent = idx === currentStep;
+          return (
+            <div
+              key={step}
+              onClick={() => idx < currentStep && setCurrentStep(idx)}
+              className={`flex items-center gap-3 ${idx < currentStep ? "cursor-pointer" : ""}`}
+            >
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
+                  isCurrent
+                    ? "bg-brand-red !text-white ring-4 ring-red-100 shadow-sm"
+                    : isDone
+                    ? "bg-stone-900 !text-white"
+                    : "bg-stone-100 text-stone-600 border border-stone-200"
+                }`}
+              >
+                {isDone ? "[DONE]" : idx + 1}
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-[10px] uppercase font-mono text-stone-400">Step 0{idx + 1}</div>
+                <div className={`text-xs font-medium ${isCurrent ? "text-stone-900 font-semibold" : "text-stone-500"}`}>
+                  {step}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Step Content */}
+      <div className="bg-white rounded-xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+        {currentStep === 0 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-900">Event Details</h2>
+              <p className="text-xs text-stone-500 mt-1">Specify the core event parameters that will be interpolated into the speech model.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Campaign Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Annual Tech Summit VIP Invitation"
+                  value={formData.title}
+                  onChange={(e) => updateField("title", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Event Type</label>
+                <select
+                  value={formData.eventType}
+                  onChange={(e) => updateField("eventType", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red bg-white"
+                >
+                  <option>Invitation</option>
+                  <option>Reminder</option>
+                  <option>Update</option>
+                  <option>Feedback</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Date</label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => updateField("date", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Time</label>
+                <input
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => updateField("time", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">RSVP Deadline</label>
+                <input
+                  type="date"
+                  value={formData.rsvpDeadline}
+                  onChange={(e) => updateField("rsvpDeadline", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Venue / Location</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Grand Hyatt Ballroom, Mumbai"
+                  value={formData.venue}
+                  onChange={(e) => updateField("venue", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 1 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-900">Recipient Audience</h2>
+              <p className="text-xs text-stone-500 mt-1">Upload contacts CSV or select a saved contact audience.</p>
+            </div>
+
+            <div className="border-2 border-dashed border-stone-200 rounded-xl p-8 text-center bg-stone-50/50 hover:bg-stone-50 transition-colors">
+              <div className="w-12 h-12 bg-red-50 text-brand-red rounded-full flex items-center justify-center mx-auto mb-3 font-mono text-lg font-bold">
+                CSV
+              </div>
+              <p className="text-sm font-medium text-stone-800">Upload your recipient list (.csv)</p>
+              <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+                Requires columns: <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">name</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">phone</code>, <code className="text-stone-700 bg-stone-100 px-1 py-0.5 rounded">language</code>
+              </p>
+              <label className="mt-4 inline-block px-4 py-2 bg-stone-900 text-white text-xs font-mono font-medium rounded-lg cursor-pointer hover:bg-stone-800 transition-colors">
+                Choose CSV File
+                <input
+                  type="file"
+                  accept=".csv"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      updateField("recipientsFile", file.name);
+                      updateField("recipientCount", 42);
+                    }
+                  }}
+                />
+              </label>
+              {formData.recipientsFile && (
+                <div className="mt-3 inline-flex items-center gap-2 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                  <span>Uploaded: {formData.recipientsFile}</span>
+                  <span className="font-bold">({formData.recipientCount} contacts detected)</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-200">
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Primary Language</label>
+                <select
+                  value={formData.primaryLanguage}
+                  onChange={(e) => updateField("primaryLanguage", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white"
+                >
+                  <option>Hindi</option>
+                  <option>English</option>
+                  <option>Tamil</option>
+                  <option>Telugu</option>
+                  <option>Bengali</option>
+                  <option>Marathi</option>
+                  <option>Kannada</option>
+                  <option>Gujarati</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Fallback Language</label>
+                <select
+                  value={formData.secondaryLanguage}
+                  onChange={(e) => updateField("secondaryLanguage", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white"
+                >
+                  <option>English</option>
+                  <option>Hindi</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-900">Voice Script & AI Synthesis</h2>
+              <p className="text-xs text-stone-500 mt-1">Craft the spoken invitation and choose your high-fidelity neural voice profile.</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Voice Engine Profile</label>
+                <select
+                  value={formData.voice}
+                  onChange={(e) => updateField("voice", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                >
+                  <option>Sarvam - Hindi Natural (Female - Bulbul)</option>
+                  <option>Sarvam - Hindi Formal (Male - Arjun)</option>
+                  <option>ElevenLabs - Multilingual v2 (Aria)</option>
+                  <option>ElevenLabs - Multilingual v2 (Roger)</option>
+                  <option>OpenAI - TTS-1-HD (Nova)</option>
+                </select>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-mono uppercase text-stone-600">Voice Script</label>
+                  <div className="flex gap-1.5">
+                    {["{name}", "{event_name}", "{date}", "{venue}"].map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => updateField("scriptText", formData.scriptText + " " + tag)}
+                        className="text-[11px] font-mono px-2 py-0.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded border border-stone-200"
+                      >
+                        +{tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <textarea
+                  rows={5}
+                  value={formData.scriptText}
+                  onChange={(e) => updateField("scriptText", e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-sm font-sans border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3.5 bg-stone-50 rounded-lg border border-stone-200">
+                <div className="text-xs text-stone-600">
+                  <span className="font-semibold text-stone-800">Estimated Call Duration:</span> ~45 seconds per recipient
+                </div>
+                <button
+                  type="button"
+                  onClick={() => alert("Playing synthetic preview audio snippet...")}
+                  className="px-3 py-1.5 bg-white border border-stone-300 hover:bg-stone-50 text-stone-800 text-xs font-mono font-medium rounded-md shadow-sm transition-colors"
+                >
+                  Play Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-900">Launch & Telephony Dispatch</h2>
+              <p className="text-xs text-stone-500 mt-1">Review concurrency limits and dispatch your campaign via Exotel.</p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Concurrent Calling Channels</label>
+                <select
+                  value={formData.concurrency}
+                  onChange={(e) => updateField("concurrency", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                >
+                  <option value="1">1 channel (Testing / Slow)</option>
+                  <option value="5">5 channels (Standard)</option>
+                  <option value="10">10 channels (High Throughput)</option>
+                  <option value="25">25 channels (Enterprise Bulk)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Max Retries on Unanswered</label>
+                <select
+                  value={formData.maxRetries}
+                  onChange={(e) => updateField("maxRetries", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg bg-white font-mono"
+                >
+                  <option value="0">No retry</option>
+                  <option value="1">1 retry (after 15 mins)</option>
+                  <option value="2">2 retries (after 15m, 1h)</option>
+                  <option value="3">3 retries (adaptive)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Campaign Summary Box */}
+            <div className="p-4 rounded-xl bg-stone-900 text-white space-y-3 font-mono text-xs">
+              <div className="text-[11px] uppercase tracking-wider text-stone-400 font-bold border-b border-stone-800 pb-2">
+                Dispatch Summary
+              </div>
+              <div className="grid grid-cols-2 gap-y-2 text-stone-300">
+                <div>Campaign: <span className="text-white font-bold">{formData.title || "Untitled Event Campaign"}</span></div>
+                <div>Audience: <span className="text-white font-bold">{formData.recipientCount || 1} recipients</span></div>
+                <div>Primary Language: <span className="text-white font-bold">{formData.primaryLanguage}</span></div>
+                <div>Voice Engine: <span className="text-white font-bold">{formData.voice.split("-")[0]}</span></div>
+                <div>Telephony Trunk: <span className="text-emerald-400 font-bold">Exotel PRI Line Active</span></div>
+                <div>Safety Rule: <span className="text-emerald-400 font-bold">TRAI 9AM-9PM Guard ON</span></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Wizard Footer Controls */}
+        <div className="flex items-center justify-between pt-6 border-t border-stone-200 mt-8">
+          <button
+            type="button"
+            onClick={handleBack}
+            disabled={currentStep === 0}
+            className={`px-4 py-2 text-xs font-mono font-medium rounded-lg transition-colors ${
+              currentStep === 0
+                ? "text-stone-300 border border-stone-200 cursor-not-allowed"
+                : "text-stone-700 border border-stone-300 hover:bg-stone-50"
+            }`}
+          >
+            Back
+          </button>
+
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={isSubmitting}
+            className="px-6 py-2 bg-brand-red hover:bg-brand-red-hover !text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all flex items-center gap-2"
+          >
+            {isSubmitting ? (
+              <span>Deploying Campaign...</span>
+            ) : currentStep === STEPS.length - 1 ? (
+              <span>Launch Campaign</span>
+            ) : (
+              <span>Next Step</span>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

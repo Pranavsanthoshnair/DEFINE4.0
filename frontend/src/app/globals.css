@@ -2,10 +2,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=DM+Sans:wght@400;500&family=Pinyon+Script&family=Caveat:wght@600&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-brand-red: #EA1D2C;
+  --color-brand-red-hover: #D01422;
+  --color-brand-yellow: #F9CF00;
+  --color-brand-blue: #A8CCEB;
+  --color-brand-blue-light: #D6E8F6;
+  --color-brand-dark: #0A0E14;
+  --color-canvas: #FAFAF9;
+  --color-canvas-sidebar: #F2F5F8;
+  --color-canvas-card: #FFFFFF;
+}
+
+/* ── Fallback & Explicit Brand Utilities ─────────────────────────────────── */
+.bg-brand-red { background-color: #EA1D2C !important; }
+.bg-brand-red-hover:hover, .hover\:bg-brand-red-hover:hover { background-color: #D01422 !important; }
+.text-brand-red { color: #EA1D2C !important; }
+.border-brand-red { border-color: #EA1D2C !important; }
+.ring-brand-red { --tw-ring-color: #EA1D2C !important; }
+
 /* ── Design tokens (reference design) ──────────────────────────────────── */
 :root {
   --blue:   #B7D8F5;
-  --red:    #E10600;
+  --red:    #EA1D2C;
   --yellow: #FFD700;
   --white:  #FFFDF8;
   --ink:    #17263A;
@@ -25,21 +44,23 @@
 }
 
 /* ── Base reset ─────────────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; }
 
-body {
-  margin: 0;
-  background: var(--white);
-  color: var(--ink);
-  font: 400 15px/1.55 'DM Sans', system-ui, sans-serif;
-  overflow-x: hidden;
+  body {
+    margin: 0;
+    background: var(--white);
+    color: var(--ink);
+    font: 400 15px/1.55 'DM Sans', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  a, button { font: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 }
-
-a, button { font: inherit; color: inherit; }
-button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
