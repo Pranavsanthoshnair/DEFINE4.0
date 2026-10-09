@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ export default function CampaignWizard() {
   // Form State
   const [formData, setFormData] = useState({
     title: "",
+    orgName: "",
     eventType: "Invitation",
     date: "",
     time: "",
@@ -31,7 +32,7 @@ export default function CampaignWizard() {
     primaryLanguage: "Hindi",
     secondaryLanguage: "English",
     templateType: "Event Invitation (Hindi)",
-    scriptText: "Namaskar {name}, aapko {event_name} mein aamantrit kiya jata hai...",
+    scriptText: "Namaskar {name}, on behalf of {organization}, you are cordially invited to {event_name}...",
     voice: "Sarvam - Hindi Natural (Female)",
     maxRetries: "2",
     concurrency: "5",
@@ -114,11 +115,16 @@ export default function CampaignWizard() {
       setSubmitStatus("Creating campaign…");
       const campaign = await campaignsApi.create({
         name: formData.title || "Untitled Campaign",
+        org_name: formData.orgName || undefined,
+        description: formData.orgName ? `Host: ${formData.orgName}` : undefined,
+        brief: `Host: ${formData.orgName || "Veylo"}\nVenue: ${formData.venue}\nScript: ${formData.scriptText}`,
         template_id: "", // template selected via UI preset; empty = custom
         languages: [formData.primaryLanguage.toLowerCase(), formData.secondaryLanguage.toLowerCase()],
         event_details: {
           event_name: formData.title,
+          organization: formData.orgName,
           date: formData.date,
+          time: formData.time,
           venue: formData.venue,
         },
       } as any);
@@ -233,7 +239,7 @@ export default function CampaignWizard() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
+              <div>
                 <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Campaign Title</label>
                 <input
                   type="text"
@@ -243,6 +249,17 @@ export default function CampaignWizard() {
                   className={`w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red ${validationErrors.title ? "border-red-300" : "border-stone-300"}`}
                 />
                 {renderError("title")}
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-stone-600 mb-1.5">Host Organization / Client</label>
+                <input
+                  type="text"
+                  placeholder="e.g., YourStory Media / DEFINE Labs"
+                  value={formData.orgName}
+                  onChange={(e) => updateField("orgName", e.target.value)}
+                  className="w-full px-3.5 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red"
+                />
               </div>
 
               <div>

@@ -71,16 +71,48 @@ def _get_campaign(campaign_id: str) -> dict:
 
 
 def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
+    """Load pending campaign_contacts joined with contacts for phone data."""
     sb = get_supabase()
     resp = (
         sb.table(_CONTACTS_TABLE)
-        .select("*")
+        .select("*, contacts(phone_enc, phone_last4, language)")
         .eq("campaign_id", campaign_id)
         .eq("status", "pending")
         .limit(limit)
         .execute()
     )
-    return resp.data or []
+    rows = resp.data or []
+    # Flatten the joined contact data into the row
+    result = []
+    for row in rows:
+        contact_data = row.pop("contacts", {}) or {}
+        row.update(contact_data)
+        result.append(row)
+    return result
+
+
+def _decode_phone(row: dict) -> str | None:
+    """Decode hex-encoded phone from contacts table and normalize to E.164."""
+    phone_enc = row.get("phone_enc", "")
+    if phone_enc:
+        try:
+            raw = bytes.fromhex(phone_enc).decode("utf-8")
+            # Strip non-digits except leading +
+            if raw.startswith("+"):
+                digits = "+" + "".join(c for c in raw[1:] if c.isdigit())
+            else:
+                digits = "".join(c for c in raw if c.isdigit())
+            # Normalize: 10-digit Indian → +91..., 12-digit 91... → +91...
+            if digits.startswith("+"):
+                return digits
+            if len(digits) == 10:
+                return f"+91{digits}"
+            if len(digits) == 12 and digits.startswith("91"):
+                return f"+{digits}"
+            return digits if digits else None
+        except Exception:
+            pass
+    return row.get("phone_e164") or row.get("phone")
 
 
 def _update_campaign_status(campaign_id: str, status: str) -> None:
@@ -113,50 +145,81 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
     campaign_name = campaign.get("name", "Campaign")
     language = campaign.get("language", "en")
 
-    # Step 1: Pre-generate ElevenLabs audio for all script segments
+    # Step 1: Pre-generate ElevenLabs audio (graceful fallback if key not set)
     log.info("campaign_engine_telephony_audio_prep", campaign_id=campaign_id)
-    from app.services.tts_service import generate_campaign_audio
-    audio_urls = await generate_campaign_audio(
-        campaign_id=campaign_id,
-        campaign_name=campaign_name,
-        language=language,
-    )
-    # Save audio URLs to campaign
-    sb = get_supabase()
-    sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
+    audio_urls: dict = {}
+    try:
+        from app.services.tts_service import generate_campaign_audio
+        audio_urls = await generate_campaign_audio(
+            campaign_id=campaign_id,
+            campaign_name=campaign_name,
+            language=language,
+        )
+        sb = get_supabase()
+        sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
+    except Exception as exc:
+        log.warning("campaign_engine_tts_skipped", error=str(exc))
 
     # Step 2: Place calls
     provider = get_provider()
     provider_name = active_provider_name()
     placed = 0
     failed = 0
+    skipped = 0
 
-    for contact in contacts[:settings.exotel_max_concurrent * 2]:  # Respect concurrency
-        phone = contact.get("phone_e164") or contact.get("phone")
+    sb = get_supabase()
+    webhook_base = settings.webhook_base_url or settings.public_base_url
+
+    for contact in contacts:
+        phone = _decode_phone(contact)
         if not phone:
+            skipped += 1
+            log.warning("campaign_call_no_phone", cc_id=contact.get("id"))
             continue
+        cc_id = contact.get("id")
         try:
             from app.telephony.providers.base import PlaceCallRequest
             call_id = uuid.uuid4()
+            caller_id = (
+                settings.twilio_phone_number if provider_name == "twilio"
+                else settings.exotel_caller_id
+            )
             result = await provider.place_call(PlaceCallRequest(
                 call_id=call_id,
                 to_number=phone,
-                caller_id=(
-                    settings.twilio_phone_number if provider_name == "twilio"
-                    else settings.exotel_caller_id
-                ),
+                caller_id=caller_id,
                 status_callback_url=(
-                    f"{settings.webhook_base_url}/webhooks/{settings.webhook_secret}"
+                    f"{webhook_base}/webhooks/{settings.webhook_secret}"
                     f"/status?call_id={call_id}"
                 ),
                 flow_url=(
-                    f"{settings.webhook_base_url}/webhooks/{settings.webhook_secret}"
+                    f"{webhook_base}/webhooks/{settings.webhook_secret}"
                     f"/flow?call_id={call_id}"
                 ),
                 custom_field=str(call_id),
             ))
-            placed += 1
-            log.info("campaign_call_placed", provider=provider_name, phone="[REDACTED]")
+            if result.accepted:
+                placed += 1
+                # Mark contact queued and log call record
+                if cc_id:
+                    sb.table(_CONTACTS_TABLE).update({
+                        "status": "queued",
+                        "attempt_count": (contact.get("attempt_count") or 0) + 1,
+                    }).eq("id", cc_id).execute()
+                sb.table("calls").insert({
+                    "id": str(call_id),
+                    "campaign_id": campaign_id,
+                    "campaign_contact_id": cc_id,
+                    "provider_call_sid": result.provider_call_sid,
+                    "status": result.raw_status or "queued",
+                    "direction": "outbound",
+                    "language": contact.get("language", language),
+                    "created_at": _now(),
+                }).execute()
+                log.info("campaign_call_placed", provider=provider_name, phone_last4=phone[-4:])
+            else:
+                failed += 1
+                log.warning("campaign_call_rejected", reason=result.raw_status)
         except Exception as exc:
             failed += 1
             log.error("campaign_call_failed", error=str(exc))
@@ -167,6 +230,7 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
         "contacts_total": len(contacts),
         "calls_placed": placed,
         "calls_failed": failed,
+        "calls_skipped_no_phone": skipped,
         "audio_segments_ready": sum(1 for v in audio_urls.values() if v),
     }
 
