@@ -1,1 +1,1 @@
-# backend\tests\telephony
+"""Telephony tests package."""

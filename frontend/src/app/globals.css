@@ -1,40 +1,63 @@
+/* ── Google Fonts ───────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;800&family=DM+Sans:wght@400;500&family=Pinyon+Script&family=Caveat:wght@600&display=swap');
 @import "tailwindcss";
 
-/* ── Design tokens ──────────────────────────────────────────────────────── */
+/* ── Design tokens (reference design) ──────────────────────────────────── */
 :root {
-  --brand-500: #6366f1;    /* indigo-500  */
-  --brand-600: #4f46e5;    /* indigo-600  */
-  --brand-400: #818cf8;    /* indigo-400  */
-  --surface-0:  #030712;   /* gray-950    */
-  --surface-1:  #111827;   /* gray-900    */
-  --surface-2:  #1f2937;   /* gray-800    */
-  --border:     #374151;   /* gray-700    */
+  --blue:   #B7D8F5;
+  --red:    #E10600;
+  --yellow: #FFD700;
+  --white:  #FFFDF8;
+  --ink:    #17263A;
+  --gap:    14px;
+  --pad:    36px;
+
+  /* legacy Next.js tokens kept for any components that reference them */
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-400: #818cf8;
+  --surface-0:  #030712;
+  --surface-1:  #111827;
+  --surface-2:  #1f2937;
+  --border:     #374151;
   --text-primary:   #f9fafb;
   --text-secondary: #9ca3af;
 }
 
-@theme inline {
-  --color-background: var(--surface-0);
-  --color-foreground: var(--text-primary);
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-}
-
-/* ── Base ───────────────────────────────────────────────────────────────── */
+/* ── Base reset ─────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
-  background-color: var(--surface-0);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  line-height: 1.6;
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font: 400 15px/1.55 'DM Sans', system-ui, sans-serif;
+  overflow-x: hidden;
 }
+
+a, button { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
 
 /* ── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--surface-1); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-track { background: rgba(183,216,245,.2); }
+::-webkit-scrollbar-thumb { background: rgba(23,38,58,.25); border-radius: 3px; }
 
-/* ── Utility: brand gradient text ───────────────────────────────────────── */
+/* ── Decorative blobs (fixed background) ───────────────────────────────── */
+.blob { position: fixed; border-radius: 50%; z-index: 0; pointer-events: none; }
+.blob-1 { width:420px;height:420px;left:-300px;top:260px;background:rgba(255,215,0,.35); }
+.blob-2 { width:380px;height:380px;right:-240px;top:-80px;background:rgba(183,216,245,.45); }
+
+body::before, body::after {
+  content: ""; position: fixed; border-radius: 50%; z-index: 0; pointer-events: none;
+}
+body::before { width:360px;height:360px;right:6%;bottom:-140px;background:rgba(255,215,0,.34); }
+body::after  { width:130px;height:130px;left:46%;top:30%;background:rgba(225,6,0,.13); }
+
+/* ── Gradient brand text (kept from original) ───────────────────────────── */
 .gradient-text {
   background: linear-gradient(135deg, var(--brand-400), #a78bfa);
   -webkit-background-clip: text;
@@ -42,10 +65,257 @@ body {
   background-clip: text;
 }
 
-/* ── Utility: glass card ────────────────────────────────────────────────── */
+/* ── Glass card ─────────────────────────────────────────────────────────── */
 .glass {
-  background: rgba(17, 24, 39, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
+  background: rgba(255,253,248,.58);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(23,38,58,.1);
   border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 24px 40px -30px rgba(23,38,58,.45);
+}
+
+/* ── Veylo brand button styles ───────────────────────────────────────────── */
+.vbtn {
+  display: inline-flex; align-items: center; gap: 12px;
+  height: 44px; padding: 0 20px;
+  font: 800 11.5px 'Manrope'; letter-spacing: .08em;
+  text-decoration: none;
+  border: 1px solid rgba(23,38,58,.2);
+  background: var(--white);
+  transition: transform .18s, box-shadow .18s;
+  cursor: pointer;
+}
+.vbtn:hover { transform: translateY(-2px); }
+.vbtn:active { transform: none; }
+.vbtn-red {
+  background: var(--red); border-color: var(--red); color: #fff;
+  position: relative; overflow: hidden;
+}
+.vbtn-red::after {
+  content: ""; position: absolute; top:0;bottom:0;left:-60%;
+  width:40%; background:rgba(255,255,255,.28);
+  transform: skewX(-20deg); transition: left .5s;
+}
+.vbtn-red:hover::after { left: 130%; }
+.vbtn-red:hover { box-shadow: 0 10px 20px -8px rgba(225,6,0,.6); }
+.vbtn-ink { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.vbtn-ink:hover { box-shadow: 4px 4px 0 var(--yellow); }
+.vbtn-sm { height: 34px; padding: 0 14px; font-size: 11px; }
+
+/* ── Status chip ────────────────────────────────────────────────────────── */
+.vchip {
+  font: 700 11px 'Manrope'; padding: 2px 9px; border-radius: 99px;
+  border: 1px solid rgba(23,38,58,.25);
+  text-transform: capitalize; white-space: nowrap; display: inline-block;
+}
+.vchip-running   { background: var(--yellow); }
+.vchip-completed, .vchip-confirmed { background: var(--ink); color: var(--white); }
+.vchip-failed, .vchip-declined { background: var(--red); color: #fff; border-color: var(--red); }
+.vchip-scheduled, .vchip-callback { background: var(--blue); }
+.vchip-demo { background: var(--yellow); border-style: dashed; }
+
+/* ── Page section header (.ph) ───────────────────────────────────────────── */
+.ph {
+  position: relative; overflow: hidden;
+  background: rgba(183,216,245,.6);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  border: 1px solid rgba(23,38,58,.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.7), 0 28px 50px -34px rgba(23,38,58,.5);
+  padding: 28px 28px 26px;
+  margin-bottom: var(--gap);
+  min-height: 160px;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+}
+.ph-inner { position: relative; z-index: 2; }
+
+/* ── Eye label ───────────────────────────────────────────────────────────── */
+.eye {
+  font: 600 11px 'Manrope'; letter-spacing: .14em;
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 10px; color: #33465C;
+}
+.eye::before { content:""; width:22px; height:1.5px; background: var(--red); flex: none; }
+
+/* ── Calligraphy tagline ─────────────────────────────────────────────────── */
+.cal {
+  display: block;
+  font: 400 clamp(22px,2.6vw,32px)/1.1 'Pinyon Script', cursive;
+  color: var(--red); margin-top: 8px;
+  position: relative; width: max-content; max-width: 100%;
+}
+.cal::after {
+  content:""; position: absolute; left:4%;right:0;bottom:-5px;height:7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 7' preserveAspectRatio='none'%3E%3Cpath d='M1 5C25 1 50 1 70 3s35 2 49-1' fill='none' stroke='%23E10600' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+}
+
+/* ── KPI card ────────────────────────────────────────────────────────────── */
+.kpi-val { display: block; font: 800 34px/1 'Manrope'; letter-spacing: -.05em; }
+.kpi-lbl { font-size: 12px; color: #4A5B6E; }
+
+/* ── Horizontal bar ──────────────────────────────────────────────────────── */
+.hbar { display: grid; grid-template-columns: 110px 1fr 46px; gap: 10px; align-items: center; font-size: 13px; margin: 7px 0; }
+.hbar-track { height: 14px; background: rgba(183,216,245,.4); }
+.hbar-fill  { display: block; height: 100%; background: var(--ink); transition: width .5s; }
+.hbar-fill-y { background: var(--yellow); }
+.hbar-fill-r { background: var(--red); }
+
+/* ── Stacked progress bar ────────────────────────────────────────────────── */
+.sbar { height: 10px; background: rgba(183,216,245,.55); display: flex; }
+.sbar-seg { display: block; height: 100%; transition: width .4s; }
+
+/* ── Timeline ────────────────────────────────────────────────────────────── */
+.tl { border-left: 2px solid var(--blue); padding-left: 16px; font-size: 13px; }
+.tl-item { margin: 0 0 12px; position: relative; }
+.tl-item::before {
+  content:""; position: absolute; left: -22px; top: 5px;
+  width: 8px; height: 8px; border-radius: 50%; background: var(--red);
+}
+
+/* ── Character image (veylo mascot) ─────────────────────────────────────── */
+.mascot {
+  height: 130px; width: auto; display: block;
+  transform-origin: 50% 100%;
+  animation: sway 5s ease-in-out infinite;
+  object-fit: contain;
+}
+@keyframes sway { 50% { transform: rotate(2.5deg); } }
+
+.mascot-sm { height: 96px; }
+
+.speech-bubble {
+  font: 600 18px/1.1 'Caveat', cursive;
+  background: rgba(255,253,248,.85);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1.5px solid var(--ink);
+  padding: 3px 14px 5px;
+  border-radius: 16px 16px 3px 16px;
+  transform: rotate(-3deg);
+  margin: 0 34px 6px 0;
+  position: relative; white-space: nowrap;
+}
+
+.mascot-wrap {
+  position: absolute; right: 20px; bottom: 0; z-index: 2;
+  display: flex; flex-direction: column; align-items: flex-end;
+  pointer-events: none;
+}
+
+/* ── Inline mascot (empty-state row) ────────────────────────────────────── */
+.em-row { display: flex; align-items: center; gap: 16px; padding: 8px 0; }
+.em-row img { height: 96px; flex: none; object-fit: contain; }
+.em-row p { margin: 0; font: 600 17px 'Manrope'; letter-spacing: -.02em; }
+
+/* ── Phone mock (templates page) ────────────────────────────────────────── */
+.phone-wrap { padding: 6px 0; }
+.phone-shell {
+  max-width: 270px; margin: 0 auto;
+  background: var(--ink); border-radius: 34px; padding: 7px;
+  box-shadow: 0 30px 40px -24px rgba(23,38,58,.6);
+  transform: perspective(900px) rotateY(-6deg); transition: transform .3s;
+}
+.phone-wrap:hover .phone-shell { transform: none; }
+.phone-screen {
+  background: var(--white); border-radius: 28px; padding: 16px 14px;
+  text-align: center; min-height: 330px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.phone-notch { width:64px;height:14px;border-radius:9px;background:var(--ink);margin-bottom:12px; }
+.phone-avatar {
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(225,6,0,.1);border:1.5px dashed var(--red);
+  display:grid;place-items:center;font:800 14px 'Manrope';color:var(--red);margin:6px 0;
+}
+.phone-wave { display:flex;gap:3px;align-items:center;height:30px;margin:6px 0 auto; }
+.phone-wave i {
+  width:3px;border-radius:2px;background:var(--red);height:8px;
+  animation:wave 1.1s ease-in-out infinite;
+}
+.phone-wave i:nth-child(2n) { animation-delay:.2s; }
+.phone-wave i:nth-child(3n) { animation-delay:.45s; }
+@keyframes wave { 50%{height:26px} }
+.phone-actions { display:flex;justify-content:space-between;width:100%;padding:0 12px; }
+.phone-actions span {
+  width:36px;height:36px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;font:800 15px 'Manrope';
+}
+
+/* ── Underline highlight (hero) ─────────────────────────────────────────── */
+.hl { display:inline-block;position:relative; }
+.hl::after {
+  content:"";position:absolute;left:-4px;right:-26px;bottom:6px;
+  height:12px;background:var(--yellow);z-index:-1;transform:rotate(-1deg);
+}
+
+/* ── Page-enter animation ────────────────────────────────────────────────── */
+.page-in { animation: pageIn .28s ease both; }
+@keyframes pageIn { from{ opacity:0; transform:translateY(8px); } }
+
+/* ── Fade-in entrance (hero panels) ─────────────────────────────────────── */
+.panel-in { opacity:0; transform:translateY(14px); animation: panelIn .6s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes panelIn { to{ opacity:1; transform:none; } }
+
+/* ── Yellow banner ───────────────────────────────────────────────────────── */
+.yb {
+  background: var(--yellow); padding: 22px 24px; margin-top: var(--gap);
+  display: flex; justify-content: space-between; gap: 16px;
+  align-items: center; flex-wrap: wrap;
+}
+.yb h3 { font:800 clamp(22px,3vw,32px)/1 'Manrope';letter-spacing:-.06em;margin:0; }
+.yb .cal { color: var(--ink); }
+.yb .cal::after { filter: brightness(0); }
+
+/* ── Network SVG paths ───────────────────────────────────────────────────── */
+.net-path { fill:none;stroke:rgba(23,38,58,.35);stroke-width:1.3;stroke-dasharray:2 5; }
+.net-pulse { fill:var(--yellow);stroke:var(--ink);stroke-width:1; }
+.net-node  { fill:var(--ink); }
+.net-label { font:600 11.5px 'Manrope';fill:var(--ink); }
+
+/* ── Sun (hero decoration) ───────────────────────────────────────────────── */
+.sun {
+  position:absolute;width:44px;height:44px;border-radius:50%;
+  background:var(--yellow);right:14%;top:12%;
+  animation:float 6s ease-in-out infinite;
+}
+@keyframes float { 50%{transform:translateY(-9px)} }
+
+/* ── Wizard step bar ─────────────────────────────────────────────────────── */
+.wz { display:flex;margin-bottom:22px;border-top:2px solid var(--red); }
+.wz-step { flex:1;padding:10px 6px 0;font:700 12px 'Manrope';color:#6A7A8C;position:relative; }
+.wz-step.active { color:var(--ink); }
+.wz-step.active::before,
+.wz-step.done::before {
+  content:"";position:absolute;top:-4px;left:0;right:0;height:6px;background:var(--blue);
+}
+.wz-step.active::before { background:var(--red); }
+
+/* ── Form elements ───────────────────────────────────────────────────────── */
+.vfield {
+  font:inherit;color:var(--ink);background:#fff;
+  border:1.5px solid var(--ink);padding:9px 11px;width:100%;border-radius:0;
+}
+.vfield:focus { outline:0;border-color:var(--ink);box-shadow:3px 3px 0 var(--yellow); }
+textarea.vfield { min-height:110px;resize:vertical; }
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.vtable { width:100%;border-collapse:collapse;font-size:13.5px; }
+.vtable th {
+  font:700 11px 'Manrope';text-align:left;color:#4A5B6E;
+  padding:8px 10px;border-bottom:1.5px solid var(--red);white-space:nowrap;
+}
+.vtable td { padding:10px;border-bottom:1px solid rgba(23,38,58,.1);vertical-align:middle; }
+.vtable tr:hover td { background:rgba(183,216,245,.18); }
+
+/* ── Misc utilities ──────────────────────────────────────────────────────── */
+.pgf {
+  margin-top:34px;border-top:1px solid rgba(23,38,58,.15);padding-top:14px;
+  display:flex;justify-content:space-between;
+  font:500 10.5px 'Manrope';letter-spacing:.1em;color:#5B6B7D;
+}
+.pgf i { color:var(--red);font-style:normal; }
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .mascot,.panel-in,.page-in{animation:none!important;opacity:1;transform:none!important}
 }
