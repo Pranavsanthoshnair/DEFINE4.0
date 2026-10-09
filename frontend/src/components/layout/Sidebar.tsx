@@ -42,13 +42,14 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
         onClick={onNavigate}
         className="flex items-center gap-2.5 mb-6 no-underline select-none"
       >
-        <svg viewBox="0 0 32 32" fill="none" stroke="#17263A" strokeWidth="2" strokeLinecap="round" width="28" height="28" aria-hidden="true" style={{ flex: "none" }}>
-          <path d="M9 19a10 10 0 0 1 14 0M5 14a16 16 0 0 1 22 0" />
-          <circle cx="16" cy="24" r="3.2" fill="#E10600" stroke="none" />
-          <circle cx="5"  cy="14" r="2"   fill="#FFD700" />
-          <circle cx="27" cy="14" r="2"   fill="#FFD700" />
-          <circle cx="16" cy="6"  r="2"   fill="#FFD700" />
-        </svg>
+        <img 
+          src="/logo.png" 
+          alt="Veylo" 
+          width={44} 
+          height={44} 
+          style={{ objectFit: "contain", flex: "none" }} 
+          aria-hidden="true" 
+        />
         <span style={{ font: "800 18px 'Manrope', sans-serif", letterSpacing: "-.03em", color: "#17263A" }}>
           Vey<span style={{ color: "#EA1D2C" }}>lo</span>
         </span>
