@@ -173,6 +173,29 @@ export default function CampaignsPage() {
     }
   };
 
+  // ── Prepare audio ───────────────────────────────────────────────────────
+
+  const [preparingAudio, setPreparingAudio] = useState<string | null>(null);
+
+  const prepareAudio = async (campaign: Campaign) => {
+    setPreparingAudio(campaign.id);
+    try {
+      const res = await fetch(`${API}/api/v1/campaigns/${campaign.id}/prepare-audio`, {
+        method: "POST",
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        alert(`✅ Audio ready! ${data.segments_generated ?? "?"} segments generated.`);
+      } else {
+        alert(`❌ Audio generation failed: ${data.detail ?? res.status}`);
+      }
+    } catch (e) {
+      alert("❌ Network error preparing audio.");
+    } finally {
+      setPreparingAudio(null);
+    }
+  };
+
   // ── Stop campaign ───────────────────────────────────────────────────────
 
   const stopCampaign = async (campaign: Campaign) => {
@@ -516,7 +539,28 @@ export default function CampaignsPage() {
                         >
                           👤 Add Contacts
                         </button>
-                        {/* Launch */}
+                        {/* Prepare Audio */}
+                         {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
+                           <button
+                             title="Pre-generate ElevenLabs audio for this campaign"
+                             onClick={() => prepareAudio(c)}
+                             disabled={preparingAudio === c.id}
+                             style={{
+                               padding: "6px 12px",
+                               background: preparingAudio === c.id ? "#d1fae5" : "rgba(16,185,129,.12)",
+                               border: "1px solid rgba(16,185,129,.3)",
+                               borderRadius: 6,
+                               fontFamily: "Manrope, sans-serif",
+                               fontWeight: 700,
+                               fontSize: 11,
+                               cursor: preparingAudio === c.id ? "not-allowed" : "pointer",
+                               color: "#065f46",
+                             }}
+                           >
+                             {preparingAudio === c.id ? "⏳ Generating…" : "🎙 Prepare Audio"}
+                           </button>
+                         )}
+                         {/* Launch */}
                          {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
                            <button
                              onClick={() => launch(c)}
