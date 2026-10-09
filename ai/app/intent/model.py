@@ -56,7 +56,10 @@ class OnnxIntentModel:
                 providers=["CPUExecutionProvider"],
             )
 
-            self._tokenizer = AutoTokenizer.from_pretrained(str(tok_path))
+            # Never download tokenizer files at runtime in the AI service.
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                str(tok_path), local_files_only=True
+            )
 
             # Load temperature calibration
             import yaml

@@ -56,12 +56,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if settings.ai_stub:
         log.info("ai_service_stub_mode_active")
     else:
+        from app.intent.model import OnnxIntentModel
+        from app.intent.pipeline import set_onnx_model
+
+        intent_model = OnnxIntentModel(settings.models_dir)
+        set_onnx_model(intent_model)
+
         # Probe Sarvam connectivity on startup — warm the singleton client
         from app.providers.sarvam import is_configured, SarvamError
         if is_configured():
             _model_status = {
                 "stt": "loaded",
-                "intent": "loaded",    # intent uses rules + LLM, not a local model
+                "intent": "loaded" if intent_model.available else "unavailable",
                 "translate": "loaded",
                 "tts": "loaded",
             }
@@ -69,7 +75,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         else:
             _model_status = {
                 "stt": "unavailable",
-                "intent": "loaded",   # rules-only intent still works
+                "intent": "loaded" if intent_model.available else "unavailable",
                 "translate": "unavailable",
                 "tts": "unavailable",
             }
