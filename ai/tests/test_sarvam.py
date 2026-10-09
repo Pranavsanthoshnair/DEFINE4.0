@@ -114,6 +114,20 @@ def _make_stub_sarvam_client(
 # ── /v1/stt mocked tests ──────────────────────────────────────────────────────
 
 class TestSarvamSTT:
+    def test_configured_output_mode_is_passed_to_sarvam(self, client):
+        mock = _make_stub_sarvam_client(transcript="नमस्ते", language_code="hi-IN")
+        with patch("app.providers.sarvam._client", mock), patch(
+            "app.providers.sarvam._stt_mode_for", return_value="codemix"
+        ):
+            r = client.post(
+                "/v1/stt",
+                files={"audio": ("hi.wav", _make_wav_bytes(), "audio/wav")},
+                data={"language": "hi"},
+                headers=HEADERS,
+            )
+        assert r.status_code == 200
+        assert mock.speech_to_text.transcribe.call_args.kwargs["mode"] == "codemix"
+
     def test_successful_transcription_english(self, client):
         mock = _make_stub_sarvam_client(transcript="yes I will come", language_code="en-IN")
         with patch("app.providers.sarvam._client", mock):

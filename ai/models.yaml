@@ -24,6 +24,14 @@ stt_routing:
   mr: sarvam/saaras:v4
   gu: sarvam/saaras:v4
 
+# Saaras v4 output mode per language. "default" omits the mode parameter and
+# preserves the provider's standard transcribe behavior.
+stt_mode:
+  en: default
+  hi: default
+  ml: default
+  ta: default
+
 # ── TTS voices (Sarvam Bulbul v2) ───────────────────────────────────────────
 # One voice per language suitable for outbound calling campaigns.
 # Full voice list: https://docs.sarvam.ai → TTS → voices
