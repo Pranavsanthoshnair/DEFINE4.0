@@ -73,24 +73,29 @@ async def create_contact(body: ContactIn):
     try:
         sb = get_supabase()
         now = datetime.now(timezone.utc).isoformat()
-        row = {
-            "id": str(uuid.uuid4()),
-            "phone_enc": phone.encode("utf-8").hex(),   # hex — replace with AES in prod
-            "phone_hash": phone_hash,
-            "phone_last4": phone_last4,
-            "language": body.language,
-            "segment": body.segment,
-            "consent": True,
-            "consent_source": "single_import",
-            "consent_at": now,
-            "dnd": False,
-            "opted_out": False,
-            "created_at": now,
-        }
-        # Upsert on phone_hash to prevent duplicates
-        resp = sb.table(_TABLE).upsert(row, on_conflict="phone_hash").execute()
-        r = (resp.data or [{}])[0]
-        contact_id = r.get("id", row["id"])
+
+        # Check if contact already exists by phone_hash to avoid FK violation
+        # on upsert (changing the id of a row referenced by campaign_contacts)
+        existing = sb.table(_TABLE).select("id").eq("phone_hash", phone_hash).limit(1).execute()
+        if existing.data:
+            contact_id = existing.data[0]["id"]
+        else:
+            row = {
+                "id": str(uuid.uuid4()),
+                "phone_enc": phone.encode("utf-8").hex(),
+                "phone_hash": phone_hash,
+                "phone_last4": phone_last4,
+                "language": body.language,
+                "segment": body.segment,
+                "consent": True,
+                "consent_source": "single_import",
+                "consent_at": now,
+                "dnd": False,
+                "opted_out": False,
+                "created_at": now,
+            }
+            resp = sb.table(_TABLE).insert(row).execute()
+            contact_id = (resp.data or [{}])[0].get("id", row["id"])
 
         # If campaign_id given, also insert into campaign_contacts
         if body.campaign_id:
@@ -328,25 +333,34 @@ async def import_contacts_to_campaign(
 
     queued = 0
     try:
-        # 1. Upsert contacts (dedup by phone_hash — returns the final rows with real IDs)
-        upsert_resp = (
+        # 1. For each row: check existing by phone_hash to avoid FK violations,
+        #    insert only truly new contacts, collect all final contact IDs.
+        phone_hashes = [r["phone_hash"] for r in contact_rows]
+        existing_resp = (
             sb.table(_TABLE)
-            .upsert(contact_rows, on_conflict="phone_hash")
+            .select("id,phone_hash")
+            .in_("phone_hash", phone_hashes)
             .execute()
         )
-        inserted_contacts = upsert_resp.data or []
+        existing_map = {r["phone_hash"]: r["id"] for r in (existing_resp.data or [])}
 
-        # 2. Link each contact to this campaign via campaign_contacts
+        new_rows = [r for r in contact_rows if r["phone_hash"] not in existing_map]
+        if new_rows:
+            insert_resp = sb.table(_TABLE).insert(new_rows).execute()
+            for r in (insert_resp.data or []):
+                existing_map[r["phone_hash"]] = r["id"]
+
+        # 2. Link all contacts (new + existing) to this campaign via campaign_contacts
         cc_rows = [
             {
                 "id": str(uuid.uuid4()),
                 "campaign_id": campaign_id,
-                "contact_id": c["id"],
+                "contact_id": contact_id,
                 "status": "pending",
                 "attempt_count": 0,
                 "created_at": now,
             }
-            for c in inserted_contacts
+            for contact_id in existing_map.values()
         ]
         if cc_rows:
             sb.table(_CC_TABLE).upsert(
