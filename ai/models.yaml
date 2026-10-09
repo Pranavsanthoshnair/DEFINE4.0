@@ -2,7 +2,7 @@
 # Primary provider for the Veylo AI MVP.
 # Architecture: local MuRIL intent classification; Sarvam provides STT,
 # translation and TTS. No local Whisper or IndicTrans2 weights are enabled.
-intent_temperature: 1.0
+intent_temperature: 0.527
 provider: sarvam
 
 sarvam:
