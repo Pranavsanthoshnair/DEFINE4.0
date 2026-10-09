@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import Sidebar from "@/components/layout/Sidebar";
 
 export const metadata: Metadata = {
   title: "Veylo — AI Calling Campaign Platform",
@@ -36,66 +37,13 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      {/* Fixed left rail (desktop) */}
-      <aside
-        style={{
-          position: "fixed",
-          inset: "0 auto 0 0",
-          width: 200,
-          padding: "26px 16px",
-          background: "rgba(183,216,245,.34)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          borderRight: "1px solid rgba(23,38,58,.1)",
-          display: "flex",
-          flexDirection: "column",
-          zIndex: 20,
-        }}
-        aria-label="Primary navigation"
-      >
-        <Link
-          href="/"
-          style={{
-            font: "800 20px 'Manrope'",
-            letterSpacing: "-.03em",
-            margin: "0 8px 26px",
-            textDecoration: "none",
-            color: "var(--ink)",
-          }}
-        >
-          Vey<b style={{ color: "var(--red)" }}>lo</b>
-        </Link>
-        {[
-          { href: "/overview",  label: "Overview" },
-          { href: "/campaigns", label: "Campaigns" },
-          { href: "/contacts",  label: "Contacts" },
-          { href: "/analytics", label: "Analytics" },
-        ].map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "10px 12px",
-              borderRadius: 12,
-              textDecoration: "none",
-              font: "600 14px 'Manrope'",
-              color: "#4A5B6E",
-              marginBottom: 4,
-              transition: ".2s",
-            }}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </aside>
+      {/* Shared unified sidebar */}
+      <Sidebar />
 
       {/* Main hero content */}
       <main
         style={{
-          marginLeft: 200,
+          marginLeft: 224,
           padding: "var(--gap)",
           position: "relative",
           zIndex: 1,
@@ -122,7 +70,7 @@ export default function LandingPage() {
               overflow: "hidden",
               border: "1px solid rgba(23,38,58,.1)",
               background: "var(--white)",
-              padding: "50px 26px 22px",
+              padding: "44px 26px 22px",
               display: "flex",
               flexDirection: "column",
               animationDelay: ".05s",
@@ -131,16 +79,16 @@ export default function LandingPage() {
             <p className="eye">REACH, TRANSLATED</p>
             <h1
               style={{
-                font: "800 clamp(46px,5.4vw,78px)/.94 'Manrope'",
-                letterSpacing: "-.065em",
-                margin: "0 0 28px",
+                font: "800 clamp(32px, 3.6vw, 52px)/1.02 'Manrope'",
+                letterSpacing: "-.04em",
+                margin: "0 0 24px",
                 position: "relative",
                 zIndex: 0,
               }}
             >
-              <span style={{ display: "block", whiteSpace: "nowrap" }}>Every call.</span>
-              <span style={{ display: "block", whiteSpace: "nowrap", color: "var(--red)" }}>Every language.</span>
-              <span style={{ display: "block", whiteSpace: "nowrap" }}>
+              <span style={{ display: "block" }}>Every call.</span>
+              <span style={{ display: "block", color: "var(--red)" }}>Every language.</span>
+              <span style={{ display: "block" }}>
                 <span className="hl">Greater reach.</span>
               </span>
             </h1>
