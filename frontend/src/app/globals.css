@@ -315,7 +315,91 @@ textarea.vfield { min-height:110px;resize:vertical; }
 }
 .pgf i { color:var(--red);font-style:normal; }
 
-@media(prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important}
-  .mascot,.panel-in,.page-in{animation:none!important;opacity:1;transform:none!important}
+/* ── Motion System Animations & Micro-interactions ────────────────────────── */
+@keyframes pulseRing {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
+
+@keyframes wavePulse {
+  0% { transform: scaleY(0.4); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes sunDrift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-16px); }
+}
+
+@keyframes drawerSlideIn {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes pageFadeIn {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Primary red button sheen sweep on hover (0.5s) */
+.vbtn-red {
+  position: relative;
+  overflow: hidden;
+}
+.vbtn-red::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%; width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-25deg);
+  transition: none;
+}
+.vbtn-red:hover::before {
+  left: 125%;
+  transition: left 0.5s ease-in-out;
+}
+.vbtn-red:hover span, .vbtn:hover span {
+  transform: translateX(4px);
+  transition: transform 0.2s ease;
+}
+
+/* KPI cards & tabs lift on hover */
+.kpi-card, .glass {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease;
+}
+.kpi-card:hover, .glass:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px -12px rgba(23,38,58,0.25);
+}
+
+/* 3D SplitText letter hover lift with stacked text-shadow extrusion */
+.split-char {
+  transition: transform 0.25s cubic-bezier(0.2, 1.5, 0.3, 1), text-shadow 0.25s ease, color 0.2s ease;
+}
+.split-char:hover {
+  transform: translateZ(46px) translateY(-9px) rotateX(-14deg) !important;
+  text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25);
+  color: var(--red);
+}
+
+/* Inputs and selects yellow offset shadow on focus */
+.vfield:focus, select:focus, input:focus {
+  outline: 0;
+  border-color: var(--ink);
+  box-shadow: 4px 4px 0 var(--yellow) !important;
+}
+
+/* Prefers Reduced Motion Overrides */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .mascot, .panel-in, .page-in, .split-char, .hero-depth-container {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+

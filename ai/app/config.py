@@ -48,6 +48,15 @@ class Settings(BaseSettings):
     llm_fallback: Literal["none", "gemini", "groq"] = "none"
     gemini_api_key: str = ""
     groq_api_key: str = ""
+    # Groq STT model — whisper-large-v3-turbo (fastest) or whisper-large-v3 (most accurate)
+    groq_stt_model: str = "whisper-large-v3-turbo"
+
+    # ── STT provider routing ──────────────────────────────────────────────────
+    # sarvam → always Sarvam Saaras v4
+    # groq   → always Groq Whisper Large v3 Turbo
+    # auto   → race both concurrently, return first winner, fallback if one fails
+    stt_provider: str = "auto"
+
 
     # ── Lexicon ───────────────────────────────────────────────────────────────
     lexicon_dir: str = "app/intent/lexicon"
