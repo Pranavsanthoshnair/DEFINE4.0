@@ -88,8 +88,6 @@ async def create_contact(body: ContactIn):
             "opted_out": False,
             "created_at": now,
         }
-        if body.campaign_id:
-            row["campaign_id"] = body.campaign_id
         # Upsert on phone_hash to prevent duplicates
         resp = sb.table(_TABLE).upsert(row, on_conflict="phone_hash").execute()
         r = (resp.data or [{}])[0]
