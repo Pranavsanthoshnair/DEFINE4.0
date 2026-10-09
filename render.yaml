@@ -2,12 +2,12 @@ services:
   # ── Backend (FastAPI) ───────────────────────────────────────────────────────
   backend:
     name: veylo-backend
-    runtime: python
+    runtime: docker
     plan: free
     region: oregon
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     healthCheckPath: /health
     envVars:
       - key: ENVIRONMENT
