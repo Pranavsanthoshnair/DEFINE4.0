@@ -29,9 +29,10 @@
   --white:  #FFFDF8;
   --ink:    #17263A;
   --gap:    14px;
-  --pad:    36px;
+  --pad:    24px;
+  --page-pad: 20px;
 
-  /* legacy Next.js tokens kept for any components that reference them */
+  /* legacy tokens */
   --brand-500: #6366f1;
   --brand-600: #4f46e5;
   --brand-400: #818cf8;
@@ -41,6 +42,13 @@
   --border:     #374151;
   --text-primary:   #f9fafb;
   --text-secondary: #9ca3af;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --pad: 36px;
+    --page-pad: 32px;
+  }
 }
 
 /* ── Base reset ─────────────────────────────────────────────────────────── */
@@ -67,16 +75,22 @@
 ::-webkit-scrollbar-track { background: rgba(183,216,245,.2); }
 ::-webkit-scrollbar-thumb { background: rgba(23,38,58,.25); border-radius: 3px; }
 
-/* ── Decorative blobs (fixed background) ───────────────────────────────── */
-.blob { position: fixed; border-radius: 50%; z-index: 0; pointer-events: none; }
-.blob-1 { width:420px;height:420px;left:-300px;top:260px;background:rgba(255,215,0,.35); }
-.blob-2 { width:380px;height:380px;right:-240px;top:-80px;background:rgba(183,216,245,.45); }
-
-body::before, body::after {
-  content: ""; position: fixed; border-radius: 50%; z-index: 0; pointer-events: none;
+/* Blobs hidden on mobile — only visible on desktop where they don't clutter */
+.blob { position: fixed; border-radius: 50%; z-index: 0; pointer-events: none; display: none; }
+@media (min-width: 1024px) {
+  .blob { display: block; }
+  .blob-1 { width:280px;height:280px;left:-140px;bottom:60px;background:rgba(255,215,0,.22); }
+  .blob-2 { width:240px;height:240px;right:-100px;top:-60px;background:rgba(183,216,245,.30); }
 }
-body::before { width:360px;height:360px;right:6%;bottom:-140px;background:rgba(255,215,0,.34); }
-body::after  { width:130px;height:130px;left:46%;top:30%;background:rgba(225,6,0,.13); }
+
+/* body pseudo-blobs only on desktop */
+@media (min-width: 1024px) {
+  body::before, body::after {
+    content: ""; position: fixed; border-radius: 50%; z-index: 0; pointer-events: none;
+  }
+  body::before { width:220px;height:220px;right:4%;bottom:-80px;background:rgba(255,215,0,.20); }
+  body::after  { width:80px;height:80px;left:50%;top:35%;background:rgba(225,6,0,.08); }
+}
 
 /* ── Gradient brand text (kept from original) ───────────────────────────── */
 .gradient-text {
@@ -489,3 +503,27 @@ textarea.vfield { min-height:110px;resize:vertical; }
   }
 }
 
+/* ── Keyframe animations ─────────────────────────────────────────────────── */
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes pulseRing {
+  0%   { transform: scale(1);   opacity: .6; }
+  70%  { transform: scale(1.8); opacity: 0;  }
+  100% { transform: scale(1.8); opacity: 0;  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ── Mobile page spacing ─────────────────────────────────────────────────── */
+/* On mobile, cards/sections should have tighter gap */
+@media (max-width: 1023px) {
+  .page-grid { gap: 16px !important; }
+  .vcard { padding: 16px !important; }
+  h1 { font-size: clamp(20px, 5vw, 32px) !important; }
+}
