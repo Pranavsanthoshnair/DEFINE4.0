@@ -38,7 +38,7 @@ export default function OverviewPage() {
     setKpi(EMPTY_KPI);
     setBackendStatus("checking");
 
-    fetch(`${API}/api/v1/overview/`)
+    fetch(`${API}/api/overview/`)
       .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((data) => {
         setKpi([

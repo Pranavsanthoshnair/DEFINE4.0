@@ -79,6 +79,8 @@ async def get_overview():
 
 
 compat_router.include_router(_overview, prefix="/api/overview", tags=["compat-overview"])
+# Also expose at /api/v1/overview for frontend consistency
+compat_router.include_router(_overview, prefix="/api/v1/overview", tags=["compat-overview-v1"])
 
 # /api/sessions  →  browser voice sessions
 compat_router.include_router(sessions_router, prefix="/api/sessions", tags=["compat-sessions"])
