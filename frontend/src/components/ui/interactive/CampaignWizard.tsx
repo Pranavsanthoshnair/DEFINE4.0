@@ -461,24 +461,28 @@ export default function CampaignWizard() {
           <button
             type="button"
             onClick={handleBack}
-            disabled={currentStep === 0}
-            className={`btn-3d px-4 py-2 text-xs font-mono font-medium rounded-lg transition-all ${
+            disabled={currentStep === 0 || isSubmitting}
+            className={`btn-3d px-6 py-2.5 text-sm font-mono font-medium rounded-lg transition-all ${
               currentStep === 0
-                ? "text-stone-300 border border-stone-200 cursor-not-allowed"
-                : "text-stone-700 border border-stone-300 hover:bg-stone-50 shadow-xs"
+                ? "text-stone-400 border border-stone-200 bg-stone-50 cursor-not-allowed opacity-50"
+                : "text-stone-700 border border-stone-300 hover:bg-stone-100 hover:text-stone-900 shadow-sm"
             }`}
           >
-            Back
+            ← Back
           </button>
 
           <button
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="btn-3d px-6 py-2.5 bg-brand-red hover:bg-brand-red-hover !text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+            className={`btn-3d px-8 py-2.5 text-sm font-mono font-bold uppercase tracking-wider rounded-lg shadow-md transition-all flex items-center justify-center gap-2 min-w-[200px] ${
+              isSubmitting
+                ? "bg-brand-red/80 text-white/90 cursor-wait"
+                : "bg-brand-red hover:bg-brand-red-hover text-white hover:shadow-lg"
+            }`}
           >
             {isSubmitting ? (
-              <span>Deploying Campaign...</span>
+              <span>{submitStatus || "Processing..."}</span>
             ) : currentStep === STEPS.length - 1 ? (
               <span>Launch Campaign 🚀</span>
             ) : (
