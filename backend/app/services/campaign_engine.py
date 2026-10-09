@@ -77,7 +77,7 @@ def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
         sb.table(_CONTACTS_TABLE)
         .select("*, contacts(phone_enc, phone_last4, language)")
         .eq("campaign_id", campaign_id)
-        .eq("state", "pending")
+        .eq("status", "pending")
         .limit(limit)
         .execute()
     )
@@ -200,22 +200,27 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
             ))
             if result.accepted:
                 placed += 1
-                # Mark contact queued and log call record
+                now_ts = _now()
+                # Mark contact as in-call
                 if cc_id:
                     sb.table(_CONTACTS_TABLE).update({
                         "status": "queued",
-                        "attempt_count": (contact.get("attempt_count") or 0) + 1,
                     }).eq("id", cc_id).execute()
-                sb.table("calls").insert({
-                    "id": str(call_id),
-                    "campaign_id": campaign_id,
-                    "campaign_contact_id": cc_id,
-                    "provider_call_sid": result.provider_call_sid,
-                    "status": result.raw_status or "queued",
-                    "direction": "outbound",
-                    "language": contact.get("language", language),
-                    "created_at": _now(),
-                }).execute()
+                # Insert call record with correct schema columns
+                try:
+                    sb.table("calls").insert({
+                        "id": str(call_id),
+                        "campaign_contact_id": cc_id,
+                        "attempt_no": 1,
+                        "provider": provider_name,
+                        "provider_call_sid": result.provider_call_sid or "",
+                        "status": "initiated",
+                        "flow_state": {},
+                        "started_at": now_ts,
+                        "created_at": now_ts,
+                    }).execute()
+                except Exception as call_exc:
+                    log.warning("campaign_call_record_failed", error=str(call_exc))
                 log.info("campaign_call_placed", provider=provider_name, phone_last4=phone[-4:])
             else:
                 failed += 1

@@ -104,9 +104,8 @@ async def create_contact(body: ContactIn):
                     "id": str(uuid.uuid4()),
                     "campaign_id": body.campaign_id,
                     "contact_id": contact_id,
-                    "state": "pending",
-                    "attempts": 0,
-                    "language": body.language or "en",
+                    "status": "pending",
+                    "attempt_count": 0,
                     "created_at": now,
                 }, on_conflict="campaign_id,contact_id").execute()
             except Exception:
@@ -357,9 +356,8 @@ async def import_contacts_to_campaign(
                 "id": str(uuid.uuid4()),
                 "campaign_id": campaign_id,
                 "contact_id": contact_id,
-                "state": "pending",
-                "attempts": 0,
-                "language": "en",
+                "status": "pending",
+                "attempt_count": 0,
                 "created_at": now,
             }
             for contact_id in existing_map.values()
