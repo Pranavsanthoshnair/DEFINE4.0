@@ -61,14 +61,30 @@ class Settings(BaseSettings):
     event_retention_days: int = 90
 
     # ── Telephony (M2) ────────────────────────────────────────────────────────
-    call_provider: str = "mock"           # mock | exotel
+    # auto = pick first available: exotel → twilio → mock
+    call_provider: str = "auto"           # auto | mock | exotel | twilio
     exotel_sid: str = ""
     exotel_api_key: str = ""
     exotel_api_token: str = ""
     exotel_subdomain: str = ""
     exotel_caller_id: str = ""
     exotel_max_concurrent: int = 3
+    # Twilio (alternative telephony)
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_phone_number: str = ""
     mock_speed: float = 1.0               # 0.1 = fast tests, 1.0 = normal
+
+    # ── ElevenLabs ────────────────────────────────────────────────────────
+    elevenlabs_api_key: str = ""
+    elevenlabs_voice_id: str = "Rachel"   # default voice
+    elevenlabs_model_id: str = "eleven_multilingual_v2"
+
+    # ── Telegram ──────────────────────────────────────────────────────────
+    telegram_bot_token: str = ""
+    telegram_webhook_secret: str = ""
+    # Set to 'polling' for local dev, 'webhook' for production
+    telegram_mode: str = "webhook"        # webhook | polling
 
     # ── AI Service ───────────────────────────────────────────────────────────
     ai_base_url: str = "http://localhost:8200"
