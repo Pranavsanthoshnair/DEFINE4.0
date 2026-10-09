@@ -1,10 +1,33 @@
 /**
  * Centralised API client.
  * All backend calls go through here — no scattered fetch() calls in components.
+ *
+ * Auth: reads the Supabase session and attaches Authorization: Bearer <token>
+ * to every request. Falls back silently when no session exists (public routes).
  */
+
+import { createClient } from "@supabase/supabase-js";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
+// Supabase client for reading the current session token only.
+// Uses public keys — safe for browser.
+const _supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+);
+
+async function _getAuthHeader(): Promise<Record<string, string>> {
+  try {
+    const { data } = await _supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (token) return { Authorization: `Bearer ${token}` };
+  } catch {
+    // Not authenticated — public route, continue without header
+  }
+  return {};
+}
 
 type RequestOptions = {
   method?: string;
@@ -18,11 +41,14 @@ async function request<T>(
 ): Promise<T> {
   const { method = "GET", body, headers = {} } = options;
 
+  const authHeader = await _getAuthHeader();
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
-      ...headers,
+      ...authHeader,
+      ...headers,   // caller-provided headers override auth if needed
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
@@ -37,6 +63,7 @@ async function request<T>(
 
   return res.json() as Promise<T>;
 }
+
 
 // ── Health ──────────────────────────────────────────────────────────────────
 

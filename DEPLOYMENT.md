@@ -114,15 +114,24 @@ curl https://veylo-backend.onrender.com/health
 
 ## 4. Configure Exotel Webhooks
 
-In your Exotel dashboard, set these callback URLs:
+The real webhook router is at `backend/app/telephony/webhooks.py` and is mounted at
+`/webhooks/{YOUR_WEBHOOK_SECRET}/...`.
+
+The `WEBHOOK_SECRET` value is embedded directly in the URL path. In your Exotel dashboard,
+set these callback URLs — replacing `YOUR_SECRET` with the actual `WEBHOOK_SECRET` env var value:
 
 | Event | URL |
 |---|---|
-| Call status callback | `https://veylo-backend.onrender.com/api/v1/webhooks/exotel` |
-| DTMF / keypad input | `https://veylo-backend.onrender.com/api/v1/webhooks/exotel/dtmf` |
-| Voicemail callback | `https://veylo-backend.onrender.com/api/v1/webhooks/exotel/voicemail` |
+| Call status / completion | `https://veylo-backend.onrender.com/webhooks/YOUR_SECRET/status` |
+| Call flow (IVR / gather) | `https://veylo-backend.onrender.com/webhooks/YOUR_SECRET/flow` |
+| Keypad / speech input | `https://veylo-backend.onrender.com/webhooks/YOUR_SECRET/input` |
+| Recording ready | `https://veylo-backend.onrender.com/webhooks/YOUR_SECRET/recording` |
 
-> Check `backend/app/api/routes/webhooks.py` for the exact implemented paths.
+> **Security note:** The secret-in-path approach provides obscurity. The backend uses
+> `hmac.compare_digest` for constant-time comparison — mismatches return `404` (not `403`)
+> to prevent route enumeration.
+
+> Verify exact paths against `backend/app/telephony/webhooks.py` before registering.
 
 ---
 
