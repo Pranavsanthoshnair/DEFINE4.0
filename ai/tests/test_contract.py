@@ -64,6 +64,23 @@ def test_healthz_public_no_auth(client):
         assert data["models"][key] in ("loaded", "stub", "unavailable")
 
 
+def test_self_check_is_internal_and_never_returns_key_material(client):
+    unauthenticated = client.get("/v1/self-check")
+    assert unauthenticated.status_code == 401
+
+    response = client.get("/v1/self-check", headers=HEADERS)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["onnx_model_loaded"] is False
+    assert data["tokenizer_local"] is False
+    assert data["intent_temperature"] == pytest.approx(0.527)
+    assert data["intent_threshold"] == pytest.approx(0.7)
+    assert data["stt_mode"] == {"en": "default", "hi": "default", "ml": "default", "ta": "default"}
+    assert isinstance(data["sarvam_api_key_configured"], bool)
+    assert isinstance(data["ffmpeg_present"], bool)
+    assert "sarvam_api_key" not in data
+
+
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
 def test_missing_token_returns_401(client):

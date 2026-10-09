@@ -79,6 +79,11 @@ class OnnxIntentModel:
     def available(self) -> bool:
         return self._session is not None
 
+    @property
+    def tokenizer_loaded_locally(self) -> bool:
+        """True only after the tokenizer has loaded from the mounted folder."""
+        return self._tokenizer is not None
+
     def predict(
         self,
         text: str,

@@ -97,3 +97,15 @@ ModelStatus = Literal["loaded", "stub", "unavailable"]
 class HealthResponse(BaseModel):
     status: Literal["ok", "degraded"]
     models: dict[str, ModelStatus]
+
+
+class SelfCheckResponse(BaseModel):
+    """Internal deployment diagnostics. Contains no credential values."""
+
+    onnx_model_loaded: bool
+    tokenizer_local: bool
+    intent_temperature: float
+    intent_threshold: float
+    stt_mode: dict[str, str]
+    sarvam_api_key_configured: bool
+    ffmpeg_present: bool

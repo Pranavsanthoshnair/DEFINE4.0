@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import shutil
 import struct
 import time
 from contextlib import asynccontextmanager
@@ -29,6 +30,7 @@ from app.schemas import (
     IntentRequest,
     IntentResponse,
     ModelStatus,
+    SelfCheckResponse,
     SpeechIntentResponse,
     STTResponse,
     TranslateRequest,
@@ -45,19 +47,20 @@ _model_status: dict[str, ModelStatus] = {
     "translate": "stub",
     "tts": "stub",
 }
+_models_config: dict = {}
 
 
 # ── Lifespan ──────────────────────────────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    global _model_status
+    global _model_status, _models_config
 
     log.info("ai_service_starting", stub=settings.ai_stub, port=settings.port)
 
     from app.models_registry import load_models_yaml
-    models_config = load_models_yaml(Path(__file__).resolve().parents[1] / "models.yaml")
-    yaml_threshold = models_config.get("intent", {}).get("confidence_threshold")
+    _models_config = load_models_yaml(Path(__file__).resolve().parents[1] / "models.yaml")
+    yaml_threshold = _models_config.get("intent", {}).get("confidence_threshold")
     if yaml_threshold is not None and "INTENT_CONFIDENCE_THRESHOLD" not in os.environ:
         settings.intent_confidence_threshold = float(yaml_threshold)
 
@@ -117,6 +120,24 @@ def create_app() -> FastAPI:
         return HealthResponse(
             status="ok" if all_ok else "degraded",
             models=_model_status,  # type: ignore[arg-type]
+        )
+
+    @app.get("/v1/self-check", response_model=SelfCheckResponse, tags=["health"])
+    async def self_check(_: None = Depends(require_token)) -> SelfCheckResponse:
+        """Report demo-readiness facts without exposing API-key material."""
+        from app.intent.pipeline import get_onnx_model
+
+        intent_model = get_onnx_model()
+        intent_config = _models_config.get("intent", {})
+        modes = _models_config.get("stt_mode", {})
+        return SelfCheckResponse(
+            onnx_model_loaded=bool(intent_model and intent_model.available),
+            tokenizer_local=bool(intent_model and intent_model.tokenizer_loaded_locally),
+            intent_temperature=float(_models_config.get("intent_temperature", 1.0)),
+            intent_threshold=float(intent_config.get("confidence_threshold", settings.intent_confidence_threshold)),
+            stt_mode={str(language): str(mode) for language, mode in modes.items()},
+            sarvam_api_key_configured=bool(settings.sarvam_api_key),
+            ffmpeg_present=shutil.which("ffmpeg") is not None,
         )
 
     # ── /v1/stt ───────────────────────────────────────────────────────────────
