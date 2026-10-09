@@ -40,6 +40,7 @@ From the repository root:
 
 ```powershell
 cd ai
+$env:MODELS_DIR = (Resolve-Path models).Path
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8200
 ```
 
