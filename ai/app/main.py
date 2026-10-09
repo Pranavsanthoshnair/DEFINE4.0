@@ -268,23 +268,76 @@ async def _live_stt(
     filename: str,
     language: str | None,
 ) -> STTResponse:
+    """Route STT call based on settings.stt_provider."""
+    provider = settings.stt_provider.lower()
+
+    if provider == "groq":
+        return await _groq_stt(data, filename, language)
+    elif provider == "sarvam":
+        return await _sarvam_stt(data, filename, language)
+    else:
+        # auto: race both, return first, fallback if one errors
+        return await _auto_stt(data, filename, language)
+
+
+async def _auto_stt(
+    data: bytes,
+    filename: str,
+    language: str | None,
+) -> STTResponse:
+    """
+    Race Sarvam and Groq concurrently. Return the first result.
+    If one provider fails, return the other's result.
+    If both fail, raise the Sarvam error (primary).
+    """
+    import asyncio as _asyncio
+
+    sarvam_task = _asyncio.ensure_future(_sarvam_stt(data, filename, language))
+    groq_task   = _asyncio.ensure_future(_groq_stt(data, filename, language))
+
+    done, pending = await _asyncio.wait(
+        [sarvam_task, groq_task],
+        return_when=_asyncio.FIRST_COMPLETED,
+    )
+
+    winner = done.pop()
+    # Cancel the slower task
+    for t in pending:
+        t.cancel()
+
+    try:
+        result = winner.result()
+        return result
+    except Exception:
+        # Winner failed — wait for the other one
+        for t in pending:
+            try:
+                return await t
+            except Exception:
+                pass
+        # Both failed — re-raise from winner
+        winner.result()  # raises
+
+
+async def _sarvam_stt(
+    data: bytes,
+    filename: str,
+    language: str | None,
+) -> STTResponse:
     """Call Sarvam STT; map SarvamError to HTTPException."""
     from app.providers.sarvam import transcribe, SarvamError
 
-    # Determine codec hint for raw PCM from Exotel
     codec: str | None = None
     if settings.exotel_audio_codec not in ("auto", ""):
         codec = settings.exotel_audio_codec
 
     try:
-        t0 = time.monotonic()
         result = await transcribe(
             audio_bytes=data,
             filename=filename,
             language=language,
             input_audio_codec=codec,
         )
-        latency_ms = int((time.monotonic() - t0) * 1000)
     except SarvamError as exc:
         _raise_provider_error(exc)
 
@@ -292,7 +345,35 @@ async def _live_stt(
         text=result.transcript,
         language=result.language,
         confidence=0.0 if result.no_speech else round(result.language_probability, 3),
-        duration_ms=0,       # Sarvam REST does not return duration
+        duration_ms=0,
+        latency_ms=result.latency_ms,
+        model=result.model,
+        no_speech=result.no_speech,
+    )
+
+
+async def _groq_stt(
+    data: bytes,
+    filename: str,
+    language: str | None,
+) -> STTResponse:
+    """Call Groq Whisper STT; map GroqSTTError to HTTPException."""
+    from app.providers.groq_whisper import transcribe as groq_transcribe, GroqSTTError
+
+    try:
+        result = await groq_transcribe(
+            audio_bytes=data,
+            filename=filename,
+            language=language,
+        )
+    except GroqSTTError as exc:
+        _raise_provider_error(exc)
+
+    return STTResponse(
+        text=result.transcript,
+        language=result.language,
+        confidence=0.0 if result.no_speech else 0.95,
+        duration_ms=0,
         latency_ms=result.latency_ms,
         model=result.model,
         no_speech=result.no_speech,
