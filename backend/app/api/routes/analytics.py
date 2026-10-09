@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 
-from app.db.supabase_client import get_supabase
+from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()
 
@@ -27,6 +27,17 @@ async def get_campaign_analytics(campaign_id: str):
     Return aggregate call statistics for a campaign.
     Computed live from campaign_contacts and calls tables.
     """
+    if not is_supabase_configured():
+        return CampaignStats(
+            campaign_id=campaign_id,
+            total_recipients=0,
+            calls_attempted=0,
+            calls_answered=0,
+            calls_failed=0,
+            calls_pending=0,
+            completion_rate=0.0,
+            answer_rate=0.0,
+        )
     try:
         sb = get_supabase()
 
@@ -68,6 +79,13 @@ async def get_campaign_analytics(campaign_id: str):
     except HTTPException:
         raise
     except Exception as exc:
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return CampaignStats(
+                campaign_id=campaign_id,
+                total_recipients=0, calls_attempted=0, calls_answered=0,
+                calls_failed=0, calls_pending=0, completion_rate=0.0, answer_rate=0.0,
+            )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",
@@ -80,6 +98,14 @@ async def get_overview_summary():
     Overall platform summary — total campaigns, contacts, calls made.
     Used by the dashboard overview page.
     """
+    if not is_supabase_configured():
+        return {
+            "total_campaigns": 0,
+            "total_contacts": 0,
+            "total_calls": 0,
+            "calls_answered": 0,
+            "calls_failed": 0,
+        }
     try:
         sb = get_supabase()
 
@@ -96,6 +122,9 @@ async def get_overview_summary():
             "calls_failed": sum(1 for c in calls if c.get("status") in ("failed", "error")),
         }
     except Exception as exc:
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return {"total_campaigns": 0, "total_contacts": 0, "total_calls": 0, "calls_answered": 0, "calls_failed": 0}
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",

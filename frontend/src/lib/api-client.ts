@@ -100,12 +100,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (!res.ok) {
-    const errBody = json as Partial<ApiErrorBody>;
+    const errBody = json as Partial<ApiErrorBody> & { detail?: string };
     const err = errBody?.error;
+    // FastAPI returns {"detail": "..."} — fall back to that if no structured error
+    const message = err?.message ?? errBody?.detail ?? `HTTP ${res.status}`;
     throw new ApiError(
       res.status,
       err?.code ?? "unknown_error",
-      err?.message ?? `HTTP ${res.status}`,
+      message,
       err?.details ?? {}
     );
   }

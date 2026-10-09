@@ -35,7 +35,7 @@ compat_router.include_router(analytics_router, prefix="/api/analytics", tags=["c
 from fastapi import APIRouter as _R
 _overview = _R()
 
-from app.db.supabase_client import get_supabase
+from app.db.supabase_client import get_supabase, is_supabase_configured
 from pydantic import BaseModel
 
 
@@ -52,7 +52,6 @@ class Overview(BaseModel):
 @_overview.get("")
 async def get_overview():
     """Dashboard overview — aggregates for the KPI cards."""
-    from app.db.supabase_client import is_supabase_configured
     if not is_supabase_configured():
         return Overview(
             total_campaigns=0,

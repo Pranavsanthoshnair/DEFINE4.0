@@ -97,6 +97,9 @@ async def list_campaigns(
         )
         return [_row_to_out(r) for r in (resp.data or [])]
     except Exception as exc:
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return []
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",
