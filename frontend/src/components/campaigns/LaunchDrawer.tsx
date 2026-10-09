@@ -150,30 +150,28 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
       }}>
         <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
         
-        {/* Header - Fixed at Top */}
-        <div style={{ padding: "28px 28px 20px", borderBottom: "1px solid rgba(23,38,58,.08)", flexShrink: 0 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", marginBottom: 4, textTransform: "uppercase" }}>
-                Launching campaign
-              </div>
-              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em", lineHeight: 1.3 }}>
-                {campaign.name}
-              </h2>
-            </div>
-            {(done || error) && (
-              <button
-                onClick={onClose}
-                style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* Scrollable inner container */}
-        <div style={{ padding: "24px 28px 36px", flex: 1, overflowY: "auto", minHeight: 0 }}>
+        <div style={{ padding: "28px 28px 36px", flex: 1, overflowY: "auto", minHeight: 0 }}>
+
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", marginBottom: 4, textTransform: "uppercase" }}>
+              Launching campaign
+            </div>
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em", lineHeight: 1.3 }}>
+              {campaign.name}
+            </h2>
+          </div>
+          {(done || error) && (
+            <button
+              onClick={onClose}
+              style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
 
         {/* Steps */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>

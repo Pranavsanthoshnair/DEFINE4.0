@@ -99,7 +99,7 @@ export default function OverviewPage() {
         bubble={isDemo ? "Demo 🎭" : "Welcome back!"}
         mascot="boy"
         action={
-          <Link href="/campaigns/new" className="vbtn vbtn-red" style={{ textDecoration: "none" }}>
+          <Link href="/campaigns" className="vbtn vbtn-red" style={{ textDecoration: "none" }}>
             CREATE CAMPAIGN <span>↗</span>
           </Link>
         }
@@ -240,7 +240,7 @@ export default function OverviewPage() {
           <em className="cal">with a human voice</em>
         </div>
         <Image src="/veylo-boy.png" alt="" width={92} height={92} style={{ objectFit: "contain", width: "auto", height: "auto" }} />
-        <Link href="/campaigns/new" className="vbtn vbtn-red" style={{ textDecoration: "none" }}>
+        <Link href="/campaigns" className="vbtn vbtn-red" style={{ textDecoration: "none" }}>
           CREATE CAMPAIGN <span>↗</span>
         </Link>
       </div>
