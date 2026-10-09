@@ -35,12 +35,12 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full flex-1 min-h-0">
       {/* Brand */}
       <Link
         href="/"
         onClick={onNavigate}
-        className="flex items-center gap-2.5 mb-6 no-underline select-none"
+        className="flex items-center gap-2.5 mb-6 no-underline select-none shrink-0"
       >
         <img 
           src="/logo.png" 
@@ -56,7 +56,15 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       {/* Nav groups */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div 
+        className="flex-1 overflow-y-auto min-h-0 pr-1 -mr-1"
+        style={{ 
+          scrollbarWidth: "thin", 
+          scrollbarColor: "rgba(23,38,58,.15) transparent",
+          scrollBehavior: "smooth",
+          WebkitOverflowScrolling: "touch"
+        }}
+      >
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="mb-1">
             <p className="px-3 mb-1 mt-4 first:mt-0" style={{ font: "700 10px/1 'Manrope', sans-serif", letterSpacing: ".12em", color: "#8A9BB0" }}>
@@ -105,7 +113,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       {/* Account widget */}
-      <div className="mt-4 pt-4 border-t border-black/5">
+      <div className="mt-4 pt-4 border-t border-black/5 shrink-0">
         <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: "rgba(183,216,245,.25)" }}>
           <span
             className="grid place-items-center rounded-full flex-none text-white text-xs font-bold"
@@ -142,9 +150,10 @@ export default function Sidebar() {
     <>
       {/* ── Desktop sidebar (lg+) ─────────────────────────────────────── */}
       <aside
-        className="hidden lg:flex flex-col fixed inset-y-0 left-0 z-20 overflow-y-auto"
+        className="hidden lg:flex flex-col fixed inset-y-0 left-0 z-20"
         style={{
           width: 220,
+          height: "100dvh",
           padding: "24px 12px",
           background: "rgba(242,245,248,.92)",
           backdropFilter: "blur(16px)",
@@ -194,7 +203,7 @@ export default function Sidebar() {
           />
           {/* Panel */}
           <div
-            className="absolute left-0 top-0 bottom-0 flex flex-col overflow-y-auto"
+            className="absolute left-0 top-0 bottom-0 flex flex-col"
             style={{
               width: 260,
               padding: "20px 14px",

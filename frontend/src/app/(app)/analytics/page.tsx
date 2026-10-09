@@ -63,7 +63,7 @@ export default function AnalyticsPage() {
         <div style={{ textAlign: "center", padding: "48px", color: "#8A9BB0", fontFamily: "Manrope, sans-serif" }}>Loading analytics…</div>
       ) : !data ? (
         <div className="glass" style={{ padding: "48px 24px", textAlign: "center" }}>
-          <Image src="/veylo-girl.png" alt="" width={80} height={80} style={{ objectFit: "contain", height: 80, width: "auto" }} />
+          <Image src="/veylo-girl.png" alt="" width={80} height={80} style={{ objectFit: "contain", height: "auto", width: "auto" }} />
           <p style={{ margin: "12px 0 0", fontFamily: "Manrope, sans-serif", fontSize: 14, color: "#5A6E84" }}>
             No analytics yet — launch a campaign and results will appear here.
           </p>

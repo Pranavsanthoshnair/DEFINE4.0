@@ -57,6 +57,14 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
     ? (initialCampaignName ?? "")
     : (campaigns.find(c => c.id === selectedCampaignId)?.name ?? "");
 
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   useEffect(() => {
     if (initialCampaignId) return;          // already have one
     setCampaignsLoading(true);
@@ -155,19 +163,19 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
 
       {/* Drawer */}
       <div style={{
-        position: "fixed", bottom: 0, right: 0,
+        position: "fixed", top: 0, bottom: 0, right: 0,
         width: "min(100vw, 500px)",
         zIndex: 1001,
         background: "#fff",
-        borderRadius: "20px 20px 0 0",
-        boxShadow: "0 -8px 40px rgba(10,16,28,.18)",
-        padding: "28px 28px 40px",
+        boxShadow: "-8px 0 40px rgba(10,16,28,.18)",
+        display: "flex", flexDirection: "column",
         fontFamily: "Manrope, sans-serif",
-        maxHeight: "90vh",
-        overflowY: "auto",
-        animation: "slideUp .25s cubic-bezier(.4,0,.2,1)",
+        animation: "slideInRight .25s cubic-bezier(.4,0,.2,1)",
       }}>
-        <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
+        <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
+        
+        {/* Scrollable internal content */}
+        <div style={{ padding: "28px 28px 40px", flex: 1, overflowY: "auto", minHeight: 0 }}>
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
@@ -357,6 +365,7 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
             )}
           </div>
         )}
+        </div>
       </div>
     </>
   );

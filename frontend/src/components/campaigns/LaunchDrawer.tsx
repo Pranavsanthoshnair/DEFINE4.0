@@ -22,6 +22,14 @@ interface Props {
 }
 
 export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const [steps, setSteps] = useState<Step[]>([]);
   const [done, setDone]   = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,17 +139,19 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
 
       {/* Drawer */}
       <div style={{
-        position: "fixed", bottom: 0, right: 0,
+        position: "fixed", top: 0, bottom: 0, right: 0,
         width: "min(100vw, 460px)",
         zIndex: 1001,
         background: "#fff",
-        borderRadius: "20px 20px 0 0",
-        boxShadow: "0 -8px 40px rgba(10,16,28,.18)",
-        padding: "28px 28px 36px",
+        boxShadow: "-8px 0 40px rgba(10,16,28,.18)",
+        display: "flex", flexDirection: "column",
         fontFamily: "Manrope, sans-serif",
-        animation: "slideUp .28s cubic-bezier(.4,0,.2,1)",
+        animation: "slideInRight .28s cubic-bezier(.4,0,.2,1)",
       }}>
-        <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
+        <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
+        
+        {/* Scrollable inner container */}
+        <div style={{ padding: "28px 28px 36px", flex: 1, overflowY: "auto", minHeight: 0 }}>
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
@@ -218,6 +228,7 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
             </button>
           </div>
         )}
+        </div>
       </div>
     </>
   );

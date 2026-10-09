@@ -71,7 +71,7 @@ export default function CallsPage() {
               <tr>
                 <td colSpan={6} style={{ textAlign: "center", paddingTop: 40, paddingBottom: 40 }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-                    <Image src="/veylo-boy.png" alt="" width={80} height={80} style={{ objectFit: "contain", height: 80, width: "auto" }} />
+                    <Image src="/veylo-boy.png" alt="" width={80} height={80} style={{ objectFit: "contain", height: "auto", width: "auto" }} />
                     <p style={{ margin: 0, fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 14, color: "#4A5B6E" }}>
                       No calls yet — launch a campaign to see history here.
                     </p>

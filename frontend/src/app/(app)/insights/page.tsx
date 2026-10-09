@@ -90,7 +90,7 @@ export default function InsightsPage() {
                 </div>
               ) : (
                 <div style={{ textAlign: "center", padding: "16px 0" }}>
-                  <Image src="/veylo-girl.png" alt="" width={72} height={72} style={{ objectFit: "contain", height: 72, width: "auto" }} />
+                  <Image src="/veylo-girl.png" alt="" width={72} height={72} style={{ objectFit: "contain", height: "auto", width: "auto" }} />
                   <p style={{ margin: "8px 0 0", fontSize: 13, color: "#4A5B6E" }}>No data yet — launch a campaign.</p>
                 </div>
               )}

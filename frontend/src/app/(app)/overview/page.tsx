@@ -50,7 +50,7 @@ export default function OverviewPage() {
     const controller = new AbortController();
 
     // Overview summary
-    fetch(`${API}/api/overview/`, { signal: controller.signal })
+    fetch(`${API}/api/overview`, { signal: controller.signal })
       .then((r) => r.ok ? r.json() : Promise.reject(r.status))
       .then((data) => {
         const total = data.total_calls ?? 0;
@@ -72,7 +72,7 @@ export default function OverviewPage() {
       });
 
     // Recent campaigns
-    fetch(`${API}/api/v1/campaigns/?limit=3`, { signal: controller.signal })
+    fetch(`${API}/api/v1/campaigns?limit=3`, { signal: controller.signal })
       .then((r) => r.ok ? r.json() : [])
       .then((data) => setRecentCampaigns(Array.isArray(data) ? data : []))
       .catch(() => {});
@@ -147,7 +147,7 @@ export default function OverviewPage() {
             </h3>
             {recentCampaigns.length === 0 ? (
               <div className="em-row">
-                <Image src="/veylo-boy.png" alt="" width={96} height={96} style={{ objectFit: "contain", width: "auto", height: 96 }} />
+                <Image src="/veylo-boy.png" alt="" width={96} height={96} style={{ objectFit: "contain", width: "auto", height: "auto" }} />
                 <p>No campaigns yet. <Link href="/campaigns" style={{ color: "var(--red)", fontWeight: 600 }}>Create one →</Link></p>
               </div>
             ) : (
@@ -171,7 +171,7 @@ export default function OverviewPage() {
               Needs attention
             </h3>
             <div className="em-row">
-              <Image src="/veylo-girl.png" alt="" width={96} height={96} style={{ objectFit: "contain", width: "auto", height: 96 }} />
+              <Image src="/veylo-girl.png" alt="" width={96} height={96} style={{ objectFit: "contain", width: "auto", height: "auto" }} />
               <p>{isDemo ? "47 callbacks pending follow-up." : "Nothing flagged right now."}</p>
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function OverviewPage() {
           <h3>Every call. Every language.</h3>
           <em className="cal">with a human voice</em>
         </div>
-        <Image src="/veylo-boy.png" alt="" width={92} height={92} style={{ objectFit: "contain" }} />
+        <Image src="/veylo-boy.png" alt="" width={92} height={92} style={{ objectFit: "contain", width: "auto", height: "auto" }} />
         <Link href="/campaigns" className="vbtn vbtn-red" style={{ textDecoration: "none" }}>
           CREATE CAMPAIGN <span>↗</span>
         </Link>
