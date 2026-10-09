@@ -1,20 +1,18 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useDemo } from "@/context/DemoModeContext";
+import { DEMO_CONTACTS } from "@/lib/demo-data";
 
 type Contact = { name: string; phone: string; language: string; status: "valid" | "invalid"; reason?: string };
 
-const SAMPLE_CONTACTS: Contact[] = [
-  { name: "Aarav Sharma", phone: "+91 98765 43210", language: "Hindi", status: "valid" },
-  { name: "Priya Patel", phone: "+91 91234 56789", language: "Gujarati", status: "valid" },
-  { name: "Suresh Kumar", phone: "+91 94440 12345", language: "Tamil", status: "valid" },
-  { name: "Ananya Roy", phone: "+91 98300 98765", language: "Bengali", status: "valid" },
-  { name: "Rahul Verma", phone: "+91 98111 22334", language: "Hindi", status: "valid" },
-  { name: "Deepak Joshi", phone: "98765", language: "Marathi", status: "invalid", reason: "Invalid phone length" },
-];
-
 export default function ContactsPanel() {
-  const [contacts, setContacts] = useState<Contact[]>(SAMPLE_CONTACTS);
+  const { isDemo } = useDemo();
+  const [contacts, setContacts] = useState<Contact[]>(
+    isDemo
+      ? DEMO_CONTACTS.map(c => ({ name: c.name ?? "", phone: c.phone ?? "", language: c.language ?? "", status: "valid" as const }))
+      : []
+  );
   const [rawText, setRawText] = useState("");
   const [activeTab, setActiveTab] = useState<"table" | "paste">("table");
   const [isProcessing, setIsProcessing] = useState(false);

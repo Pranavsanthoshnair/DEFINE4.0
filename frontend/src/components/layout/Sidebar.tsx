@@ -38,7 +38,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full">
       {/* Brand */}
       <Link
-        href="/overview"
+        href="/"
         onClick={onNavigate}
         className="flex items-center gap-2.5 mb-6 no-underline select-none"
       >

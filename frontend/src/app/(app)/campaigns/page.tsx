@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import BrowserCallSimulator from "@/components/campaigns/BrowserCallSimulator";
+import LaunchDrawer from "@/components/campaigns/LaunchDrawer";
 import { useDemo } from "@/context/DemoModeContext";
 import { DEMO_CAMPAIGNS } from "@/lib/demo-data";
 
@@ -49,7 +50,7 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [simulatorId, setSimulatorId] = useState<string | null>(null);
-  const [launching, setLaunching] = useState<string | null>(null);
+  const [launchTarget, setLaunchTarget] = useState<Campaign | null>(null);
   const [csvCampaignId, setCsvCampaignId] = useState<string | null>(null);
   const [csvStatus, setCsvStatus] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -125,27 +126,14 @@ export default function CampaignsPage() {
     }
   };
 
-  // ── Launch campaign ─────────────────────────────────────────────────────
+  // ── Launch campaign — opens the custom LaunchDrawer ─────────────────────
 
-  const launch = async (id: string) => {
-    if (isDemo) { alert("🎭 Demo mode — launch disabled. Press Space\u00d75 to exit."); return; }
-    setLaunching(id);
-    try {
-      const res = await fetch(`${API}/api/v1/campaigns/${id}/launch`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body?.detail ?? `Launch failed (${res.status})`);
-      }
-      await load();
-      alert(`\u2705 Campaign launched! AI calls will start automatically.`);
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Launch failed");
-    } finally {
-      setLaunching(null);
+  const launch = (campaign: Campaign) => {
+    if (isDemo) {
+      setLaunchTarget({ id: "demo-preview", name: campaign.name, language: campaign.language, status: "draft" });
+      return;
     }
+    setLaunchTarget(campaign);
   };
 
   // ── CSV import ──────────────────────────────────────────────────────────
@@ -283,11 +271,10 @@ export default function CampaignsPage() {
                       {/* Launch */}
                       {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
                         <button
-                          onClick={() => launch(c.id)}
-                          disabled={launching === c.id}
-                          style={{ padding: "6px 12px", background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 11, cursor: launching === c.id ? "not-allowed" : "pointer" }}
+                          onClick={() => launch(c)}
+                          style={{ padding: "6px 12px", background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 6, fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 11, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}
                         >
-                          {launching === c.id ? "⏳ Launching…" : "🚀 Launch"}
+                          🚀 Launch
                         </button>
                       )}
                       {/* Simulator */}
@@ -329,10 +316,17 @@ export default function CampaignsPage() {
       {/* Instructions */}
       <div style={{ background: "rgba(183,216,245,.2)", borderRadius: 12, padding: "16px 20px", fontFamily: "Manrope, sans-serif", fontSize: 13, color: "#5A6E84", border: "1px solid rgba(183,216,245,.4)" }}>
         <strong style={{ color: "#17263A" }}>How it works:</strong>
-        {" "}Create a campaign → import contacts from CSV → click 🚀 Launch (auto-detects Telephony/Telegram/Browser) → ElevenLabs voice calls each contact → AI classifies their response → results appear in analytics.
+        {" "}Create a campaign → import contacts from CSV → click 🚀 Launch → ElevenLabs voice calls each contact → AI classifies their response → results appear in analytics.
         <br />
         <span style={{ fontSize: 11, opacity: 0.8 }}>Press Space×5 to toggle demo mode · Click 📞 Simulate to test the browser call flow</span>
       </div>
+
+      {/* Custom launch drawer — no browser alerts */}
+      <LaunchDrawer
+        campaign={launchTarget}
+        onClose={() => setLaunchTarget(null)}
+        onSuccess={() => { setLaunchTarget(null); load(); }}
+      />
     </div>
   );
 }
