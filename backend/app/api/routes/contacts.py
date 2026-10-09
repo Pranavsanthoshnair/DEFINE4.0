@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import io
 import uuid
 from datetime import datetime, timezone
@@ -23,6 +24,15 @@ REQUIRED_COLUMNS = {"phone"}
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 
+class ContactIn(BaseModel):
+    campaign_id: Optional[str] = None
+    name: Optional[str] = None
+    phone: str
+    language: str = "en"
+    segment: Optional[str] = "General"
+    notes: Optional[str] = None
+
+
 class ContactOut(BaseModel):
     id: str
     name: Optional[str] = None
@@ -40,6 +50,55 @@ class ImportResult(BaseModel):
 
 
 # ── Routes ───────────────────────────────────────────────────────────────────
+
+@router.post("/", response_model=ContactOut, status_code=status.HTTP_201_CREATED)
+async def create_contact(body: ContactIn):
+    """Add a single contact to the database."""
+    phone = body.phone.strip().replace(" ", "").replace("-", "")
+    if len(phone) < 7:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Phone number too short — expected at least 7 digits.",
+        )
+    phone_hash = hashlib.sha256(phone.encode()).hexdigest()
+    phone_last4 = phone[-4:] if len(phone) >= 4 else phone.ljust(4, "0")
+    try:
+        sb = get_supabase()
+        now = datetime.now(timezone.utc).isoformat()
+        row = {
+            "id": str(uuid.uuid4()),
+            "phone_enc": phone.encode("utf-8").hex(),   # hex — replace with AES in prod
+            "phone_hash": phone_hash,
+            "phone_last4": phone_last4,
+            "language": body.language,
+            "segment": body.segment,
+            "notes": body.notes,
+            "consent": True,
+            "consent_source": "single_import",
+            "consent_at": now,
+            "dnd": False,
+            "opted_out": False,
+            "created_at": now,
+        }
+        if body.campaign_id:
+            row["campaign_id"] = body.campaign_id
+        # Upsert on phone_hash to prevent duplicates
+        resp = sb.table(_TABLE).upsert(row, on_conflict="phone_hash").execute()
+        r = (resp.data or [{}])[0]
+        return ContactOut(
+            id=str(r.get("id", row["id"])),
+            name=None,
+            phone_last4=phone_last4,
+            language=body.language,
+            consent=True,
+            opted_out=False,
+            created_at=now,
+        )
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
 
 @router.get("/", response_model=List[ContactOut])
 async def list_contacts(
@@ -127,7 +186,6 @@ async def import_contacts_csv(file: UploadFile = File(...)):
             continue
 
         # Store only last-4 digits and a deterministic hash (no plain phone)
-        import hashlib
         phone_hash = hashlib.sha256(phone_raw.encode()).hexdigest()
         phone_last4 = phone_raw[-4:] if len(phone_raw) >= 4 else phone_raw.ljust(4, "0")
 

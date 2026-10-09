@@ -57,6 +57,14 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
     ? (initialCampaignName ?? "")
     : (campaigns.find(c => c.id === selectedCampaignId)?.name ?? "");
 
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   useEffect(() => {
     if (initialCampaignId) return;          // already have one
     setCampaignsLoading(true);
@@ -155,32 +163,34 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
 
       {/* Drawer */}
       <div style={{
-        position: "fixed", bottom: 0, right: 0,
+        position: "fixed", top: 0, bottom: 0, right: 0,
         width: "min(100vw, 500px)",
         zIndex: 1001,
         background: "#fff",
-        borderRadius: "20px 20px 0 0",
-        boxShadow: "0 -8px 40px rgba(10,16,28,.18)",
-        padding: "28px 28px 40px",
+        boxShadow: "-8px 0 40px rgba(10,16,28,.18)",
+        display: "flex", flexDirection: "column",
         fontFamily: "Manrope, sans-serif",
-        maxHeight: "90vh",
-        overflowY: "auto",
-        animation: "slideUp .25s cubic-bezier(.4,0,.2,1)",
+        animation: "slideInRight .25s cubic-bezier(.4,0,.2,1)",
       }}>
-        <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
-
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", textTransform: "uppercase", marginBottom: 3 }}>
-              Add Contacts
+        <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
+        
+        {/* Header - Fixed at Top */}
+        <div style={{ padding: "28px 28px 20px", borderBottom: "1px solid rgba(23,38,58,.08)", flexShrink: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", textTransform: "uppercase", marginBottom: 3 }}>
+                Add Contacts
+              </div>
+              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em" }}>
+                {campaignName || "Select a campaign"}
+              </h2>
             </div>
-            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em" }}>
-              {campaignName || "Select a campaign"}
-            </h2>
+            <button onClick={onClose} style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}>✕</button>
           </div>
-          <button onClick={onClose} style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}>✕</button>
         </div>
+
+        {/* Scrollable internal content */}
+        <div style={{ flex: 1, overflowY: "auto", minHeight: 0, padding: "24px 28px 20px" }}>
 
         {/* Campaign picker — only shown when no campaign was pre-selected */}
         {!initialCampaignId && (
@@ -278,29 +288,6 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
               </div>
             )}
 
-            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
-              {status === "done" ? (
-                <>
-                  <button onClick={reset} style={{ flex: 1, background: "#17263A", color: "#fff", border: "none", borderRadius: 8, padding: 11, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                    + Add Another
-                  </button>
-                  <button onClick={onClose} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 11, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                    Done ✓
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={submitSingle}
-                    disabled={status === "loading"}
-                    style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 11, fontWeight: 700, fontSize: 13, cursor: status === "loading" ? "not-allowed" : "pointer", opacity: status === "loading" ? .7 : 1 }}
-                  >
-                    {status === "loading" ? "Adding…" : "Add Contact"}
-                  </button>
-                  <button onClick={onClose} style={{ padding: "11px 18px", background: "transparent", border: "1.5px solid rgba(23,38,58,.12)", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Cancel</button>
-                </>
-              )}
-            </div>
           </div>
         )}
 
@@ -350,13 +337,52 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
               </div>
             )}
 
-            {status === "done" && (
-              <button onClick={onClose} style={{ width: "100%", background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                Done ✓
-              </button>
-            )}
           </div>
         )}
+        </div>
+
+        {/* Footer - Fixed at Bottom */}
+        <div style={{ padding: "20px 28px", borderTop: "1px solid rgba(23,38,58,.08)", flexShrink: 0, background: "#F8FAFC" }}>
+          {tab === "single" ? (
+            <div style={{ display: "flex", gap: 10 }}>
+              {status === "done" ? (
+                <>
+                  <button onClick={reset} style={{ flex: 1, background: "#17263A", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "Manrope, sans-serif" }}>
+                    + Add Another
+                  </button>
+                  <button onClick={onClose} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "Manrope, sans-serif" }}>
+                    Done ✓
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={onClose} style={{ padding: "12px 20px", background: "#fff", border: "1.5px solid rgba(23,38,58,.12)", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "Manrope, sans-serif", color: "#17263A" }}>
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitSingle}
+                    disabled={status === "loading"}
+                    style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontWeight: 800, fontSize: 13, cursor: status === "loading" ? "not-allowed" : "pointer", opacity: status === "loading" ? .7 : 1, fontFamily: "Manrope, sans-serif" }}
+                  >
+                    {status === "loading" ? "Adding…" : "Add Contact"}
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: "flex", gap: 10 }}>
+              {status === "done" ? (
+                <button onClick={onClose} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "Manrope, sans-serif" }}>
+                  Done ✓
+                </button>
+              ) : (
+                <button onClick={onClose} style={{ padding: "12px 20px", background: "#fff", border: "1.5px solid rgba(23,38,58,.12)", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "Manrope, sans-serif", color: "#17263A" }}>
+                  Cancel
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

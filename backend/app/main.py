@@ -14,6 +14,7 @@ from app.api.routes import health, campaigns, contacts, calls, analytics, webhoo
 from app.api.routes import capabilities, sessions, telegram_webhook, audio
 from app.api.compat_router import compat_router
 from app.telephony.router import router as telephony_router
+from app.templates.router import router as templates_router
 
 log = structlog.get_logger()
 
@@ -60,6 +61,7 @@ def create_app() -> FastAPI:
         tags=["telegram"],
     )
     app.include_router(telephony_router, tags=["telephony"])
+    app.include_router(templates_router, tags=["templates"])  # GET /api/templates
     app.include_router(compat_router)  # /api/* aliases for frontend client
 
     return app

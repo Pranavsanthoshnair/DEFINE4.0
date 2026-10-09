@@ -53,10 +53,6 @@ export default function CampaignsPage() {
   const [simulatorId, setSimulatorId]   = useState<string | null>(null);
   const [launchTarget, setLaunchTarget] = useState<Campaign | null>(null);
   const [addContactsCampaign, setAddContactsCampaign] = useState<Campaign | null>(null);
-  const [showCreate, setShowCreate] = useState(false);
-  const [newName, setNewName]       = useState("");
-  const [newLang, setNewLang]       = useState("en");
-  const [creating, setCreating]     = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Load campaigns ─────────────────────────────────────────────────────
@@ -102,29 +98,6 @@ export default function CampaignsPage() {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [campaigns, isDemo, load]);
 
-  // ── Create campaign ─────────────────────────────────────────────────────
-
-  const createCampaign = async () => {
-    if (!newName.trim()) return;
-    setCreating(true);
-    try {
-      const res = await fetch(`${API}/api/v1/campaigns/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newName.trim(), language: newLang, status: "draft" }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const c = await res.json();
-      setCampaigns((prev) => [c, ...prev]);
-      setShowCreate(false);
-      setNewName("");
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Create failed");
-    } finally {
-      setCreating(false);
-    }
-  };
-
   // ── Launch campaign — opens the custom LaunchDrawer ─────────────────────
 
   const launch = (campaign: Campaign) => {
@@ -148,52 +121,16 @@ export default function CampaignsPage() {
         mascot="girl"
         bubble={isDemo ? "Demo mode 🎭" : "Live data 🔴"}
         action={
-          <button
-            onClick={() => setShowCreate(true)}
-            style={{ background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
+          <Link
+            href="/campaigns/new"
+            style={{ textDecoration: "none", background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 8 }}
           >
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
             New Campaign
-          </button>
+          </Link>
         }
       />
 
-      {/* Create modal */}
-      {showCreate && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(10,14,20,.5)", zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "28px 32px", width: 400, maxWidth: "90vw", boxShadow: "0 24px 60px rgba(0,0,0,.2)" }}>
-            <h2 style={{ fontFamily: "Manrope, sans-serif", fontWeight: 800, fontSize: 20, margin: "0 0 20px", color: "#17263A" }}>New Campaign</h2>
-            <label style={{ display: "block", fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 13, color: "#5A6E84", marginBottom: 6 }}>Campaign Name</label>
-            <input
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && createCampaign()}
-              placeholder="e.g. Annual Summit 2026 Invites"
-              style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontFamily: "Manrope, sans-serif", fontSize: 14, marginBottom: 16, boxSizing: "border-box" }}
-            />
-            <label style={{ display: "block", fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 13, color: "#5A6E84", marginBottom: 6 }}>Primary Language</label>
-            <select
-              value={newLang}
-              onChange={(e) => setNewLang(e.target.value)}
-              style={{ width: "100%", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "10px 12px", fontFamily: "Manrope, sans-serif", fontSize: 14, marginBottom: 20, boxSizing: "border-box" }}
-            >
-              <option value="en">English</option>
-              <option value="hi">Hindi</option>
-              <option value="ta">Tamil</option>
-              <option value="te">Telugu</option>
-              <option value="kn">Kannada</option>
-              <option value="ml">Malayalam</option>
-              <option value="mr">Marathi</option>
-            </select>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={createCampaign} disabled={creating} style={{ flex: 1, background: "#EA1D2C", color: "#fff", border: "none", borderRadius: 8, padding: "11px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 14, cursor: creating ? "not-allowed" : "pointer" }}>
-                {creating ? "Creating…" : "Create Campaign"}
-              </button>
-              <button onClick={() => setShowCreate(false)} style={{ padding: "11px 16px", background: "transparent", border: "1.5px solid #e2e8f0", borderRadius: 8, fontFamily: "Manrope, sans-serif", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Campaigns table */}
       <div style={{ background: "#fff", borderRadius: 16, border: "1px solid rgba(23,38,58,.08)", overflow: "hidden", boxShadow: "0 1px 4px rgba(23,38,58,.06)", marginBottom: 24 }}>
@@ -278,19 +215,23 @@ export default function CampaignsPage() {
       </div>
 
       {/* Custom launch drawer */}
-      <LaunchDrawer
-        campaign={launchTarget}
-        onClose={() => setLaunchTarget(null)}
-        onSuccess={() => { setLaunchTarget(null); load(); }}
-      />
+      {launchTarget && (
+        <LaunchDrawer
+          campaign={launchTarget}
+          onClose={() => setLaunchTarget(null)}
+          onSuccess={() => { setLaunchTarget(null); load(); }}
+        />
+      )}
 
       {/* Add contacts drawer — single or bulk CSV */}
-      <AddContactsDrawer
-        campaignId={addContactsCampaign?.id ?? null}
-        campaignName={addContactsCampaign?.name}
-        onClose={() => setAddContactsCampaign(null)}
-        onSuccess={() => { setAddContactsCampaign(null); load(); }}
-      />
+      {addContactsCampaign && (
+        <AddContactsDrawer
+          campaignId={addContactsCampaign.id}
+          campaignName={addContactsCampaign.name}
+          onClose={() => setAddContactsCampaign(null)}
+          onSuccess={() => { setAddContactsCampaign(null); load(); }}
+        />
+      )}
     </div>
   );
 }

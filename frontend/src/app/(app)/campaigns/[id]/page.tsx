@@ -59,7 +59,7 @@ export default function CampaignDetailPage({ params }: { params: { id: string } 
             Recipients
           </h3>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "24px 0" }}>
-            <Image src="/veylo-girl.png" alt="" width={80} height={80} style={{ objectFit: "contain" }} />
+            <Image src="/veylo-girl.png" alt="" width={80} height={80} style={{ objectFit: "contain", width: "auto", height: "auto" }} />
             <p style={{ margin: 0, font: "600 14px 'Manrope'", color: "#4A5B6E" }}>
               No recipients data yet.
             </p>

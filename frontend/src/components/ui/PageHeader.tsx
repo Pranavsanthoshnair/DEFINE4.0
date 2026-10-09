@@ -90,8 +90,8 @@ export default function PageHeader({
             alt=""
             width={90}
             height={110}
-            style={{ objectFit: "contain", objectPosition: "bottom" }}
-            priority={false}
+            style={{ objectFit: "contain", objectPosition: "bottom", width: "auto", height: "110px" }}
+            priority={true}
           />
         </div>
       )}

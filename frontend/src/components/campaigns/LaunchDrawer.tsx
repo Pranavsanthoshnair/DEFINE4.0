@@ -22,6 +22,14 @@ interface Props {
 }
 
 export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
+  // Prevent background scrolling when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const [steps, setSteps] = useState<Step[]>([]);
   const [done, setDone]   = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -131,37 +139,41 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
 
       {/* Drawer */}
       <div style={{
-        position: "fixed", bottom: 0, right: 0,
+        position: "fixed", top: 0, bottom: 0, right: 0,
         width: "min(100vw, 460px)",
         zIndex: 1001,
         background: "#fff",
-        borderRadius: "20px 20px 0 0",
-        boxShadow: "0 -8px 40px rgba(10,16,28,.18)",
-        padding: "28px 28px 36px",
+        boxShadow: "-8px 0 40px rgba(10,16,28,.18)",
+        display: "flex", flexDirection: "column",
         fontFamily: "Manrope, sans-serif",
-        animation: "slideUp .28s cubic-bezier(.4,0,.2,1)",
+        animation: "slideInRight .28s cubic-bezier(.4,0,.2,1)",
       }}>
-        <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
-
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", marginBottom: 4, textTransform: "uppercase" }}>
-              Launching campaign
+        <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
+        
+        {/* Header - Fixed at Top */}
+        <div style={{ padding: "28px 28px 20px", borderBottom: "1px solid rgba(23,38,58,.08)", flexShrink: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#8A9BB0", marginBottom: 4, textTransform: "uppercase" }}>
+                Launching campaign
+              </div>
+              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em", lineHeight: 1.3 }}>
+                {campaign.name}
+              </h2>
             </div>
-            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "#17263A", letterSpacing: "-.03em", lineHeight: 1.3 }}>
-              {campaign.name}
-            </h2>
+            {(done || error) && (
+              <button
+                onClick={onClose}
+                style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
+              >
+                ✕
+              </button>
+            )}
           </div>
-          {(done || error) && (
-            <button
-              onClick={onClose}
-              style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
-            >
-              ✕
-            </button>
-          )}
         </div>
+
+        {/* Scrollable inner container */}
+        <div style={{ padding: "24px 28px 36px", flex: 1, overflowY: "auto", minHeight: 0 }}>
 
         {/* Steps */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
@@ -218,6 +230,7 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
             </button>
           </div>
         )}
+        </div>
       </div>
     </>
   );

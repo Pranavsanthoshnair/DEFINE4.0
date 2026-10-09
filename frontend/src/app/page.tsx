@@ -35,13 +35,14 @@ export default function LandingPage() {
           style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}
           aria-label="Veylo home"
         >
-          <svg viewBox="0 0 32 32" fill="none" stroke="#17263A" strokeWidth="2" strokeLinecap="round" width="28" height="28" aria-hidden="true">
-            <path d="M9 19a10 10 0 0 1 14 0M5 14a16 16 0 0 1 22 0"/>
-            <circle cx="16" cy="24" r="3.2" fill="#E10600" stroke="none"/>
-            <circle cx="5" cy="14" r="2" fill="#FFD700"/>
-            <circle cx="27" cy="14" r="2" fill="#FFD700"/>
-            <circle cx="16" cy="6" r="2" fill="#FFD700"/>
-          </svg>
+          <img 
+            src="/logo.png" 
+            alt="Veylo" 
+            width={44} 
+            height={44} 
+            style={{ objectFit: "contain", flex: "none" }} 
+            aria-hidden="true" 
+          />
           <span style={{ font: "800 19px 'Manrope'", letterSpacing: "-.03em" }}>
             Vey<b style={{ color: "var(--red)", fontWeight: 800 }}>lo</b>
           </span>

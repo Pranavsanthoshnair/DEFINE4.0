@@ -1,11 +1,12 @@
-"""Calls routes — call initiation and testing."""
+"""Calls routes — call list, initiation and testing."""
 
 import uuid
-from typing import Optional
-from fastapi import APIRouter, HTTPException, status
+from typing import List, Optional
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
+from app.db.supabase_client import get_supabase, is_supabase_configured
 from app.telephony.providers.base import PlaceCallRequest
 from app.telephony.providers.factory import active_provider_name, get_provider
 
@@ -34,6 +35,53 @@ class CallAttemptOut(BaseModel):
     provider: str
     provider_call_sid: str
     message: str
+
+
+class CallRecord(BaseModel):
+    id: str
+    campaign_id: Optional[str] = None
+    status: str
+    outcome: Optional[str] = None
+    duration_sec: Optional[int] = None
+    created_at: str
+
+
+@router.get("/", response_model=List[CallRecord])
+async def list_calls(
+    campaign_id: Optional[str] = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+):
+    """List call records, optionally filtered by campaign."""
+    if not is_supabase_configured():
+        return []
+    try:
+        sb = get_supabase()
+        q = (
+            sb.table("calls")
+            .select("id,campaign_id,status,outcome,duration_sec,created_at")
+            .order("created_at", desc=True)
+            .range(offset, offset + limit - 1)
+        )
+        if campaign_id:
+            q = q.eq("campaign_id", campaign_id)
+        resp = q.execute()
+        return [
+            CallRecord(
+                id=str(r["id"]),
+                campaign_id=r.get("campaign_id"),
+                status=r.get("status", "unknown"),
+                outcome=r.get("outcome"),
+                duration_sec=r.get("duration_sec"),
+                created_at=str(r.get("created_at", "")),
+            )
+            for r in (resp.data or [])
+        ]
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
 
 
 @router.post("/test-call", response_model=CallAttemptOut, status_code=status.HTTP_200_OK)
