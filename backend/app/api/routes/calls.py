@@ -40,6 +40,7 @@ class CallAttemptOut(BaseModel):
 class CallRecord(BaseModel):
     id: str
     campaign_id: Optional[str] = None
+    campaign_contact_id: Optional[str] = None
     status: str
     outcome: Optional[str] = None
     duration_sec: Optional[int] = None
@@ -52,24 +53,42 @@ async def list_calls(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ):
-    """List call records, optionally filtered by campaign."""
+    """List call records, optionally filtered by campaign via campaign_contacts join."""
     if not is_supabase_configured():
         return []
     try:
         sb = get_supabase()
-        q = (
-            sb.table("calls")
-            .select("id,campaign_id,status,outcome,duration_sec,created_at")
-            .order("created_at", desc=True)
-            .range(offset, offset + limit - 1)
-        )
         if campaign_id:
-            q = q.eq("campaign_id", campaign_id)
+            # calls has no campaign_id — join via campaign_contacts
+            cc_resp = (
+                sb.table("campaign_contacts")
+                .select("id")
+                .eq("campaign_id", campaign_id)
+                .execute()
+            )
+            cc_ids = [r["id"] for r in (cc_resp.data or [])]
+            if not cc_ids:
+                return []
+            q = (
+                sb.table("calls")
+                .select("id,campaign_contact_id,status,outcome,duration_sec,created_at")
+                .in_("campaign_contact_id", cc_ids)
+                .order("created_at", desc=True)
+                .range(offset, offset + limit - 1)
+            )
+        else:
+            q = (
+                sb.table("calls")
+                .select("id,campaign_contact_id,status,outcome,duration_sec,created_at")
+                .order("created_at", desc=True)
+                .range(offset, offset + limit - 1)
+            )
         resp = q.execute()
         return [
             CallRecord(
                 id=str(r["id"]),
-                campaign_id=r.get("campaign_id"),
+                campaign_id=campaign_id,
+                campaign_contact_id=r.get("campaign_contact_id"),
                 status=r.get("status", "unknown"),
                 outcome=r.get("outcome"),
                 duration_sec=r.get("duration_sec"),

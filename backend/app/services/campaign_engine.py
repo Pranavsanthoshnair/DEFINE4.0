@@ -227,7 +227,18 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
                 log.warning("campaign_call_rejected", reason=result.raw_status)
         except Exception as exc:
             failed += 1
-            log.error("campaign_call_failed", error=str(exc))
+            log.error("campaign_call_failed", error=str(exc), phone_last4=phone[-4:] if phone else "?")
+            # Surface the first error in the result so it's visible in the UI
+            if failed == 1:
+                return {
+                    "channel": "telephony",
+                    "provider": provider_name,
+                    "contacts_total": len(contacts),
+                    "calls_placed": placed,
+                    "calls_failed": failed,
+                    "calls_skipped_no_phone": skipped,
+                    "error": str(exc),
+                }
 
     return {
         "channel": "telephony",
