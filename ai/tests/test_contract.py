@@ -64,6 +64,23 @@ def test_healthz_public_no_auth(client):
         assert data["models"][key] in ("loaded", "stub", "unavailable")
 
 
+def test_self_check_is_internal_and_never_returns_key_material(client):
+    unauthenticated = client.get("/v1/self-check")
+    assert unauthenticated.status_code == 401
+
+    response = client.get("/v1/self-check", headers=HEADERS)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["onnx_model_loaded"] is False
+    assert data["tokenizer_local"] is False
+    assert data["intent_temperature"] == pytest.approx(0.527)
+    assert data["intent_threshold"] == pytest.approx(0.7)
+    assert data["stt_mode"] == {"en": "default", "hi": "default", "ml": "default", "ta": "default"}
+    assert isinstance(data["sarvam_api_key_configured"], bool)
+    assert isinstance(data["ffmpeg_present"], bool)
+    assert "sarvam_api_key" not in data
+
+
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
 def test_missing_token_returns_401(client):
@@ -97,7 +114,7 @@ def test_intent_confirm(client):
     data = r.json()
     assert data["intent"] == "confirm"
     assert 0.0 <= data["confidence"] <= 1.0
-    assert data["source"] in ("rules", "model", "llm")
+    assert data["source"] in ("rules", "model", "llm", "tap")
     assert isinstance(data["latency_ms"], int)
 
 
@@ -136,6 +153,41 @@ def test_intent_allowed_intents_filtering(client):
     )
     assert r.status_code == 200
     assert r.json()["intent"] in ("confirm", "decline", "unclear")
+
+
+def test_intent_tap_returns_selected_intent(client):
+    r = client.post(
+        "/v1/intent",
+        json={
+            "text": "",
+            "language": "en",
+            "chosen_intent": "stop_calling",
+            "allowed_intents": ["confirm", "stop_calling"],
+        },
+        headers=HEADERS,
+    )
+    assert r.status_code == 200
+    assert r.json() == {
+        "intent": "stop_calling",
+        "confidence": 1.0,
+        "source": "tap",
+        "latency_ms": 0,
+    }
+
+
+def test_intent_tap_rejects_disallowed_intent(client):
+    r = client.post(
+        "/v1/intent",
+        json={
+            "text": "",
+            "language": "en",
+            "chosen_intent": "stop_calling",
+            "allowed_intents": ["confirm", "decline"],
+        },
+        headers=HEADERS,
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"]["error"]["code"] == "tap_intent_not_allowed"
 
 
 # ── /v1/stt ───────────────────────────────────────────────────────────────────

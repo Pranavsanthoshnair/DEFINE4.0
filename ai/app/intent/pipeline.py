@@ -24,6 +24,11 @@ def set_onnx_model(model) -> None:  # type: ignore[type-arg]
     _onnx_model = model
 
 
+def get_onnx_model():  # type: ignore[no-untyped-def]
+    """Expose startup state to internal diagnostics without reloading weights."""
+    return _onnx_model
+
+
 async def run_pipeline(
     text: str,
     language: str,

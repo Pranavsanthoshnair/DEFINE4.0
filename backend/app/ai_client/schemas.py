@@ -27,7 +27,7 @@ class IntentRequest(BaseModel):
 class IntentResponse(BaseModel):
     intent: str
     confidence: float
-    source: str  # rules | model | llm
+    source: str  # rules | model | llm | tap
     latency_ms: int = 0
 
 

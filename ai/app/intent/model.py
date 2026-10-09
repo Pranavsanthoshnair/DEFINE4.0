@@ -56,11 +56,16 @@ class OnnxIntentModel:
                 providers=["CPUExecutionProvider"],
             )
 
-            self._tokenizer = AutoTokenizer.from_pretrained(str(tok_path))
+            # Never download tokenizer files at runtime in the AI service.
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                str(tok_path), local_files_only=True
+            )
 
             # Load temperature calibration
             import yaml
-            models_yaml = model_dir.parent / "models.yaml"
+            # models.yaml is packaged with the AI application, while weights
+            # are mounted separately at /models.
+            models_yaml = Path(__file__).resolve().parents[2] / "models.yaml"
             if models_yaml.exists():
                 cfg = yaml.safe_load(models_yaml.read_text())
                 self._temperature = cfg.get("intent_temperature", 1.0)
@@ -73,6 +78,11 @@ class OnnxIntentModel:
     @property
     def available(self) -> bool:
         return self._session is not None
+
+    @property
+    def tokenizer_loaded_locally(self) -> bool:
+        """True only after the tokenizer has loaded from the mounted folder."""
+        return self._tokenizer is not None
 
     def predict(
         self,

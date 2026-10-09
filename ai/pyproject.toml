@@ -21,6 +21,9 @@ dependencies = [
     # Audio utilities (lightweight — no ML weights)
     "soundfile>=0.12",
     "numpy>=1.26",
+    "onnxruntime>=1.19",
+    "transformers>=4.44",
+    "sentencepiece>=0.2",
     # ── Local ML deps — NOT required for the Sarvam MVP ─────────────────────
     # Uncomment only if you re-enable local model paths:
     # "faster-whisper>=1.0.3",      # replaced by Sarvam Saaras v4

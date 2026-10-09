@@ -6,6 +6,7 @@
 .env
 .env.local
 .env.*.local
+models/
 *.pem
 *.key
 *.crt
@@ -27,6 +28,7 @@ dist/
 build/
 wheels/
 .pytest_cache/
+.pytest-tmp/
 .mypy_cache/
 .ruff_cache/
 .pytype/
@@ -88,6 +90,7 @@ pnpm-debug.log*
 coverage/
 lcov.info
 junit.xml
+ai/tests/tts_out/
 
 # ── Misc ─────────────────────────────────────────────────────────────────────
 *.bak

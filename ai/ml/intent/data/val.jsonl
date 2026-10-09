@@ -1,0 +1,240 @@
+{"text": "Umm, sure, but unclear", "label": "unclear", "lang": "ml"}
+{"text": "polite: 'I'm not sure who called me'", "label": "unclear", "lang": "en"}
+{"text": "no, too busy", "label": "decline", "lang": "ta"}
+{"text": "Stop calling, come here, azhaikkadheenga", "label": "stop_calling", "lang": "ta"}
+{"text": "Reschedule the appointment to a new day.", "label": "reschedule", "lang": "en"}
+{"text": "theriyala, can you repeat?", "label": "unclear", "lang": "ta"}
+{"text": "Stop calling, sure, bye", "label": "stop_calling", "lang": "ml"}
+{"text": "Time badlo, kya hai", "label": "reschedule", "lang": "hi"}
+{"text": "Stop call, busy, come", "label": "stop_calling", "lang": "hi"}
+{"text": "no, busy now", "label": "decline", "lang": "ta"}
+{"text": "aah, ariyilla, confused", "label": "unclear", "lang": "ml"}
+{"text": "Piragu, appuram, later, call.", "label": "call_later", "lang": "ta"}
+{"text": "Ji haan, kya kya karta hai?", "label": "confirm", "lang": "hi"}
+{"text": "can you repeat", "label": "unclear", "lang": "ta"}
+{"text": "impolite: 'I don't know what time is it'", "label": "unclear", "lang": "en"}
+{"text": "busy, later", "label": "call_later", "lang": "hi"}
+{"text": "Code-mixed: Let me know when you want to reschedule.", "label": "reschedule", "lang": "en"}
+{"text": "I'm not sure, come again?", "label": "confirm", "lang": "ml"}
+{"text": "Aangu, confirm the phone number.", "label": "confirm", "lang": "hi"}
+{"text": "Hm, pata nahi", "label": "unclear", "lang": "hi"}
+{"text": "Romanised: eō nōn ād eō dōnō, etsi eō nōn ād eō dōnō.", "label": "unclear", "lang": "en"}
+{"text": "Naa, not interested, sorry", "label": "decline", "lang": "ta"}
+{"text": "Haan haan, kya kari?", "label": "confirm", "lang": "hi"}
+{"text": "Stop calling, it's me, azhaikkad: no", "label": "stop_calling", "lang": "ta"}
+{"text": "hmm, who is this number?", "label": "unclear", "lang": "ml"}
+{"text": "Pinne, call later, busy, umm", "label": "call_later", "lang": "ml"}
+{"text": "Later, I'll call you, busy", "label": "call_later", "lang": "hi"}
+{"text": "Nope, I'm busy right now", "label": "decline", "lang": "ml"}
+{"text": "Nahi, hi! I can't accept the offer.", "label": "decline", "lang": "hi"}
+{"text": "Nahi aa sakta, jana hai kya?", "label": "decline", "lang": "hi"}
+{"text": "I'm busy now, can I call later?", "label": "call_later", "lang": "en"}
+{"text": "aah, ethu event, no clue", "label": "unclear", "lang": "ml"}
+{"text": "Aaunga, kya pata hain?", "label": "confirm", "lang": "hi"}
+{"text": "not sure, busy", "label": "decline", "lang": "ta"}
+{"text": "Um, okay, I'm busy, can't do now", "label": "decline", "lang": "ta"}
+{"text": "Sop calling me.", "label": "stop_calling", "lang": "en"}
+{"text": "I'm not feeling well, can't help", "label": "decline", "lang": "ml"}
+{"text": "Piragu, busy, call later, haan", "label": "call_later", "lang": "ta"}
+{"text": "Dusra time, reschedule karo. (5)", "label": "reschedule", "lang": "hi"}
+{"text": "Athey, I need to check this", "label": "confirm", "lang": "ml"}
+{"text": "Umm, what's the number?", "label": "confirm", "lang": "ml"}
+{"text": "Umm, busy, call later", "label": "call_later", "lang": "hi"}
+{"text": "Sheri, can you be clearer?", "label": "confirm", "lang": "ml"}
+{"text": "Decline, I'm not interested, I'll pass.", "label": "decline", "lang": "en"}
+{"text": "Azhaikkadheenga, stop calling me", "label": "stop_calling", "lang": "ta"}
+{"text": "who is speaking? i'm confused", "label": "unclear", "lang": "hi"}
+{"text": "Reschedule later, umm", "label": "reschedule", "lang": "ta"}
+{"text": "Not coming, I'm afraid.", "label": "decline", "lang": "en"}
+{"text": "Pinne, ippol busy, come later?", "label": "call_later", "lang": "ml"}
+{"text": "Come, busy, but later okay", "label": "call_later", "lang": "hi"}
+{"text": "Call later, busy umm", "label": "call_later", "lang": "ta"}
+{"text": "Pinne, sure later", "label": "call_later", "lang": "ml"}
+{"text": "Stop calling, later, sure", "label": "stop_calling", "lang": "ta"}
+{"text": "Reschedule, busy umm", "label": "reschedule", "lang": "ta"}
+{"text": "code-mixed: 'i'm not sure what time they called'", "label": "unclear", "lang": "en"}
+{"text": "Jai ho, jai ho. Haan haan, jai ho.", "label": "confirm", "lang": "hi"}
+{"text": "Stop calling, come on, busy", "label": "stop_calling", "lang": "ml"}
+{"text": "Nahi, tumhari kya karta hai? Hi, tumhari kya karta hai?", "label": "decline", "lang": "hi"}
+{"text": "Who called this? Not sure", "label": "unclear", "lang": "hi"}
+{"text": "en na, who calling now?", "label": "unclear", "lang": "ta"}
+{"text": "Who is calling right now?", "label": "unclear", "lang": "hi"}
+{"text": "Pinne busy, umm, when can I call?", "label": "call_later", "lang": "ml"}
+{"text": "Pine vlikku, busy now", "label": "call_later", "lang": "ml"}
+{"text": "yaar ithu enna event", "label": "unclear", "lang": "ta"}
+{"text": "Stop calling, i'm busy, later.", "label": "stop_calling", "lang": "hi"}
+{"text": "No, I won't, I'm busy.", "label": "decline", "lang": "en"}
+{"text": "Confirming the reservation for 25th June", "label": "confirm", "lang": "en"}
+{"text": "Pinne, call later, busy?", "label": "call_later", "lang": "ml"}
+{"text": "Dusra time, reschedule karo. 5 words.", "label": "reschedule", "lang": "hi"}
+{"text": "Yeah, I'm sure", "label": "confirm", "lang": "ml"}
+{"text": "Stop calling me, thank you.", "label": "stop_calling", "lang": "en"}
+{"text": "I'll call later, but not now.", "label": "call_later", "lang": "en"}
+{"text": "Nahi, kya kare? (2)", "label": "decline", "lang": "hi"}
+{"text": "Code-mixed: I'll be there later, sure.", "label": "confirm", "lang": "en"}
+{"text": "Reschedule the meeting to a different date.", "label": "reschedule", "lang": "en"}
+{"text": "This is confusing, tell me again", "label": "confirm", "lang": "ml"}
+{"text": "native: 'i don't know'", "label": "unclear", "lang": "en"}
+{"text": "Reschedule meeting when I'm free", "label": "reschedule", "lang": "ml"}
+{"text": "Reschedule the event to a later day.", "label": "reschedule", "lang": "en"}
+{"text": "Pine vlik, call later", "label": "call_later", "lang": "ml"}
+{"text": "Jai ho, jai ho, haan haan", "label": "confirm", "lang": "hi"}
+{"text": "Call later, busy now", "label": "call_later", "lang": "ta"}
+{"text": "Don't call me, I'm not available.", "label": "stop_calling", "lang": "en"}
+{"text": "Vere neram, schedule busy", "label": "reschedule", "lang": "ta"}
+{"text": "Schedule change, when's okay?", "label": "reschedule", "lang": "ml"}
+{"text": "Haan, later, busy", "label": "call_later", "lang": "hi"}
+{"text": "Nahi, abhi kya karna hai?", "label": "decline", "lang": "hi"}
+{"text": "Piragu, call later, later", "label": "call_later", "lang": "ta"}
+{"text": "Stop calling, do not call.", "label": "stop_calling", "lang": "en"}
+{"text": "Come, reschedule meeting for tomorrow?", "label": "reschedule", "lang": "ml"}
+{"text": "no, i'm swamped", "label": "decline", "lang": "ta"}
+{"text": "ummm sorry no", "label": "decline", "lang": "ml"}
+{"text": "Hmmm, not sure", "label": "unclear", "lang": "hi"}
+{"text": "Stop calling, yes, later", "label": "stop_calling", "lang": "ml"}
+{"text": "Reschedule, umm, when is good?", "label": "reschedule", "lang": "ta"}
+{"text": "Umm... call later, kya hua?", "label": "call_later", "lang": "hi"}
+{"text": "Umm, come, no idea", "label": "unclear", "lang": "ml"}
+{"text": "Reschedule karo, dusra time. Umm, kya kya karo?", "label": "reschedule", "lang": "hi"}
+{"text": "Hmm, I'm busy, maybe later?", "label": "confirm", "lang": "ml"}
+{"text": "No, I can't come, I'm busy", "label": "decline", "lang": "en"}
+{"text": "Pinne vilikku, come later", "label": "call_later", "lang": "ml"}
+{"text": "Call later, please. (4) Call me later, please.", "label": "call_later", "lang": "en"}
+{"text": "Nahi aa sakta, hi. I'm busy now.", "label": "decline", "lang": "hi"}
+{"text": "aam confirm sure", "label": "confirm", "lang": "ta"}
+{"text": "Confirming the call is connected", "label": "confirm", "lang": "en"}
+{"text": "Haan haan, stop calling, I'm busy now", "label": "stop_calling", "lang": "hi"}
+{"text": "Unrelated statement: The cat is on the mat.", "label": "unclear", "lang": "en"}
+{"text": "Reschedule the call for next Friday.", "label": "reschedule", "lang": "en"}
+{"text": "Aam sari varuven, confirm haan haan?", "label": "confirm", "lang": "ta"}
+{"text": "I'll call later, but I'm currently busy.", "label": "call_later", "lang": "en"}
+{"text": "Phone pannadheenga, please stop", "label": "stop_calling", "lang": "ta"}
+{"text": "Vilik, stop calling, sure", "label": "stop_calling", "lang": "ml"}
+{"text": "Ji haan, tum kya karta hai?", "label": "confirm", "lang": "hi"}
+{"text": "Native: Can I come tomorrow? I'm sure.", "label": "confirm", "lang": "en"}
+{"text": "Reschedule the meeting to a new time.", "label": "reschedule", "lang": "en"}
+{"text": "ummm what was that", "label": "unclear", "lang": "ta"}
+{"text": "en na, who is it?", "label": "unclear", "lang": "ta"}
+{"text": "Native: I'll be there later, sure.", "label": "confirm", "lang": "en"}
+{"text": "Umm, busy hoon abhi, kuch later", "label": "call_later", "lang": "hi"}
+{"text": "confirm sari come later", "label": "confirm", "lang": "ta"}
+{"text": "Impolite: I'm available, haan haan.", "label": "confirm", "lang": "en"}
+{"text": "polite: 'umm, who is calling?'", "label": "unclear", "lang": "en"}
+{"text": "Dusra time, reschedule karo. Haan haan, kya karta hai?", "label": "reschedule", "lang": "hi"}
+{"text": "baad mein call karungi", "label": "call_later", "lang": "hi"}
+{"text": "Vilikalle, stop, busy", "label": "stop_calling", "lang": "ml"}
+{"text": "pattilla busy", "label": "decline", "lang": "ml"}
+{"text": "Can't help you today, umm", "label": "decline", "lang": "ml"}
+{"text": "Confirm, I will be there", "label": "confirm", "lang": "en"}
+{"text": "Nahi, hi. I can't accept the offer.", "label": "decline", "lang": "hi"}
+{"text": "reschedule karo dusra time", "label": "reschedule", "lang": "hi"}
+{"text": "sari confirm no", "label": "confirm", "lang": "ta"}
+{"text": "Don't call me, I'm unavailable.", "label": "stop_calling", "lang": "en"}
+{"text": "I don't want to be called.", "label": "stop_calling", "lang": "en"}
+{"text": "Varilla, I'm not free now", "label": "decline", "lang": "ml"}
+{"text": "Stop calling, i'm busy, haan haan", "label": "stop_calling", "lang": "hi"}
+{"text": "Stop callin', umm, busy", "label": "stop_calling", "lang": "hi"}
+{"text": "Hey, stop calling, i'm busy right now.", "label": "stop_calling", "lang": "hi"}
+{"text": "Stop calling, sure.", "label": "stop_calling", "lang": "en"}
+{"text": "abhi nahi, busy", "label": "call_later", "lang": "hi"}
+{"text": "Pattilla, nope, busy", "label": "decline", "lang": "ml"}
+{"text": "thi, no, maybe later", "label": "unclear", "lang": "ta"}
+{"text": "who's that? i'm lost", "label": "unclear", "lang": "hi"}
+{"text": "No, I'm not interested, I'll pass.", "label": "decline", "lang": "en"}
+{"text": "romanised: 'hm, i'm not sure what you're saying'", "label": "unclear", "lang": "en"}
+{"text": "Ethu event, noise, no", "label": "unclear", "lang": "ml"}
+{"text": "Piragu paarkalam, come later", "label": "reschedule", "lang": "ta"}
+{"text": "Pir, appuram, call later, yeah.", "label": "call_later", "lang": "ta"}
+{"text": "Piragu, call later, umm", "label": "call_later", "lang": "ta"}
+{"text": "Nahi, hai haan, kya karte hain?", "label": "decline", "lang": "hi"}
+{"text": "aam confirm yes later", "label": "confirm", "lang": "ta"}
+{"text": "Piragu paarkalam, reschedule, later?", "label": "reschedule", "lang": "ta"}
+{"text": "Haan haan, no, can't help, busy", "label": "decline", "lang": "ta"}
+{"text": "Haaan, busy? Not sure.", "label": "unclear", "lang": "hi"}
+{"text": "Vilikalle, stop, umm", "label": "stop_calling", "lang": "ml"}
+{"text": "Stop calling, please.", "label": "stop_calling", "lang": "en"}
+{"text": "Later, but I'm unclear", "label": "unclear", "lang": "ml"}
+{"text": "Call me later, busy. (Code-mixed)", "label": "call_later", "lang": "en"}
+{"text": "Confirm, I'm not available", "label": "confirm", "lang": "en"}
+{"text": "later, umm", "label": "call_later", "lang": "hi"}
+{"text": "Please stop callin' me, I'm busy", "label": "stop_calling", "lang": "ml"}
+{"text": "Umm, no, thank you", "label": "decline", "lang": "ta"}
+{"text": "en na, who called this?", "label": "unclear", "lang": "ta"}
+{"text": "Can you reschedule my appointment for later?", "label": "reschedule", "lang": "ml"}
+{"text": "Stop call, busy, yeah", "label": "stop_calling", "lang": "hi"}
+{"text": "Umm... not sure, who's this?", "label": "unclear", "lang": "ta"}
+{"text": "ummm, is this the right person?", "label": "confirm", "lang": "ta"}
+{"text": "Haan haan, not now, busy", "label": "decline", "lang": "ta"}
+{"text": "reschedule karo, dusra time", "label": "reschedule", "lang": "hi"}
+{"text": "Haan ha, unclear signal", "label": "unclear", "lang": "ml"}
+{"text": "Stop calling me. (2)", "label": "stop_calling", "lang": "en"}
+{"text": "Stop calling later", "label": "stop_calling", "lang": "hi"}
+{"text": "Schedule maru, umm later", "label": "reschedule", "lang": "ta"}
+{"text": "Res: schedule tomorrow, umm", "label": "reschedule", "lang": "ml"}
+{"text": "dusra time karo, re-schedule karo", "label": "reschedule", "lang": "hi"}
+{"text": "Nahi, kya kare? (1)", "label": "decline", "lang": "hi"}
+{"text": "Haan haan, I want to confirm the payment details.", "label": "confirm", "lang": "hi"}
+{"text": "Pleeease stop calling, haan haan", "label": "stop_calling", "lang": "ml"}
+{"text": "Umm, can we reschedule this meeting for later?", "label": "reschedule", "lang": "ml"}
+{"text": "Reschedule the meeting for next Friday.", "label": "reschedule", "lang": "en"}
+{"text": "Aam sari varuven, confirm sure umm", "label": "confirm", "lang": "ta"}
+{"text": "Sure, I'll confirm later", "label": "confirm", "lang": "ml"}
+{"text": "Reschedule, I'll be free later", "label": "reschedule", "lang": "ta"}
+{"text": "Haan haan, jahaan hai kya?", "label": "confirm", "lang": "hi"}
+{"text": "Varam, please confirm", "label": "confirm", "lang": "ml"}
+{"text": "varu, confirm no? haan", "label": "confirm", "lang": "ta"}
+{"text": "Ji haan, ab kya karna hai?", "label": "confirm", "lang": "hi"}
+{"text": "Pinneedu, reschedule schedule for tomorrow", "label": "reschedule", "lang": "ml"}
+{"text": "Umm, stop calling, busy now, sure", "label": "stop_calling", "lang": "ta"}
+{"text": "Stop calling, i'm busy, umm", "label": "stop_calling", "lang": "hi"}
+{"text": "nope not interested at all", "label": "decline", "lang": "ml"}
+{"text": "Schedule change, umm later", "label": "reschedule", "lang": "ta"}
+{"text": "Impolite: Haan, the meeting is tomorrow.", "label": "unclear", "lang": "en"}
+{"text": "Pinne vilikku, call later please?", "label": "call_later", "lang": "ml"}
+{"text": "Kaun ho? Umm", "label": "unclear", "lang": "hi"}
+{"text": "Phone pannad: stop it, no more", "label": "stop_calling", "lang": "ta"}
+{"text": "Stoppa challing me, please.", "label": "stop_calling", "lang": "en"}
+{"text": "Aam sari varuven, confirm busy umm", "label": "confirm", "lang": "ta"}
+{"text": "Appur, call later, busy", "label": "call_later", "lang": "ta"}
+{"text": "nope can't help", "label": "decline", "lang": "ml"}
+{"text": "Umm, no, too much, later", "label": "decline", "lang": "ta"}
+{"text": "Aam sari varuven, confirm now", "label": "confirm", "lang": "ta"}
+{"text": "Not interested, I can't come.", "label": "decline", "lang": "en"}
+{"text": "Confirming the message is received", "label": "confirm", "lang": "en"}
+{"text": "Stop calling me, I'm busy, umm", "label": "stop_calling", "lang": "hi"}
+{"text": "impolite: 'I don't know what event you're talking about'", "label": "unclear", "lang": "en"}
+{"text": "I'm not now, can you call later?", "label": "call_later", "lang": "en"}
+{"text": "Call me later. (Polite)", "label": "call_later", "lang": "en"}
+{"text": "Reschedule the meeting to a later day.", "label": "reschedule", "lang": "en"}
+{"text": "Not coming, not interested.", "label": "decline", "lang": "en"}
+{"text": "No, I can't come, but I'm sorry you're disappointed.", "label": "decline", "lang": "en"}
+{"text": "No, I can't come, I'm busy today.", "label": "decline", "lang": "en"}
+{"text": "Stop it, stop calling me", "label": "stop_calling", "lang": "ml"}
+{"text": "Stop calling me, please", "label": "stop_calling", "lang": "ml"}
+{"text": "Piragu, call later, yes", "label": "call_later", "lang": "ta"}
+{"text": "Haan, reschedule for next week?", "label": "reschedule", "lang": "hi"}
+{"text": "come on busy", "label": "unclear", "lang": "ta"}
+{"text": "who called? i don't know", "label": "unclear", "lang": "ml"}
+{"text": "Reschedule my call, I'm free later", "label": "reschedule", "lang": "ml"}
+{"text": "i'm not sure i can do that", "label": "decline", "lang": "ml"}
+{"text": "Umm, confirm later, haan", "label": "confirm", "lang": "ml"}
+{"text": "Ethu event, busy, sorry", "label": "unclear", "lang": "ml"}
+{"text": "Call me later, please. (Polite with fillers)", "label": "call_later", "lang": "en"}
+{"text": "Haan haan, call later, please", "label": "call_later", "lang": "ta"}
+{"text": "Phone pannadheenga, stop it", "label": "stop_calling", "lang": "ta"}
+{"text": "Haan haan, I'm free now, reschedule?", "label": "reschedule", "lang": "ml"}
+{"text": "Stop calling now, I'm busy", "label": "stop_calling", "lang": "ta"}
+{"text": "Call busier, later. (Code-mixed)", "label": "call_later", "lang": "en"}
+{"text": "Call later, I'll get back to you.", "label": "call_later", "lang": "en"}
+{"text": "Reschedule me, I'm busy now", "label": "reschedule", "lang": "ml"}
+{"text": "Who is this? Not clear", "label": "unclear", "lang": "hi"}
+{"text": "Confirming the call is not answered", "label": "confirm", "lang": "en"}
+{"text": "Stop calling, azhaikkadheenga", "label": "stop_calling", "lang": "ta"}
+{"text": "Declaro que no puedo asistir, estoy ocupado.", "label": "decline", "lang": "en"}
+{"text": "Reschedule, busy, umm, later?", "label": "reschedule", "lang": "ta"}
+{"text": "Dusra time, reschedule karo. (1)native script natural phrasing", "label": "reschedule", "lang": "hi"}
+{"text": "Reschedule the event to a different day and time.", "label": "reschedule", "lang": "en"}
+{"text": "Hah, who's this?", "label": "unclear", "lang": "hi"}
+{"text": "Nahi, hi. I'm not able to help.", "label": "decline", "lang": "hi"}
+{"text": "Polite: I’d like to reschedule the meeting for a later time.", "label": "reschedule", "lang": "en"}
+{"text": "Um, pinne vilikku, later please?", "label": "call_later", "lang": "ml"}

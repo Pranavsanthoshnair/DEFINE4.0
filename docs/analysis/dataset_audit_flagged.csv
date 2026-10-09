@@ -1,0 +1,2029 @@
+split,row_number,lang,label,text,flags,matched_labels
+train,1,hi,reschedule,"Dusra time, reschedule karo. Tum, menej karo.",entirely_latin_or_english,reschedule
+train,2,ta,unclear,enough to understand? hmm,entirely_latin_or_english,
+train,3,ta,reschedule,"reschedule for later, haan haan",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,4,ml,stop_calling,"Sure, stop calling",entirely_latin_or_english,stop_calling
+train,5,ml,unclear,"haan haan, i don't get it",entirely_latin_or_english,confirm
+train,6,ml,call_later,"Pinne, later, call busy",entirely_latin_or_english,call_later
+train,7,ml,unclear,"Aarudu, who is this?",entirely_latin_or_english,
+train,8,ml,call_later,"Pinne vilikku, ippol busy?",entirely_latin_or_english,call_later
+train,9,ml,stop_calling,"stop calling, umm please",entirely_latin_or_english,stop_calling
+train,10,en,confirm,Romanised: I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,11,ml,confirm,"haan haan, yes confirm",entirely_latin_or_english,confirm
+train,13,hi,unclear,"Hm, who? Not clear, busy.",entirely_latin_or_english,call_later
+train,14,hi,confirm,"Haan, jai ho",entirely_latin_or_english,confirm
+train,15,ta,unclear,"Hmm, who's calling again?",entirely_latin_or_english,
+train,17,hi,confirm,"Ji haan, kya kari?",entirely_latin_or_english,confirm
+train,19,ml,confirm,"Athey, what's this?",entirely_latin_or_english,
+train,20,ta,stop_calling,"Stop calling, phone pannad: I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,21,ml,stop_calling,"Vilikalle, stop it, umm",entirely_latin_or_english,stop_calling
+train,22,ml,reschedule,"Schedule change, later, come?",entirely_latin_or_english,call_later
+train,23,hi,call_later,"abhi nahi, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,24,hi,confirm,"Hi, confirm the details of the call once more.",entirely_latin_or_english,
+train,25,hi,confirm,"Haan haan, tum kya karta hai?",entirely_latin_or_english,confirm
+train,26,en,unclear,"Polite: Um, the train is late.",generator_artifact,
+train,27,ta,confirm,"aam confirm, confirm yes",entirely_latin_or_english,confirm
+train,28,ta,decline,"Umm... no, not today",entirely_latin_or_english,decline
+train,30,en,unclear,"impolite: 'haan haan, what event?'",generator_artifact,
+train,31,ta,decline,"nope, umm, not today",entirely_latin_or_english,
+train,32,hi,decline,"Nahi, haan haan, kya karte hain?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,34,en,confirm,Code-mixed: I'll come/busy later.,multiple_label_cues,confirm;call_later
+train,35,hi,reschedule,"Dusra time, reschedule karo. Umm, kya kisi bhi time karo?",entirely_latin_or_english,reschedule
+train,36,hi,stop_calling,"Stop callin', busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,37,hi,confirm,"Aangua, kya kisi bhi baat karta hai?",entirely_latin_or_english,
+train,38,ta,stop_calling,"Umm, stop calling, come later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,39,ml,decline,"Umm, I'm just not feeling well",entirely_latin_or_english,
+train,40,ml,stop_calling,"stop calling, sure later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,41,hi,call_later,"Umm, later kya hua?",entirely_latin_or_english,call_later
+train,43,hi,unclear,"Hah, no idea who this is",entirely_latin_or_english,decline
+train,44,ta,unclear,"en na, who is this?",entirely_latin_or_english,
+train,46,ml,stop_calling,"Stop calling, later, bye",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,47,ta,confirm,ummm confirm later? varuven busy,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,49,ml,unclear,"Ariyilla, what's happening?",entirely_latin_or_english,
+train,50,hi,decline,"Nahi, hi! I can't accept.",entirely_latin_or_english,decline
+train,51,hi,reschedule,"Dusra time, reschedule karo. 8 words.",entirely_latin_or_english,reschedule
+train,52,ml,call_later,"Pinne, busy, come later?",entirely_latin_or_english,call_later
+train,55,hi,decline,"Nahi, hi! I can't attend.",entirely_latin_or_english,decline
+train,57,hi,decline,"Nahi, hi. I can't attend.",entirely_latin_or_english,decline
+train,58,ta,reschedule,"Reschedule, I'm free later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,59,ml,reschedule,"Reschedule for later, sure?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,60,en,confirm,Native: I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,61,ta,unclear,"not sure, later please",entirely_latin_or_english,call_later
+train,63,hi,confirm,"Ji haan, ek baar karte hai",entirely_latin_or_english,confirm
+train,64,hi,stop_calling,"Stop calling, busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,65,hi,confirm,"Ji haan, can you confirm the appointment date?",entirely_latin_or_english,confirm
+train,66,ta,call_later,"Piragu, umm, call later, busy.",entirely_latin_or_english,call_later
+train,67,ta,stop_calling,"Stop calling, come, busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,68,ml,unclear,"Aarudu, ethu event, no clue",entirely_latin_or_english,decline
+train,69,ta,confirm,aam confirm haan haan,entirely_latin_or_english,confirm
+train,70,hi,unclear,"Haaan, not sure, who is calling?",entirely_latin_or_english,
+train,71,ml,call_later,"Pinne, call later, busy, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,72,ml,call_later,Kan maa maa later?,entirely_latin_or_english,call_later
+train,73,ta,unclear,thats not clear,entirely_latin_or_english,
+train,74,ml,confirm,"Ok, I'll confirm later",entirely_latin_or_english,call_later
+train,75,ta,call_later,"Call after 5, umm",entirely_latin_or_english,
+train,78,ml,unclear,"Hmm, who's calling now?",entirely_latin_or_english,
+train,80,ta,reschedule,"Neram, can we reschedule later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,81,en,unclear,native: 'I'm not sure who called me',generator_artifact,confirm
+train,82,en,decline,"No, I can't come, I'm busy.",multiple_label_cues,decline;call_later
+train,83,ml,stop_calling,"Vilikkaruth, stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,84,ml,unclear,"Ethu event, not clear",entirely_latin_or_english,
+train,85,ta,call_later,"Piragu, haan haan, call me later.",entirely_latin_or_english,call_later
+train,87,ml,stop_calling,"Stop calling, sure, yes",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,88,ta,call_later,"Piragu, busy, call later, haan haan.",entirely_latin_or_english,call_later
+train,89,en,decline,"I'm not interested, I'm busy.",multiple_label_cues,decline;call_later
+train,90,hi,decline,"Nahi, kya kya kare? (4)",entirely_latin_or_english,decline
+train,91,ml,decline,i'm busy so no thanks,multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,92,hi,confirm,"Ji haan, aap kya kare?",entirely_latin_or_english,confirm
+train,94,ta,unclear,"en na event, who calling?",entirely_latin_or_english,
+train,95,en,reschedule,Native: Reschedule the appointment to a different time.,generator_artifact,reschedule
+train,96,ta,decline,"illai, i'm not available",entirely_latin_or_english,decline
+train,97,ta,reschedule,"Reschedule, I'm sure it's possible",entirely_latin_or_english,reschedule
+train,98,hi,decline,"Nahi, hi. I can't speak now.",entirely_latin_or_english,decline
+train,99,ta,stop_calling,"Azhaikkadheenga, stop calling now",entirely_latin_or_english,stop_calling
+train,100,ml,stop_calling,"Umm, stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,101,ml,confirm,"Ok, confirm for me please",entirely_latin_or_english,
+train,102,en,unclear,polite: 'I don't know who is calling',generator_artifact,
+train,103,ta,call_later,"Appuram, call later",entirely_latin_or_english,call_later
+train,104,hi,stop_calling,"Haan haan, stop calling",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,105,ml,decline,i'm too busy to talk,entirely_latin_or_english,call_later
+train,106,ml,confirm,"Hmm, confirm this please",entirely_latin_or_english,
+train,107,hi,confirm,"Ji haan, can you confirm the delivery time?",entirely_latin_or_english,confirm
+train,108,hi,stop_calling,"Stop calling, I'm busy, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,109,ml,confirm,"Sheri, v: busy now, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,110,ta,reschedule,"Vere ner, schedule later",entirely_latin_or_english,call_later
+train,111,ml,confirm,"This isn, it's not clear",entirely_latin_or_english,
+train,113,en,stop_calling,I can't receive calls. (1),generator_artifact,
+train,114,en,stop_calling,"Stop calling me, I'm busy. (1)",generator_artifact;multiple_label_cues,call_later;stop_calling
+train,117,ml,call_later,"Pinne vilikku, busy later",entirely_latin_or_english,call_later
+train,118,hi,reschedule,"Just reschedule, please. Um, kya kari naa?",entirely_latin_or_english,reschedule
+train,119,ml,confirm,Can you clarify what you mean?,entirely_latin_or_english,
+train,120,en,unclear,"polite: 'umm, what event?'",generator_artifact,
+train,122,hi,confirm,"Hi, please confirm the details of the call.",entirely_latin_or_english,
+train,124,ta,stop_calling,"Stop callin', I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,125,ta,call_later,"Appuram, call me later, come",entirely_latin_or_english,call_later
+train,127,ml,stop_calling,"Come stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,128,ta,reschedule,Vere neram schedule maru later,entirely_latin_or_english,call_later
+train,129,en,unclear,Romanised: caṭ is on the mat.,generator_artifact,
+train,130,ta,decline,"sure, but no",entirely_latin_or_english,decline
+train,131,ml,call_later,"pinne, busy later",entirely_latin_or_english,call_later
+train,132,hi,reschedule,"Dusra time, reschedule karo. (4)polite and impolite forms with fillers like umm or haan haan",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,133,hi,stop_calling,"Stop calling, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,135,ml,call_later,"Pinne vilikku, ippol busy, umm?",entirely_latin_or_english,call_later
+train,136,ml,unclear,"come on, i need to clarify",entirely_latin_or_english,
+train,138,ml,stop_calling,"Stop calling, later, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,139,ml,stop_calling,"Stop calling, I'm away now",entirely_latin_or_english,stop_calling
+train,140,ta,stop_calling,"Stop calling, I'm busy, phone pannadheenga",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,141,ta,unclear,"Theriyala, busy right now, what's up?",entirely_latin_or_english,call_later
+train,142,en,stop_calling,"Stop calling, I'm not interested.",multiple_label_cues,decline;stop_calling
+train,143,hi,stop_calling,"Come stop, don't call me again",entirely_latin_or_english,stop_calling
+train,144,hi,stop_calling,"Stop calling, I: I'm busy, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,146,ta,reschedule,"Reschedule, later, sure, haan haan",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,147,ta,reschedule,"Schedule maru, come later, umm",entirely_latin_or_english,call_later
+train,148,hi,call_later,"Haan, later karo, busy hoon",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,149,ml,confirm,"Yeah, I'm busy right now, can you wait?",entirely_latin_or_english,call_later
+train,151,hi,stop_calling,"Stop calling, I'm busy, come later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,152,hi,call_later,"baad mein, umm",entirely_latin_or_english,call_later
+train,153,ta,confirm,"Aam sari varuven, confirm?",entirely_latin_or_english,confirm
+train,154,ml,call_later,"Pine vlikku, call later",entirely_latin_or_english,call_later
+train,155,ml,unclear,"aah, ethu, not clear",entirely_latin_or_english,
+train,156,ta,confirm,"ummm, confirm? i think",entirely_latin_or_english,
+train,157,ml,reschedule,"Schedule maaroo, reschedule for next week",entirely_latin_or_english,reschedule
+train,158,hi,confirm,"Hi, please confirm the time of the call.",entirely_latin_or_english,
+train,160,en,unclear,"Romanised: tu nōn ād eō dōnō, etsi eō nōn ād eō dōnō.",generator_artifact,
+train,161,ml,reschedule,"Schedule this later, I'm available",entirely_latin_or_english,call_later
+train,162,ml,stop_calling,"Um, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,164,ta,confirm,"sari, confirm, busy now",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,166,hi,call_later,"Haan, later, busy hoon, kya",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,167,hi,reschedule,"Reschedule, busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,168,ta,stop_calling,"Stop calling, I'm busy, haan",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,169,en,reschedule,Reschedule the call for a later hour.,multiple_label_cues,reschedule;call_later
+train,171,ta,call_later,"Call later, busy",entirely_latin_or_english,call_later
+train,172,hi,reschedule,"dusra time, reschedule karo",entirely_latin_or_english,reschedule
+train,173,ta,reschedule,"Reschedule, busy later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,174,en,unclear,"polite: 'umm, hmm'",generator_artifact,
+train,175,ml,confirm,"Haan, come later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,177,ta,confirm,sari confirm come,entirely_latin_or_english,confirm
+train,178,ta,stop_calling,"Umm, stop calling, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,179,hi,stop_calling,"Stop calling, I'm busy right now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,180,en,unclear,"native: 'Hm, I'm not sure what you're saying'",generator_artifact,confirm
+train,181,ml,stop_calling,", stop calling, later please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,182,hi,decline,"Nahi, bhai. Pehle kya karta hai?",entirely_latin_or_english,decline
+train,183,ml,decline,no i'm not sure about that,entirely_latin_or_english,decline
+train,185,ml,reschedule,"Haan haan, reschedule for next week?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,186,hi,unclear,"Hm, pata nahi, kaun ho?",entirely_latin_or_english,decline
+train,187,ml,confirm,"i'm busy, come confirm",entirely_latin_or_english,call_later
+train,188,ta,decline,"haan, not now",entirely_latin_or_english,
+train,189,en,unclear,"native: 'hello, how are you'",generator_artifact,
+train,190,en,unclear,romanised: 'i don't know who called me',generator_artifact,
+train,191,hi,call_later,"Baad mein call karunga, kya haal hai?",entirely_latin_or_english,call_later
+train,193,hi,confirm,"Hi, I need to confirm the location.",entirely_latin_or_english,
+train,194,ta,unclear,"kina? theriy, no",entirely_latin_or_english,decline
+train,195,en,decline,"Not coming, I'm afraid, I'll have to decline.",multiple_label_cues,confirm;decline
+train,196,hi,reschedule,"Dusra time, reschedule karo. Haan haan, menej karo.",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,197,ta,call_later,"Appur, call me later come",entirely_latin_or_english,call_later
+train,198,ta,confirm,aam confirm busy,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,200,ml,call_later,"Pinne, call later, busy, umm?",entirely_latin_or_english,call_later
+train,201,ta,call_later,"Piragu, haan haan, call later?",entirely_latin_or_english,call_later
+train,202,ml,reschedule,"Reschedule, umm, when free?",entirely_latin_or_english,reschedule
+train,203,ta,reschedule,ummm can you reschedule my meeting,entirely_latin_or_english,reschedule
+train,204,ml,decline,"Illa, nope, I'm busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,205,ml,unclear,"Umm, aarudu, what's this?",entirely_latin_or_english,
+train,206,hi,reschedule,"Reschedule, time badlo",entirely_latin_or_english,reschedule
+train,207,ta,confirm,"aam, confirm, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,208,ta,decline,"Illai, varamatten, naa",entirely_latin_or_english,decline
+train,209,ta,stop_calling,"Who is calling, phone pannadheenga",entirely_latin_or_english,stop_calling
+train,210,ml,unclear,"aaru, this is confusing",entirely_latin_or_english,
+train,211,ta,decline,"ummm, not interested",entirely_latin_or_english,
+train,212,ta,confirm,"Aam sari, confirm later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,213,hi,call_later,baad mein karo,entirely_latin_or_english,call_later
+train,215,en,decline,"Decline, I can't attend, I'm busy.",multiple_label_cues,decline;call_later
+train,217,hi,reschedule,Res: can we move it later?,entirely_latin_or_english,call_later
+train,218,ml,confirm,"i'm busy, confirm later",entirely_latin_or_english,call_later
+train,219,hi,unclear,"Hm, kya hua? Pata nahi.",entirely_latin_or_english,decline
+train,220,ta,confirm,varu  confirm sure,entirely_latin_or_english,
+train,221,ta,stop_calling,"Phone pannadheenga, stop calling, umm",entirely_latin_or_english,stop_calling
+train,222,ml,reschedule,"Schedule later, I'm busy right now",entirely_latin_or_english,call_later
+train,224,hi,stop_calling,"Phone mat karo, stop calling",entirely_latin_or_english,stop_calling
+train,225,ta,decline,"Illai, varamatten, can't do, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,226,hi,call_later,"later, busy",entirely_latin_or_english,call_later
+train,227,ta,call_later,"Piragu, I'll call you later yeah",entirely_latin_or_english,call_later
+train,229,en,unclear,impolite: 'I don't know who is calling',generator_artifact,
+train,230,ml,confirm,"ok, confirm please",entirely_latin_or_english,
+train,231,ta,confirm,"Aam sari varuven, confirm busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,232,ta,call_later,"Piragu, umm, call later later.",entirely_latin_or_english,call_later
+train,233,ml,decline,"I'm not sure, I'm busy",entirely_latin_or_english,call_later
+train,234,ta,unclear,"Haan, unclear, why can't you say again?",entirely_latin_or_english,
+train,236,ta,confirm,"Aam sari varuven, confirm umm?",entirely_latin_or_english,confirm
+train,237,ta,unclear,"yaar, i don't get it, sure?",entirely_latin_or_english,
+train,238,ta,confirm,"Aam sari varuven, confirm come",entirely_latin_or_english,confirm
+train,239,hi,unclear,"busy, can't hear you",entirely_latin_or_english,call_later
+train,241,hi,stop_calling,"Stop calling now, please",entirely_latin_or_english,stop_calling
+train,242,ta,reschedule,ummm can you reschedule my meeting later?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,243,hi,stop_calling,"Stop calling now, please, umm",entirely_latin_or_english,stop_calling
+train,244,hi,unclear,"Umm, not sure",entirely_latin_or_english,
+train,246,hi,reschedule,"Dusra time, reschedule karo. 1 word.",entirely_latin_or_english,reschedule
+train,247,ta,confirm,"Aam sari, confirm, yes",entirely_latin_or_english,confirm
+train,248,ml,decline,"No, I'm too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,249,ml,stop_calling,"Vilikalle, stop, sure",entirely_latin_or_english,stop_calling
+train,250,ta,confirm,"sari, confirm? umm",entirely_latin_or_english,confirm
+train,252,hi,call_later,"Later karo, busy hoon, shukriya",entirely_latin_or_english,call_later
+train,253,ml,reschedule,Haan ha. Reschedule to next day?,multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,255,ta,unclear,"Umm... not sure, who's speaking?",entirely_latin_or_english,
+train,256,ta,reschedule,"Piragu paarkalam, later",entirely_latin_or_english,call_later
+train,257,ta,unclear,"hmm, i'm busy now, come back later",entirely_latin_or_english,call_later
+train,258,en,confirm,"Native: I'm free, sure.",generator_artifact,confirm
+train,259,ta,decline,"Naa, sorry, busy",entirely_latin_or_english,call_later
+train,260,ta,unclear,"yaar, i'm confused, please",entirely_latin_or_english,
+train,261,ml,unclear,"hmm, who is this for?",entirely_latin_or_english,
+train,263,ml,call_later,pinne vilikku later umm,entirely_latin_or_english,call_later
+train,264,ta,decline,"Not now, busy, umm",entirely_latin_or_english,call_later
+train,265,ta,reschedule,"Um, my schedule is busy now, reschedule?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,266,hi,call_later,"Busy, call later please",entirely_latin_or_english,call_later
+train,268,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,269,ml,stop_calling,"Vilikalle, stop calling, umm",entirely_latin_or_english,stop_calling
+train,271,ta,decline,"no, not today",entirely_latin_or_english,decline
+train,272,hi,stop_calling,"Stop calling, please, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,273,hi,stop_calling,"Stop calling, please",entirely_latin_or_english,stop_calling
+train,274,en,decline,"No, I'm not coming, I'm too busy.",multiple_label_cues,confirm;decline;call_later
+train,275,ml,call_later,"Pinne, umm, call later, sure",entirely_latin_or_english,call_later
+train,276,ta,decline,"varamatten, i'm not here",entirely_latin_or_english,decline
+train,277,hi,unclear,"Hm, who calling?",entirely_latin_or_english,
+train,278,ml,stop_calling,"Stop calling, busy, come",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,279,en,stop_calling,"Stop calling, no.",multiple_label_cues,decline;stop_calling
+train,280,ta,reschedule,"Hai, can you reschedule my meeting?",entirely_latin_or_english,reschedule
+train,281,ta,stop_calling,"Come on, stop calling me, haan haan",entirely_latin_or_english,stop_calling
+train,283,ta,stop_calling,"Stop calling, I'm busy, now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,284,hi,unclear,"come here, say again",entirely_latin_or_english,
+train,285,hi,call_later,"Haan haan, abhi nahi, call later",multiple_label_cues;entirely_latin_or_english,confirm;decline;call_later
+train,286,ta,reschedule,"reschedule me later, sure",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,287,en,confirm,Polite: I'm not sure if I can come.,generator_artifact,confirm
+train,289,ml,reschedule,"Reschedule, schedule maaroo, later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,292,ml,confirm,"Hmm, yes, confirm",entirely_latin_or_english,confirm
+train,293,ml,decline,ill be busy,entirely_latin_or_english,call_later
+train,295,ml,decline,"Haan haan, I'm too busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,296,en,reschedule,"Reschedule, please, to later this week.",multiple_label_cues,reschedule;call_later
+train,297,ta,call_later,"Piragu, can I call you later?",entirely_latin_or_english,call_later
+train,299,ml,unclear,"later, i need to check",entirely_latin_or_english,call_later
+train,300,en,unclear,polite: 'I don't know how are you',generator_artifact,
+train,301,ta,unclear,"yaar, what's happening here?",entirely_latin_or_english,
+train,303,ml,unclear,"i'm busy, no time now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,304,ml,call_later,"Pinne, i'm busy later",entirely_latin_or_english,call_later
+train,306,hi,unclear,"Umm, who's calling? Not sure.",entirely_latin_or_english,
+train,307,ta,reschedule,"Reschedule, later, okay, haan",multiple_label_cues;entirely_latin_or_english,confirm;reschedule;call_later
+train,308,ta,unclear,ummm okay unclear,entirely_latin_or_english,confirm
+train,310,ta,reschedule,"Piragu paarkalam, kana later",entirely_latin_or_english,call_later
+train,311,hi,call_later,"Bhool gaya, later kya",entirely_latin_or_english,call_later
+train,312,hi,confirm,"Theek hai, kya kisi bhi baat karta hai?",entirely_latin_or_english,confirm
+train,313,ml,stop_calling,"Stop calling, busy, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,314,hi,call_later,"Bhool gaya, call later",entirely_latin_or_english,call_later
+train,315,ta,call_later,"Call later, busy, haan",entirely_latin_or_english,call_later
+train,316,hi,reschedule,dusra time reschedule karo,entirely_latin_or_english,reschedule
+train,317,ml,confirm,"Yeah, this is good for me",entirely_latin_or_english,
+train,318,hi,stop_calling,"Stop calling, i'm busy umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,320,ml,reschedule,Res: reschedule my meeting later?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,321,hi,unclear,"Whoa, who called this?",entirely_latin_or_english,
+train,323,hi,reschedule,"Reschedule karo, dusra time. 🎉",entirely_latin_or_english,reschedule
+train,324,ta,stop_calling,"Come stop callin' me, I'm busy.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,325,ml,decline,"I'm not feeling good, too busy",entirely_latin_or_english,call_later
+train,326,ml,confirm,"Hmm, confirm that thing",entirely_latin_or_english,
+train,327,ml,decline,"No, I'm busy with other things",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,328,en,unclear,"romanised: 'hmm, what time is it'",generator_artifact,
+train,329,ta,confirm,"Aam sari varuven, yeah confirm",entirely_latin_or_english,confirm
+train,330,ml,stop_calling,"Who's calling, stop it, umm",entirely_latin_or_english,stop_calling
+train,331,ta,decline,"Umm, not today, sure, busy",entirely_latin_or_english,call_later
+train,332,en,unclear,"Impolite: Haan, the train is late.",generator_artifact,
+train,333,ml,stop_calling,"stop calling, busy please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,335,ta,confirm,"Aam sari, noise, sari",entirely_latin_or_english,confirm
+train,336,ta,decline,"na, thanks",entirely_latin_or_english,
+train,337,ml,unclear,"Ariy using, no clue",entirely_latin_or_english,decline
+train,338,hi,unclear,Who is calling? I'm not sure.,entirely_latin_or_english,
+train,339,ml,reschedule,"Reschedule later, come when you can",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,340,ta,decline,"come later, i'm busy",entirely_latin_or_english,call_later
+train,342,hi,unclear,Can't hear you clearly,entirely_latin_or_english,
+train,343,ta,decline,"Naa, not now, please",entirely_latin_or_english,
+train,344,ta,call_later,"Piragu: call me later, sure",entirely_latin_or_english,call_later
+train,346,en,decline,"Not coming, I'm not interested, sorry.",multiple_label_cues,confirm;decline
+train,348,ta,confirm,"Aam sari, confirm, come",entirely_latin_or_english,confirm
+train,349,ta,decline,"no, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,350,ml,unclear,"haan ha: ariyilla, confused",entirely_latin_or_english,confirm
+train,353,hi,unclear,"Haaan, not clear, come later?",entirely_latin_or_english,call_later
+train,354,hi,decline,"Nahi, kya kisi bhi karega? (5)",entirely_latin_or_english,decline
+train,355,hi,call_later,"Call later, but not now",entirely_latin_or_english,call_later
+train,357,ta,stop_calling,"Stop calling, phone pannadheenga, umm",entirely_latin_or_english,stop_calling
+train,358,ta,decline,"varamatten, i'm busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,359,hi,decline,"Nahi aa sakta, haan haan, kya kare?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,360,ta,decline,"nah, come back soon",entirely_latin_or_english,
+train,361,ml,confirm,"come on, confirm this",entirely_latin_or_english,
+train,362,hi,decline,"Nahi, hi. I'm not here.",entirely_latin_or_english,decline
+train,363,en,decline,"Not coming, I'm sorry.",multiple_label_cues,confirm;decline
+train,364,ml,reschedule,"Reschedule for next time, haan haan?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,365,ta,confirm,"aam confirm, busy time",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,366,hi,call_later,"Call later, please? Umm... later",entirely_latin_or_english,call_later
+train,367,ml,unclear,"umh, unclear message",entirely_latin_or_english,
+train,369,en,decline,"No, I can't come, I'm too busy.",multiple_label_cues,decline;call_later
+train,370,ml,call_later,"Pinne, call later, busy, yes",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,371,ml,call_later,"Pinne, call later, come when free",entirely_latin_or_english,call_later
+train,372,en,unclear,"native: 'hmm, what time is it'",generator_artifact,
+train,373,hi,unclear,"not sure, what happened?",entirely_latin_or_english,
+train,374,ta,unclear,"en na, who said that?",entirely_latin_or_english,
+train,375,ta,reschedule,"Piragu paarkalam, busy now",entirely_latin_or_english,call_later
+train,377,ta,stop_calling,"Phone pannadheenga, stop now",entirely_latin_or_english,stop_calling
+train,380,ta,reschedule,"Schedule change, busy now",entirely_latin_or_english,call_later
+train,381,en,unclear,impolite: 'I don't know who called me',generator_artifact,
+train,382,ml,reschedule,Can we reschedule to a later time?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,383,ml,reschedule,Reschedule when? I'm free tomorrow.,entirely_latin_or_english,reschedule
+train,386,hi,decline,"Nahi, maa jaa sakta",entirely_latin_or_english,decline
+train,387,hi,call_later,"Abhi nahi, later kardo",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,388,hi,unclear,"Haaan, kya hua? Umm, busy.",entirely_latin_or_english,call_later
+train,389,en,reschedule,"Reschedule, sure, to a later hour.",multiple_label_cues,confirm;reschedule;call_later
+train,390,ml,call_later,"Pinne vilikku, call later, busy",entirely_latin_or_english,call_later
+train,391,en,unclear,polite: 'I don't know what event is happening',generator_artifact,
+train,392,hi,confirm,"Haan haan, jai mera kya kari?",entirely_latin_or_english,confirm
+train,393,ml,call_later,"Pinne vilikku, later, busy",entirely_latin_or_english,call_later
+train,394,ta,decline,"varamatten, not now",entirely_latin_or_english,decline
+train,395,ml,decline,"Can't do it, sorry",entirely_latin_or_english,
+train,396,hi,unclear,"Haa: who? Not sure, busy.",entirely_latin_or_english,call_later
+train,397,ml,confirm,"Sheri varam, busy now, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,398,en,confirm,"Polite: I'll be there later, thanks.",generator_artifact;multiple_label_cues,confirm;call_later
+train,399,hi,unclear,"Kya hua? Haaan, busy.",entirely_latin_or_english,call_later
+train,400,hi,unclear,who called? i'm busy,entirely_latin_or_english,call_later
+train,401,ta,stop_calling,"Come, stop calling now",entirely_latin_or_english,stop_calling
+train,402,ta,stop_calling,"Stop callin' me, azhaikkadheenga.",entirely_latin_or_english,stop_calling
+train,403,ta,confirm,"Aam sari, confirm, haan haan",entirely_latin_or_english,confirm
+train,404,hi,unclear,"Whoa, no idea who it is",entirely_latin_or_english,decline
+train,405,ml,unclear,"sure, but I'm a bit unclear",entirely_latin_or_english,
+train,406,hi,confirm,"Aaunga, confirm the delivery location.",entirely_latin_or_english,confirm
+train,407,ml,unclear,"ummm, no idea",entirely_latin_or_english,decline
+train,408,ml,stop_calling,"Um... stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,409,ml,reschedule,"Um, my time is busy, can we move it?",entirely_latin_or_english,call_later
+train,410,hi,unclear,"hi, can you repeat that?",entirely_latin_or_english,
+train,411,ta,confirm,"aam confirm, varuven",entirely_latin_or_english,confirm
+train,412,hi,reschedule,"Dusra time, reschedule karo. 😊",entirely_latin_or_english,reschedule
+train,413,hi,reschedule,"Reschedule karo, dusra time. Haan haan, kya kisi bhi kora? Umm, kya kisi bhi kora? Reschedule karo, dusra time.",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,414,hi,stop_calling,"Stop calling me, I'm busy, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,415,ta,call_later,"Piragu, call later, umm, busy.",entirely_latin_or_english,call_later
+train,416,hi,reschedule,"Dusra time, reschedule karo. 6 words.",entirely_latin_or_english,reschedule
+train,418,ta,call_later,"Later, can you call me when free",entirely_latin_or_english,call_later
+train,419,hi,stop_calling,"Stop calling, i'm busy, come",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,421,hi,unclear,"haan haan, unclear",entirely_latin_or_english,confirm
+train,422,ml,stop_calling,"come on, stop the calls",entirely_latin_or_english,stop_calling
+train,423,hi,stop_calling,"Stop calling, i'm busy, sure.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,424,ta,decline,"Varamatten, illai, not today, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,425,hi,reschedule,"Dusra time, reschedule karo. 9 words.",entirely_latin_or_english,reschedule
+train,426,ta,decline,"ummm, not really",entirely_latin_or_english,
+train,427,ml,unclear,"ummm, no idea, please clarify",entirely_latin_or_english,decline
+train,429,hi,decline,"Nahi, kya kisi karta hai?",entirely_latin_or_english,decline
+train,431,hi,unclear,"Kya event? Umm, no idea",entirely_latin_or_english,decline
+train,433,en,unclear,romanised: 'what event is happening',generator_artifact,
+train,435,ta,stop_calling,"Stop calling, umm, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,436,ta,reschedule,can you reschedule my event,entirely_latin_or_english,reschedule
+train,437,hi,decline,"Nahi, hai haan, kya kare?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,438,ml,decline,haan haan i'm busy,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,439,ml,unclear,"Haan haan, busy, please",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,440,ta,decline,"No, umm, not today",entirely_latin_or_english,decline
+train,442,ml,confirm,"Mmm, busy now",entirely_latin_or_english,call_later
+train,443,hi,reschedule,"Just a moment, reschedule karo. Um, kya kari naa?",entirely_latin_or_english,reschedule
+train,444,ta,call_later,"Appur: call later, i'm free, okay",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,445,ml,reschedule,"Reschedule my appointment, please",entirely_latin_or_english,reschedule
+train,446,hi,call_later,"Baad mein, later, busy",entirely_latin_or_english,call_later
+train,447,ta,confirm,"aam confirm, come now",entirely_latin_or_english,confirm
+train,448,hi,confirm,"Ji haan, confirm. Contact is clear.",entirely_latin_or_english,confirm
+train,449,ta,unclear,"ummm, not clear, please",entirely_latin_or_english,
+train,450,ml,reschedule,"Reschedule, can you do it?",entirely_latin_or_english,reschedule
+train,451,ml,call_later,"Pine vlik, busy now",entirely_latin_or_english,call_later
+train,452,hi,confirm,"Aangua, jhootha hai",entirely_latin_or_english,
+train,453,ml,decline,not interested at all,entirely_latin_or_english,
+train,454,hi,stop_calling,"Stop calling, i'm busy, haan haan.",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+train,455,ml,call_later,"Pinne, umm, come later?",entirely_latin_or_english,call_later
+train,456,ta,stop_calling,"Stop calling, it's me, phone pannadheenga",entirely_latin_or_english,stop_calling
+train,457,ml,reschedule,Can I reschedule my event?,entirely_latin_or_english,reschedule
+train,458,ml,decline,I'm not available right now,entirely_latin_or_english,
+train,459,ml,unclear,"ethu event, not clear at all",entirely_latin_or_english,
+train,460,hi,stop_calling,"Stop callin', haan haan, later",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+train,461,hi,call_later,"Umm, later, I'm busy now",entirely_latin_or_english,call_later
+train,462,ml,reschedule,"Reschedule, I'm busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,463,ml,unclear,"lmao, who's this?",entirely_latin_or_english,
+train,465,ml,call_later,"Pinne vilikku, busy, later?",entirely_latin_or_english,call_later
+train,467,ml,stop_calling,"stop calling, hey now",entirely_latin_or_english,stop_calling
+train,468,ml,decline,sure but later maybe,entirely_latin_or_english,call_later
+train,469,hi,call_later,"Baad mein, busy hoon, later",entirely_latin_or_english,call_later
+train,470,ml,decline,"I'm not sure, busy now",entirely_latin_or_english,call_later
+train,472,ta,decline,"Umm, no, I'm not sure, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,473,hi,call_later,Call later? Umm... busy now,entirely_latin_or_english,call_later
+train,474,ta,reschedule,"Schedule change, sure haan haan",entirely_latin_or_english,
+train,475,ta,call_later,"Piragu, later, call, appuram.",entirely_latin_or_english,call_later
+train,476,ml,reschedule,Reschedule when you're free?,entirely_latin_or_english,reschedule
+train,477,en,reschedule,Reschedule the event to a later time.,multiple_label_cues,reschedule;call_later
+train,478,ml,confirm,"Okay, I'm busy, can you come?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,480,hi,unclear,"Hmmm, pata n, busy",entirely_latin_or_english,call_later
+train,481,ta,unclear,what's up? not clear,entirely_latin_or_english,
+train,483,ml,reschedule,"Pinneedu, kya aap schedule change kar sakte hain?",entirely_latin_or_english,
+train,485,ml,decline,"I'm not available, sorry",entirely_latin_or_english,
+train,486,ta,stop_calling,"Haan haan, stop, please, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,487,ml,unclear,"ummm, not sure who's on the line",entirely_latin_or_english,
+train,488,hi,confirm,"Haan haan, I want to confirm the meeting time.",entirely_latin_or_english,confirm
+train,489,ml,reschedule,"Reschedule event, I'm free now",entirely_latin_or_english,reschedule
+train,490,ta,decline,"busy, no",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,491,ml,decline,"Sure, but I'm out of time",entirely_latin_or_english,
+train,492,ta,decline,"Varamatten, illai, please say no",entirely_latin_or_english,decline
+train,493,ml,reschedule,"Sure, let's reschedule the call later.",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,494,hi,reschedule,"dusra time karo, jisne reschedule karo",entirely_latin_or_english,reschedule
+train,495,ta,confirm,"Aam sari, confirm, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,496,ta,reschedule,"Reschedule later, busy sure",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,497,ta,unclear,it sounds like,entirely_latin_or_english,
+train,499,ta,stop_calling,"Come, stop that call now",entirely_latin_or_english,stop_calling
+train,501,hi,reschedule,Can you reschedule me later?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,502,ta,confirm,"Aam sari varuven, confirm sure?",entirely_latin_or_english,confirm
+train,503,ml,unclear,"Ariyilla, but what's unclear?",entirely_latin_or_english,
+train,504,ta,reschedule,"Neram, reschedule, when can you?",entirely_latin_or_english,reschedule
+train,505,ml,decline,"Varilla, nope, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,506,en,confirm,"Impolite: I'm free, haan haan.",generator_artifact,
+train,507,hi,reschedule,"Asker, reschedule karo. Haan haan, kya kari naa?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,509,hi,reschedule,"Reschedule karo, dusra time. Umm, mera kya kare?",entirely_latin_or_english,reschedule
+train,510,hi,confirm,"Haan haan, are you confirming the payment?",entirely_latin_or_english,confirm
+train,511,ml,call_later,"Pinne, busy, later please?",entirely_latin_or_english,call_later
+train,512,ta,decline,"Not interested, busy, varamatten",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,514,ml,decline,i'm too busy,entirely_latin_or_english,call_later
+train,515,ml,decline,"No, I'm too busy, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,516,ml,stop_calling,"Stop calling me now, please",entirely_latin_or_english,stop_calling
+train,517,ta,confirm,"aam confirm, haan",entirely_latin_or_english,confirm
+train,518,ml,call_later,"Pinne, busy, later, sure?",entirely_latin_or_english,call_later
+train,519,ta,stop_calling,"Stop calling, phone pannadheenga",entirely_latin_or_english,stop_calling
+train,520,hi,confirm,"Haan haan, tum kya kia hai?",entirely_latin_or_english,confirm
+train,521,en,reschedule,Reschedule the call for later this week.,multiple_label_cues,reschedule;call_later
+train,522,hi,confirm,"Aaunga, please confirm the delivery date.",entirely_latin_or_english,confirm
+train,523,en,confirm,"Polite: I'm free, thanks.",generator_artifact,
+train,524,ta,call_later,"Call later, come",entirely_latin_or_english,call_later
+train,525,ml,confirm,"i'm busy, can we confirm?",entirely_latin_or_english,call_later
+train,526,en,confirm,Impolite: I'm not sure if I can come.,generator_artifact,confirm
+train,527,en,stop_calling,"Stop calling me, I'm unavailable. (1)",generator_artifact,stop_calling
+train,528,hi,call_later,"Call later? Haan haan, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,529,ml,stop_calling,"Stop: calling me, please",entirely_latin_or_english,stop_calling
+train,530,en,reschedule,Reschedule the appointment for a later date.,multiple_label_cues,reschedule;call_later
+train,531,hi,confirm,"Theek hai, ab kya karna hai?",entirely_latin_or_english,confirm
+train,532,ta,confirm,"ummm, confirm? busy",entirely_latin_or_english,call_later
+train,533,ml,decline,"Illa, I can't help you now",entirely_latin_or_english,decline
+train,534,hi,stop_calling,"Come stop calling, it's busy.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,535,ml,stop_calling,"Stop calling, busy, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,536,ml,confirm,"ok, but i'm busy right now",entirely_latin_or_english,call_later
+train,537,en,confirm,Native: I'm sure I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,538,ml,call_later,"pinne, ippol busy later",entirely_latin_or_english,call_later
+train,539,hi,unclear,"Hmm, can't tell who it is",entirely_latin_or_english,
+train,540,ta,decline,"varamatten, busy now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,541,ml,call_later,"Pinne vilikku, later please, busy",entirely_latin_or_english,call_later
+train,542,en,confirm,"Native: I'm available, sure.",generator_artifact,confirm
+train,543,en,confirm,Romanised: I'm suer I will come later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,544,hi,unclear,"Come, but not sure",entirely_latin_or_english,
+train,545,ml,reschedule,"Reschedule when you free, yes?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,546,ml,stop_calling,Come stop calling me,entirely_latin_or_english,stop_calling
+train,547,ta,decline,"Haan, I'm not free, later please",entirely_latin_or_english,call_later
+train,548,ta,stop_calling,"Phone pannadheenga, stop that",entirely_latin_or_english,stop_calling
+train,549,ta,call_later,"Appur: call me later, come when free",entirely_latin_or_english,call_later
+train,550,ml,stop_calling,"stop calling, hey please",entirely_latin_or_english,stop_calling
+train,552,hi,call_later,"Call later, abhi nahi",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,553,ml,reschedule,"Reschedule my call, I'm busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,554,ml,reschedule,"Um, can I reschedule my event later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,555,hi,stop_calling,"Stop calling, come later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,556,hi,call_later,"Baad mein call karo, busy hoon",entirely_latin_or_english,call_later
+train,557,ml,unclear,ethu event? not sure who,entirely_latin_or_english,
+train,558,en,unclear,polite: 'I don't know what time is it',generator_artifact,
+train,559,en,decline,"Not coming, haan haan, I'm not interested.",multiple_label_cues,confirm;decline
+train,560,ta,stop_calling,"Stop callin', I'm busy, yeah",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,561,ml,unclear,"Ethu event, busy, unclear",entirely_latin_or_english,call_later
+train,562,ml,call_later,"Pinne, haan haan, later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,563,hi,confirm,"Haan haan, jeha karte hai",entirely_latin_or_english,confirm
+train,564,ta,unclear,yaar this is unclear,entirely_latin_or_english,
+train,565,ta,confirm,"Aam sari, who called?",entirely_latin_or_english,confirm
+train,566,hi,confirm,"Haan, kya kisi bhi baat karta hai?",entirely_latin_or_english,confirm
+train,567,hi,stop_calling,"Band karo, stop calling",entirely_latin_or_english,stop_calling
+train,568,ml,call_later,"Pinne, later, busy?",entirely_latin_or_english,call_later
+train,569,ta,decline,"I'm busy, can't help right now",entirely_latin_or_english,call_later
+train,570,ta,confirm,"aam confirm, haan haan",entirely_latin_or_english,confirm
+train,571,hi,decline,"Nahi aa sakta, bhaiya. Hi, tumhari kya karta hai?",entirely_latin_or_english,decline
+train,572,ta,call_later,"Appur: call later, i'm free now",entirely_latin_or_english,call_later
+train,573,hi,reschedule,"Dusra time, reschedule karo. (3)",entirely_latin_or_english,reschedule
+train,574,hi,unclear,"Kya event? Umm, pata n? Hm.",entirely_latin_or_english,
+train,575,ml,confirm,Confirming this okay for me today?,entirely_latin_or_english,confirm
+train,576,ta,decline,"ummm haan, nope, not today",entirely_latin_or_english,
+train,577,ta,reschedule,"Vere, schedule maru, umm, okay?",entirely_latin_or_english,confirm
+train,578,ta,confirm,"aam confirm, busy now",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,579,hi,decline,"Nahi, janaa. Jaan hai, nahi.",entirely_latin_or_english,decline
+train,580,hi,call_later,"Busy hoon, call later",entirely_latin_or_english,call_later
+train,582,hi,reschedule,Can we reschedule this meeting?,entirely_latin_or_english,reschedule
+train,583,hi,unclear,can you speak slow?,entirely_latin_or_english,
+train,584,hi,decline,"Nahi aa sakta, kya kya karta hai",entirely_latin_or_english,decline
+train,585,hi,confirm,"Haan, kya kare?",entirely_latin_or_english,confirm
+train,586,ta,confirm,"aam, confirm, sure",entirely_latin_or_english,confirm
+train,587,hi,confirm,"Theek hai, jai ho",entirely_latin_or_english,confirm
+train,588,en,confirm,"Code-mixed: I'll come, sure, later.",multiple_label_cues,confirm;call_later
+train,589,ml,reschedule,"Reschedule when you can, please?",entirely_latin_or_english,reschedule
+train,590,hi,decline,"Nahi, abhi. Um, I'm not available.",entirely_latin_or_english,decline
+train,591,ml,reschedule,"Umm, can you reschedule my appointment?",entirely_latin_or_english,reschedule
+train,593,ml,stop_calling,"Stop callin' me, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,595,hi,call_later,"Come on, I'm busy right now, umm",entirely_latin_or_english,call_later
+train,596,ml,reschedule,"Reschedule please, I'm busy now umm",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,597,hi,stop_calling,"Stop calling, i'm busy later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,598,hi,unclear,"pata nahi, busy now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,599,hi,reschedule,"Reschedule karo, dusra time,",entirely_latin_or_english,reschedule
+train,600,en,decline,"No, not interested, I'm not coming.",multiple_label_cues,confirm;decline
+train,601,ml,call_later,"Pinne, call later, umm?",entirely_latin_or_english,call_later
+train,602,ml,decline,"Hmm, busy right now, later maybe",entirely_latin_or_english,call_later
+train,603,ml,unclear,"lmao, no idea what you said",entirely_latin_or_english,decline
+train,604,ml,stop_calling,"Stop calling, vilikkaruth",entirely_latin_or_english,stop_calling
+train,605,ta,call_later,"Piragu, call me later, haan haan",entirely_latin_or_english,call_later
+train,606,ta,reschedule,"schedule maru, vere neram later",entirely_latin_or_english,call_later
+train,607,hi,reschedule,"Reschedule karo, dusra time. Umm, kya kisi bhi pahle karo?",entirely_latin_or_english,reschedule
+train,609,ml,stop_calling,"Stop calling, later, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,610,hi,unclear,"Hm, kaun ho? Busy.",entirely_latin_or_english,call_later
+train,611,ml,call_later,"Pinne vilikku, can you call later?",entirely_latin_or_english,call_later
+train,612,en,unclear,impolite: 'I don't know what event is happening',generator_artifact,
+train,613,en,confirm,"Impolite: I'll be there later, haan haan.",generator_artifact;multiple_label_cues,confirm;call_later
+train,614,hi,decline,"Nahi aa sakta, kya kya kara raha hai?",entirely_latin_or_english,decline
+train,615,en,stop_calling,I won't receive calls. (1),generator_artifact,
+train,616,ta,reschedule,"Vere neram, can we move this later?",entirely_latin_or_english,call_later
+train,618,ta,confirm,"aam confirm, yes please",entirely_latin_or_english,confirm
+train,619,hi,reschedule,"Dusra time, reschedule karo. 12 words.",entirely_latin_or_english,reschedule
+train,620,ta,unclear,"thi, no, who is this?",entirely_latin_or_english,decline
+train,621,ta,unclear,who is this? unclear,entirely_latin_or_english,
+train,622,ml,confirm,"Haan, I'm busy, maybe later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,625,hi,reschedule,"Reschedule for later, busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,626,hi,decline,Nahi aa sakta. (1) Native script: nahi aa sakta. (2) Romanised: nahi aa sakta. (3) Code-mixed: nahi aa sakta. (4) Polite: nahi aa sakta. (5) ASR-noisy: nahi aa sakta.,generator_artifact;entirely_latin_or_english,decline
+train,627,en,decline,"Not coming, I'm not interested.",multiple_label_cues,confirm;decline
+train,628,hi,stop_calling,"Stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,630,ta,confirm,aam confirm? sari yes,entirely_latin_or_english,confirm
+train,631,ta,unclear,"Theriy, who called? Not sure",entirely_latin_or_english,
+train,633,hi,confirm,"Haan haan, jhoothi ka kya karna hai?",entirely_latin_or_english,confirm
+train,636,ta,call_later,"Piragu, call me later later",entirely_latin_or_english,call_later
+train,637,ml,call_later,pinne vilikku later,entirely_latin_or_english,call_later
+train,639,hi,decline,"Nahi, chalega. Jaan mai nahi aa sakta.",entirely_latin_or_english,decline
+train,640,ta,reschedule,"Piragu paark, reschedule, sure?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,641,ta,call_later,"Piragu, sure, call me later",entirely_latin_or_english,call_later
+train,642,ta,confirm,"aam confirm, i am free",entirely_latin_or_english,confirm
+train,643,hi,confirm,"Aangu, please confirm the meeting time.",entirely_latin_or_english,
+train,644,ml,decline,"I'm not sure about that, haan",entirely_latin_or_english,confirm
+train,646,ml,decline,"I'm not available right now, sorry",entirely_latin_or_english,
+train,647,ml,confirm,"Yes, confirm, okay, sure",entirely_latin_or_english,confirm
+train,648,ta,stop_calling,"Stop calling, please, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,649,ml,confirm,"I'm busy, come later, sure?",entirely_latin_or_english,call_later
+train,650,ta,unclear,"busy right now, can't hear",entirely_latin_or_english,call_later
+train,651,hi,call_later,Um... later maybe? I'm busy now,entirely_latin_or_english,call_later
+train,652,hi,unclear,"Haan haan, who's this?",entirely_latin_or_english,confirm
+train,653,ta,confirm,"aam confirm, sari yes",entirely_latin_or_english,confirm
+train,654,hi,decline,"Nahi, bhai. Kya karte hoon?",entirely_latin_or_english,decline
+train,657,ml,unclear,"hmm, who is this call for?",entirely_latin_or_english,
+train,658,ta,unclear,what did you say?,entirely_latin_or_english,
+train,659,ml,decline,haan haan nope,entirely_latin_or_english,confirm
+train,660,ml,unclear,"mml, ariy, what's the point?",entirely_latin_or_english,
+train,661,ta,decline,"Haan haan, not interested",entirely_latin_or_english,
+train,662,hi,reschedule,time badlo ke reschedule karo,entirely_latin_or_english,reschedule
+train,663,hi,reschedule,"dusra time karo, reschedule karo",entirely_latin_or_english,reschedule
+train,665,en,confirm,"Polite: I'll be there later, sure.",generator_artifact;multiple_label_cues,confirm;call_later
+train,666,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya kari naa?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,668,en,decline,"Not coming, haan haan, I'm sorry.",multiple_label_cues,confirm;decline
+train,669,hi,reschedule,"Reschedule karo, dusra time. Umm, kya kisi bhi kora? Haan haan, kya kisi bhi kora? Reschedule karo, dusra time.",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,670,hi,call_later,"I'm busy, call me later, sure",entirely_latin_or_english,call_later
+train,671,hi,call_later,"baad mein, later",entirely_latin_or_english,call_later
+train,672,en,unclear,impolite: 'I don't know who you are',generator_artifact,
+train,673,ta,confirm,"Aam sari, who is this?",entirely_latin_or_english,confirm
+train,675,hi,stop_calling,"Call mat karo, phone mat karo",entirely_latin_or_english,stop_calling
+train,676,hi,call_later,"Later, busy, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,677,ta,reschedule,"Vere ner, schedule maru",entirely_latin_or_english,
+train,678,ta,unclear,"theriy a little, i'm confused",entirely_latin_or_english,
+train,679,ta,reschedule,"Vere neram, kana schedule busy",entirely_latin_or_english,call_later
+train,680,hi,call_later,Kya kar raha hai? Call later karo,entirely_latin_or_english,call_later
+train,681,hi,reschedule,"Reschedule karo, dusra time. Haan haan, kya kya karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,682,ml,unclear,"aah, ariyilla, this is confusing",entirely_latin_or_english,
+train,683,ta,decline,"Haa, not now, busy",entirely_latin_or_english,call_later
+train,684,en,decline,"Not coming, I'm afraid, I can't.",multiple_label_cues,confirm;decline
+train,685,hi,confirm,"Aangu, confirm the delivery date.",entirely_latin_or_english,
+train,686,ml,unclear,"come, but it's unclear",entirely_latin_or_english,
+train,688,en,reschedule,"Code-mixed: Come back later, please reschedule.",multiple_label_cues,reschedule;call_later
+train,689,hi,call_later,"haan haan, later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,690,ml,stop_calling,"umm, stop calling me now",entirely_latin_or_english,stop_calling
+train,691,en,confirm,"Romanised: I'm fēe, sūr.",generator_artifact,
+train,692,hi,decline,"Nahi, abhi. Haan haan. Um, I'm not available.",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,693,ta,call_later,"Piragu, call me later, busy now",entirely_latin_or_english,call_later
+train,694,en,confirm,Polite: Can I come tomorrow? I'm sure.,generator_artifact,confirm
+train,696,en,unclear,"Impolite: Haan, the cat is on the mat.",generator_artifact,
+train,697,ml,stop_calling,"Stop calling me, come",entirely_latin_or_english,stop_calling
+train,699,ml,unclear,"haan haan, not sure what you mean",entirely_latin_or_english,confirm
+train,700,en,unclear,native: 'who is calling?',generator_artifact,
+train,701,hi,decline,"Nahi aa sakta, abhi bhi kya kar rahe ho?",entirely_latin_or_english,decline
+train,702,hi,decline,"Nahi, kya kya karta hai",entirely_latin_or_english,decline
+train,703,hi,reschedule,"Dusra time, reschedule karo. (2)romanised Latin spelling as a person or ASR might write it",entirely_latin_or_english,reschedule
+train,706,ml,decline,i'm not sure,entirely_latin_or_english,
+train,707,hi,decline,"Nahi, jai salaam! Um, kya karta hai?",entirely_latin_or_english,decline
+train,710,ml,reschedule,"Schedule maaroo, when's later?",entirely_latin_or_english,call_later
+train,711,ta,call_later,"Piragu, call me later haan haan",entirely_latin_or_english,call_later
+train,712,ta,decline,"nope, not today",entirely_latin_or_english,
+train,713,ta,stop_calling,"Stop calling, busy, umm, haan haan",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,714,ml,reschedule,Reschedule the call when you're free,entirely_latin_or_english,reschedule
+train,716,hi,call_later,"Later, please? Umm... busy",entirely_latin_or_english,call_later
+train,717,ta,unclear,thats not right,entirely_latin_or_english,
+train,718,ml,reschedule,"Kya schedule change kar sakte hain, later?",entirely_latin_or_english,call_later
+train,720,ta,confirm,"Aam sari varuven, confirm sure",entirely_latin_or_english,confirm
+train,721,en,reschedule,Reschedule the appointment to later this week.,multiple_label_cues,reschedule;call_later
+train,722,ml,confirm,"Varam, confirm this thing",entirely_latin_or_english,confirm
+train,723,ml,confirm,"ok, confirm it",entirely_latin_or_english,
+train,724,en,unclear,romanised: 'who is callin?',generator_artifact,
+train,725,ml,decline,"No, I'm not free right now",entirely_latin_or_english,decline
+train,726,ta,call_later,"Piragu, call me later",entirely_latin_or_english,call_later
+train,727,ta,decline,"illai umm, na",entirely_latin_or_english,decline
+train,728,en,stop_calling,"Don't call me, I'm busy.",multiple_label_cues,call_later;stop_calling
+train,729,ml,call_later,"Umm, pinne vilikku, later?",entirely_latin_or_english,call_later
+train,730,ta,confirm,"aam confirm, sure",entirely_latin_or_english,confirm
+train,731,ta,unclear,"Umm, unclear, busy, come later?",entirely_latin_or_english,call_later
+train,732,ta,decline,"varam: no, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,733,hi,stop_calling,"Stop callin', busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,735,ta,stop_calling,"Who is calling, stop calling now, please",entirely_latin_or_english,stop_calling
+train,736,en,stop_calling,"Don't call me, I'm not interested.",multiple_label_cues,decline;stop_calling
+train,737,ta,unclear,"Yaar, this is unclear, can you repeat?",entirely_latin_or_english,
+train,739,ml,unclear,"Aarudu, who's this?",entirely_latin_or_english,
+train,740,hi,reschedule,"Reschedule karo, dusra time.",entirely_latin_or_english,reschedule
+train,741,ml,confirm,"Um, sheri, varam, can you come?",entirely_latin_or_english,confirm
+train,742,ta,call_later,"Piragu, call me later umm",entirely_latin_or_english,call_later
+train,743,ml,decline,I'm not able to help right now,entirely_latin_or_english,
+train,744,ml,confirm,"Sure, I can do it later",entirely_latin_or_english,call_later
+train,745,ta,reschedule,haan haan reschedule please umm,entirely_latin_or_english,reschedule
+train,746,ml,confirm,"Okay, confirm, yeah, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,747,ta,confirm,aam confirm later yes,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,749,ta,reschedule,"Schedule change, sure",entirely_latin_or_english,
+train,750,ml,stop_calling,"Stop calling, I'm not home",entirely_latin_or_english,stop_calling
+train,751,ta,decline,"no, i'm not free",entirely_latin_or_english,decline
+train,753,hi,confirm,"Haan haan, ek baar karte hai",entirely_latin_or_english,confirm
+train,754,ta,reschedule,"Schedule maru, busy, reschedule?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,756,hi,reschedule,"Reschedule karo, please. Um, kya kari naa?",entirely_latin_or_english,reschedule
+train,757,ml,unclear,"later, but i'm not sure",entirely_latin_or_english,call_later
+train,758,ta,confirm,"aam confirm, sure no",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,759,ta,call_later,"Piragu, come later, appuram.",entirely_latin_or_english,call_later
+train,760,hi,call_later,baad: call later,entirely_latin_or_english,call_later
+train,762,ta,stop_calling,"Stop calling, it's me, umm",entirely_latin_or_english,stop_calling
+train,763,hi,confirm,"Jai ho, jai ho, jai ho",entirely_latin_or_english,
+train,764,hi,reschedule,"Reschedule karo, dusra time ke liye",entirely_latin_or_english,reschedule
+train,765,en,reschedule,Reschedule the session to a later date.,multiple_label_cues,reschedule;call_later
+train,766,hi,stop_calling,"Stop call, busy, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+train,767,ta,call_later,"Pir? Appuram, call later",entirely_latin_or_english,call_later
+train,768,ml,unclear,"can't hear, please repeat",entirely_latin_or_english,
+train,769,ml,decline,"I'm not available now, sorry",entirely_latin_or_english,
+train,770,en,decline,"No, not coming, I'm too busy.",multiple_label_cues,confirm;decline;call_later
+train,771,hi,confirm,"Haan haan, jeez, kya karta hai?",entirely_latin_or_english,confirm
+train,772,hi,reschedule,"dusra time karo, jisne time badlo karo",entirely_latin_or_english,reschedule
+train,774,hi,unclear,"Haaan, kaun ho? Not sure.",entirely_latin_or_english,
+train,775,hi,reschedule,"Dusra time, reschedule karo. I'm available, later.",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,776,ta,decline,"No thanks, umm, busy now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,777,hi,decline,"Nahi aa sakta, kya kisi karta hai?",entirely_latin_or_english,decline
+train,778,en,stop_calling,I'm not interested in calls. (1),generator_artifact,decline
+train,779,hi,confirm,"Hi, I need to confirm the schedule.",entirely_latin_or_english,
+train,780,ta,stop_calling,"Come, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,781,ml,decline,can't do this right now please,entirely_latin_or_english,
+train,782,ml,stop_calling,Please stop calling,entirely_latin_or_english,stop_calling
+train,783,ta,call_later,"Piragu, call later",entirely_latin_or_english,call_later
+train,784,ta,unclear,come talk later please,entirely_latin_or_english,call_later
+train,787,hi,stop_calling,"Stop call, busy, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,788,hi,unclear,"i don't understand, umm",entirely_latin_or_english,
+train,789,ml,stop_calling,"Stop calling, it's me",entirely_latin_or_english,stop_calling
+train,790,hi,unclear,ummm who called? not sure,entirely_latin_or_english,
+train,791,ta,stop_calling,"Stop callin' me, later.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,792,en,reschedule,Reschedule the event for a later date.,multiple_label_cues,reschedule;call_later
+train,793,en,reschedule,Reschedule the meeting to a later afternoon.,multiple_label_cues,reschedule;call_later
+train,795,ta,reschedule,"Reschedule maru, busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,796,ta,call_later,"Call later, sure, thanks",entirely_latin_or_english,call_later
+train,797,ml,stop_calling,"Come stop the call, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,800,ta,confirm,"A: Aam sari, confirm",entirely_latin_or_english,confirm
+train,801,ta,call_later,"Piragu, haan haan, call later",entirely_latin_or_english,call_later
+train,802,ta,decline,"No, varamatten, illai",entirely_latin_or_english,decline
+train,803,ta,decline,"Illai, varamatten, bye",entirely_latin_or_english,decline
+train,804,en,unclear,impolite: 'I don't know what you're saying',generator_artifact,
+train,805,hi,unclear,"Umm, pata nahi, kya event?",entirely_latin_or_english,decline
+train,806,hi,reschedule,"Reschedule karo, dusra time. Haan haan, kya karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,807,hi,unclear,"Hm, not sure, busy",entirely_latin_or_english,call_later
+train,809,ta,confirm,"sari, confirm, later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,810,ta,confirm,"Aam sari, confirm, sure",entirely_latin_or_english,confirm
+train,811,hi,reschedule,"Reschedule karo, dusra time 12:00 PM",entirely_latin_or_english,reschedule
+train,812,ml,call_later,"Pinne vilikku, later haan haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,813,ta,stop_calling,"Phone pannadheenga, stop.",entirely_latin_or_english,stop_calling
+train,814,en,reschedule,Romanised: Reschedule the meeting for tomorrow afternoon.,generator_artifact,reschedule
+train,815,ml,confirm,"Umm, I'm busy, can you wait?",entirely_latin_or_english,call_later
+train,816,hi,reschedule,"Dusra time, reschedule karo. 12:00 PM",entirely_latin_or_english,reschedule
+train,817,hi,reschedule,"Reschedule karo, busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,818,ta,confirm,Aam sari varu: confirm?,entirely_latin_or_english,confirm
+train,819,ta,call_later,"Piragu, come when you're free, later.",entirely_latin_or_english,call_later
+train,820,ta,reschedule,can you reschedule my meeting,entirely_latin_or_english,reschedule
+train,821,ta,stop_calling,"Sure, stop the call, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,822,hi,call_later,"Later, busy, sure",entirely_latin_or_english,call_later
+train,823,ml,reschedule,"Pinneedu, reschedule event for next week",entirely_latin_or_english,reschedule
+train,824,ml,confirm,Can you confirm that for me?,entirely_latin_or_english,
+train,825,ta,stop_calling,"Umm, stop callin' me now.",entirely_latin_or_english,stop_calling
+train,827,ta,reschedule,"Vere neram, kana later",entirely_latin_or_english,call_later
+train,828,ml,stop_calling,"Later, stop calling me",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,829,ta,reschedule,"Reschedule, I'm not free now",entirely_latin_or_english,reschedule
+train,832,hi,call_later,"ummm i'm busy now, can you call later?",entirely_latin_or_english,call_later
+train,833,hi,confirm,"Ji haan, jai ho",entirely_latin_or_english,confirm
+train,834,ta,decline,"Haan ha: no, thanks",entirely_latin_or_english,decline
+train,835,hi,stop_calling,"Stop calling, i'm busy, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,836,ml,call_later,pinne vilikku ippol,entirely_latin_or_english,call_later
+train,837,en,reschedule,"Impolite: I’m not available, can’t reschedule.",generator_artifact,reschedule
+train,838,ml,call_later,"Pinne vilikku, ippol come later",entirely_latin_or_english,call_later
+train,839,ta,reschedule,"Vere neram, can we reschedule?",entirely_latin_or_english,reschedule
+train,840,ta,call_later,"Piragu, I'll call you later umm",entirely_latin_or_english,call_later
+train,841,hi,decline,"Nahi, bhai, aapka kya karta hai?",entirely_latin_or_english,decline
+train,842,ta,call_later,"Piragu, busy now, call later, please.",entirely_latin_or_english,call_later
+train,843,hi,stop_calling,"Come stop calling, i'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,844,ta,unclear,"Theriyala, unclear, can you say again?",entirely_latin_or_english,
+train,845,ml,decline,"Varilla, too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,846,ta,unclear,i don't get it,entirely_latin_or_english,
+train,847,ta,unclear,"Haan haan, unclear, come again?",entirely_latin_or_english,
+train,848,hi,reschedule,dusra time ke reschedule karo,entirely_latin_or_english,reschedule
+train,849,en,decline,"Decline, I can't attend, I'm too busy.",multiple_label_cues,decline;call_later
+train,850,ta,reschedule,"schedule maru, vere neram, come later",entirely_latin_or_english,call_later
+train,851,hi,confirm,"Aaunga, confirm the order number.",entirely_latin_or_english,confirm
+train,852,hi,stop_calling,"Stop calling, yeah, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,854,ta,call_later,"Piragu, call later, busy, yes.",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,855,hi,unclear,"Hi, kaun ho? Pata nahi.",entirely_latin_or_english,decline
+train,856,ta,unclear,"hmm, i don't understand, later",entirely_latin_or_english,call_later
+train,858,hi,stop_calling,"Stop calling, sure",entirely_latin_or_english,stop_calling
+train,859,ml,call_later,"Pinne vilikku, busy, call later",entirely_latin_or_english,call_later
+train,860,ta,unclear,"Umm, not sure, why is this happening?",entirely_latin_or_english,
+train,861,hi,call_later,"Busy, later call",entirely_latin_or_english,call_later
+train,862,hi,unclear,"Haaan, busy? Not sure who.",entirely_latin_or_english,call_later
+train,863,hi,reschedule,"Dusra time, reschedule karo. 3 words.",entirely_latin_or_english,reschedule
+train,864,ml,call_later,"Pinne vilikku, umm later",entirely_latin_or_english,call_later
+train,865,ta,reschedule,"Vere neram, reschedule schedule maru",entirely_latin_or_english,reschedule
+train,866,ml,call_later,"Pinne, busy now later",entirely_latin_or_english,call_later
+train,867,ta,call_later,"Appuram, call me later",entirely_latin_or_english,call_later
+train,869,hi,confirm,"Hi, could you confirm the location of the meeting?",entirely_latin_or_english,
+train,871,ml,confirm,"I'm confused, what's next?",entirely_latin_or_english,
+train,872,ml,decline,"I'm not feeling well today, sorry",entirely_latin_or_english,
+train,873,hi,stop_calling,"Stop calling, i: i'm busy, umm.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,874,ta,call_later,"Piragu, call later, busy now.",entirely_latin_or_english,call_later
+train,875,ta,stop_calling,"Pani pannadheenga? Um, stop calling",entirely_latin_or_english,stop_calling
+train,876,hi,unclear,"ummm, who's calling?",entirely_latin_or_english,
+train,877,ml,call_later,"Pinne, umm, later, busy?",entirely_latin_or_english,call_later
+train,878,ta,stop_calling,"Haan haan, stop callin' me.",entirely_latin_or_english,stop_calling
+train,879,ta,reschedule,"Piragu paark, busy, let's try later",entirely_latin_or_english,call_later
+train,880,hi,unclear,"Hm, not clear, who's calling?",entirely_latin_or_english,
+train,881,en,stop_calling,I'll stop calling you later.,multiple_label_cues,call_later;stop_calling
+train,883,ml,confirm,"Umm, confirm that again?",entirely_latin_or_english,
+train,884,ta,call_later,"Piragu, call me later sure",entirely_latin_or_english,call_later
+train,885,hi,unclear,"Hm, who is this? Not sure.",entirely_latin_or_english,
+train,886,ta,confirm,"Aam sari, confirm, maybe",entirely_latin_or_english,confirm
+train,888,hi,unclear,"Umm, kaun ho? Not clear.",entirely_latin_or_english,
+train,889,hi,decline,"Nahi, abhi bhi kya kar rahe ho?",entirely_latin_or_english,decline
+train,890,hi,decline,"Nahi, hi. I can't speak.",entirely_latin_or_english,decline
+train,891,hi,unclear,Kya hua? Not clear,entirely_latin_or_english,
+train,892,ml,confirm,"Ok, I'm available",entirely_latin_or_english,
+train,893,ml,confirm,"Umm, can you repeat that?",entirely_latin_or_english,
+train,894,en,reschedule,Reschedule the appointment to a later time.,multiple_label_cues,reschedule;call_later
+train,895,ta,call_later,"Piragu, call later, busy now",entirely_latin_or_english,call_later
+train,896,hi,call_later,"Haan haan, baad mein call karo",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,897,ta,stop_calling,"Haan haan, stop the call",entirely_latin_or_english,stop_calling
+train,898,ta,confirm,"aam confirm, umm later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,899,ml,reschedule,Reschedule when you have time?,entirely_latin_or_english,reschedule
+train,901,en,reschedule,Reschedule the call to a later date.,multiple_label_cues,reschedule;call_later
+train,902,ml,reschedule,Reschedule me when you have time,entirely_latin_or_english,reschedule
+train,903,ta,reschedule,"Reschedule, my time is full",entirely_latin_or_english,reschedule
+train,904,en,reschedule,Reschedule the appointment to a later day.,multiple_label_cues,reschedule;call_later
+train,905,ml,unclear,"ethu event, who called?",entirely_latin_or_english,
+train,906,ml,stop_calling,"Vilikalle, stop, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,907,hi,call_later,"Call later, busy hoon",entirely_latin_or_english,call_later
+train,908,ml,unclear,"ethu event, i dont know",entirely_latin_or_english,
+train,909,ta,decline,"Illai, varamatten, I'll come later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,910,en,decline,"Not coming, I'm sorry, I can't.",multiple_label_cues,confirm;decline
+train,911,hi,unclear,Who is calling me right now?,entirely_latin_or_english,
+train,912,ta,stop_calling,"Phone pannadheenga, stop",entirely_latin_or_english,stop_calling
+train,913,ml,decline,i'm busy yeah,entirely_latin_or_english,call_later
+train,914,ml,reschedule,"Reschedule for next week, sure?",entirely_latin_or_english,reschedule
+train,915,ta,confirm,sari confirm busy,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,916,hi,confirm,"Hi, confirm the time of the call again.",entirely_latin_or_english,
+train,917,ml,confirm,"Haan haan, I'm busy, sure later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,919,ml,call_later,"Pinne, call later, busy now",entirely_latin_or_english,call_later
+train,920,ml,reschedule,Reschedule please umm when are you free?,entirely_latin_or_english,reschedule
+train,921,ta,call_later,"Later, call me, sure",entirely_latin_or_english,call_later
+train,922,en,decline,"Not coming, haan haan, I'll pass.",multiple_label_cues,confirm;decline
+train,924,en,call_later,Call busy later. - Code-mixed with English words like come/busy/sure/later,multiple_label_cues,confirm;call_later
+train,925,hi,call_later,"Call later, I'm busy now, umm",entirely_latin_or_english,call_later
+train,926,ml,decline,varilla not working,entirely_latin_or_english,decline
+train,928,ta,unclear,ummm who called,entirely_latin_or_english,
+train,929,ml,call_later,"Pinne vilikku, I'll call later",entirely_latin_or_english,call_later
+train,930,hi,confirm,"Theek hai, I need to confirm the delivery date.",entirely_latin_or_english,confirm
+train,931,ml,stop_calling,"Pleas stop callin' me, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,932,hi,call_later,"Haan haan, later sure",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,933,hi,unclear,"Pata nahi, who called?",entirely_latin_or_english,decline
+train,934,hi,call_later,"Baad mein karo, busy hoon now",entirely_latin_or_english,call_later
+train,935,en,reschedule,"Reschedule, please, to a later hour.",multiple_label_cues,reschedule;call_later
+train,936,hi,stop_calling,"Um, stop calling, I'm busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,937,ml,confirm,"ummm, confirm with me",entirely_latin_or_english,
+train,938,ml,decline,"Haan haan, no, please",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,939,hi,unclear,Pata nahi kya hua,entirely_latin_or_english,decline
+train,940,ta,reschedule,"reschedule for next time, umm",entirely_latin_or_english,reschedule
+train,942,hi,stop_calling,"Stop calling, please, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,943,en,reschedule,Reschedule the appointment for a later time.,multiple_label_cues,reschedule;call_later
+train,944,ml,call_later,"Pin: call later, sure, busy?",entirely_latin_or_english,call_later
+train,947,ml,stop_calling,"Haan haan, stop calling, umm",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,948,ta,call_later,"Piragu, appuram, call later, umm.",entirely_latin_or_english,call_later
+train,949,ta,stop_calling,Phone pannad: stop now,entirely_latin_or_english,stop_calling
+train,950,ta,unclear,sure but it's not clear,entirely_latin_or_english,
+train,951,ml,confirm,"Yeah, I'm free now",entirely_latin_or_english,
+train,952,hi,stop_calling,"Umm, stop calling, yeah",entirely_latin_or_english,stop_calling
+train,954,hi,unclear,"Hm, kaun ho? Pata nahi.",entirely_latin_or_english,decline
+train,955,hi,stop_calling,"Hey, stop the calls, umm",entirely_latin_or_english,stop_calling
+train,956,hi,decline,"Nahi, hi! I can't help you right now.",entirely_latin_or_english,decline
+train,957,hi,decline,"Nahi aa sakta, kya kya kare? (2)",entirely_latin_or_english,decline
+train,958,hi,reschedule,"Dusra time, reschedule karo. 4 words.",entirely_latin_or_english,reschedule
+train,959,ta,unclear,haan haan not sure,entirely_latin_or_english,
+train,961,hi,call_later,"call later, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,962,ta,reschedule,schedule maru later sure,entirely_latin_or_english,call_later
+train,963,ta,stop_calling,"Stop calling, busy, azhaikkadheenga",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,964,ml,reschedule,"Pinneedu, schedule maaroo?",entirely_latin_or_english,
+train,965,ta,unclear,theriyala no idea,entirely_latin_or_english,decline
+train,966,hi,confirm,"Aangu, tum kya kia hai?",entirely_latin_or_english,
+train,967,ml,confirm,"Haan, busy now",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,968,en,decline,"Decline, not coming, but I'm sorry.",multiple_label_cues,confirm;decline
+train,969,ml,decline,"No, I don't think so, umm",entirely_latin_or_english,decline
+train,970,ml,unclear,"umm, what's happening here?",entirely_latin_or_english,
+train,971,ml,reschedule,"Reschedule when you free, come later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,972,ml,unclear,"haan haan, not sure about this one",entirely_latin_or_english,confirm
+train,973,ta,unclear,"yaar this is confusing, umm",entirely_latin_or_english,
+train,974,ta,unclear,hey i think it was,entirely_latin_or_english,
+train,975,ta,unclear,"kina? en na, who?",entirely_latin_or_english,
+train,977,hi,stop_calling,"Stop calling, please, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,978,ta,unclear,"thi, it's busy, umm",entirely_latin_or_english,call_later
+train,979,en,unclear,Romanised: traɪn is late.,generator_artifact,
+train,980,en,reschedule,Reschedule the appointment to a later hour.,multiple_label_cues,reschedule;call_later
+train,981,hi,unclear,Umm... kaun ho? Not sure.,entirely_latin_or_english,
+train,982,hi,call_later,"Umm, call later maybe",entirely_latin_or_english,call_later
+train,985,ml,reschedule,Schedule again when you're free?,entirely_latin_or_english,
+train,986,en,unclear,romanised: 'i'm not sure what time they called',generator_artifact,confirm
+train,987,hi,unclear,"Kya event? Umm, not sure.",entirely_latin_or_english,
+train,988,ta,stop_calling,"Umm... stop calling, please",entirely_latin_or_english,stop_calling
+train,990,en,decline,"Not interested, I'm busy.",multiple_label_cues,decline;call_later
+train,991,ml,confirm,"Umm, busy, come later?",entirely_latin_or_english,call_later
+train,992,en,unclear,romanised: 'i'm not sure who called me',generator_artifact,confirm
+train,993,ml,unclear,"umi, aarudu, not clear",entirely_latin_or_english,
+train,994,hi,decline,"Nahi, kya kya karta hai?",entirely_latin_or_english,decline
+train,995,ml,stop_calling,"Stop the call, please",entirely_latin_or_english,stop_calling
+train,996,hi,unclear,"Umm, not sure about that",entirely_latin_or_english,
+train,997,hi,stop_calling,"Come on, stop calling me, i'm busy.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,998,ml,reschedule,"Schedule maaroo, reschedule me?",entirely_latin_or_english,reschedule
+train,999,ta,call_later,"Later, call me, umm",entirely_latin_or_english,call_later
+train,1001,ml,stop_calling,"Stop calling, come",entirely_latin_or_english,stop_calling
+train,1002,hi,unclear,"Kya event? Not sure, busy.",entirely_latin_or_english,call_later
+train,1003,hi,decline,"Nahi, kya karte hain, kya kya karte hain?",entirely_latin_or_english,decline
+train,1004,en,decline,"No, I can't, I'm too busy.",multiple_label_cues,decline;call_later
+train,1006,ml,call_later,"Pinne, busy now, call later?",entirely_latin_or_english,call_later
+train,1007,ta,stop_calling,"Umm... stop, please",entirely_latin_or_english,stop_calling
+train,1008,hi,decline,"Nahi aa sakta, kya kya karte hain?",entirely_latin_or_english,decline
+train,1010,ta,confirm,"haan, confirm later",entirely_latin_or_english,call_later
+train,1011,hi,confirm,"Aangua, jai hai",entirely_latin_or_english,
+train,1012,ml,reschedule,"Reschedule request, please?",entirely_latin_or_english,reschedule
+train,1013,ml,call_later,"Pinne, later, busy, sure?",entirely_latin_or_english,call_later
+train,1014,ta,decline,"haan, i'm busy now",entirely_latin_or_english,call_later
+train,1015,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya kisi bhi kora? Umm, kya kisi bhi kora? Dusra time, reschedule karo.",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1016,en,decline,"No, I won't come, I'm busy.",multiple_label_cues,decline;call_later
+train,1017,en,stop_calling,"Stop calling, no call.",multiple_label_cues,decline;stop_calling
+train,1018,hi,unclear,"Hah, kya event?",entirely_latin_or_english,
+train,1019,ta,reschedule,"Piragu, paarkalam, come later",entirely_latin_or_english,call_later
+train,1021,ml,confirm,"Hmm, I'm busy right now",entirely_latin_or_english,call_later
+train,1022,ml,call_later,"Pinne, call later, busy",entirely_latin_or_english,call_later
+train,1023,ml,decline,"Sure, but I'm currently busy",entirely_latin_or_english,call_later
+train,1024,ta,reschedule,"Vere neram, reschedule later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1025,ta,reschedule,"reschedule, umm, busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1027,ml,call_later,"Pinne vilikku, call later, busy now",entirely_latin_or_english,call_later
+train,1028,hi,decline,"Nahi, jai salaam! Haan haan, kya karta hai?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1029,hi,call_later,"Later, busy but come",entirely_latin_or_english,call_later
+train,1030,en,confirm,Native: Confirm your attendance at the meeting tomorrow,generator_artifact,
+train,1031,hi,unclear,"Umm, kya event? Pata nahi.",entirely_latin_or_english,decline
+train,1032,ml,call_later,"Pin: vilikku, call later?",entirely_latin_or_english,call_later
+train,1034,ml,call_later,"Pinne, call later, busy, ty",entirely_latin_or_english,call_later
+train,1035,ta,reschedule,"Reschedule maru, come later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1036,en,unclear,impolite: 'I'm not sure what time they called',generator_artifact,confirm
+train,1038,ml,unclear,"Umm, not sure what you mean, aarudu",entirely_latin_or_english,
+train,1039,en,confirm,Polite: I'm sure I will come later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,1041,en,stop_calling,"Stop calling, busy.",multiple_label_cues,call_later;stop_calling
+train,1042,hi,unclear,i think you said something wrong,entirely_latin_or_english,
+train,1043,en,decline,"No, not coming, I'm not interested.",multiple_label_cues,confirm;decline
+train,1044,ta,reschedule,"Vere neram, kana schedule later",entirely_latin_or_english,call_later
+train,1045,hi,confirm,"Ji haan, theek hai",entirely_latin_or_english,confirm
+train,1046,ta,unclear,later maybe clearer,entirely_latin_or_english,call_later
+train,1047,ml,stop_calling,"Stop callin', I'm busy right now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1048,hi,confirm,"Theek hai, kya kari?",entirely_latin_or_english,confirm
+train,1049,ta,stop_calling,"Phone pannad, stop callin'.",entirely_latin_or_english,stop_calling
+train,1051,ta,call_later,"Later, call me when you're free",entirely_latin_or_english,call_later
+train,1053,ml,unclear,ethu event? who's calling?,entirely_latin_or_english,
+train,1054,hi,decline,"Nahi, bhai. Jaan mai nahi aa sakta.",entirely_latin_or_english,decline
+train,1056,hi,stop_calling,"Stop calling, i'm busy, umm.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1057,ta,confirm,"Aam sari varuven, confirm come?",entirely_latin_or_english,confirm
+train,1058,ta,unclear,thats unclear,entirely_latin_or_english,
+train,1059,ta,reschedule,"Neram, busy now, can you reschedule?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1060,en,unclear,"Polite: Um, the cat is on the mat.",generator_artifact,
+train,1061,ml,confirm,"Yes, I'm available now",entirely_latin_or_english,confirm
+train,1063,hi,stop_calling,"Stop calling, umm, please.",entirely_latin_or_english,stop_calling
+train,1064,hi,stop_calling,"Stop calling me, i'm busy, later.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1065,hi,reschedule,"Reschedule karo, dusra time. Um, kya karta hai?",entirely_latin_or_english,reschedule
+train,1066,ml,call_later,"Pinne, later, busy, umm?",entirely_latin_or_english,call_later
+train,1067,ta,stop_calling,"Phone pannadheenga, stop calling please",entirely_latin_or_english,stop_calling
+train,1068,ta,decline,"Umm, no, not interested, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1069,hi,stop_calling,"Stop calling, busy, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1070,hi,reschedule,"Dusra time, reschedule karo. I'm busy, so later.",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1071,hi,decline,"Nahi, hi. I'm not available.",entirely_latin_or_english,decline
+train,1072,ta,decline,"ummm, not today",entirely_latin_or_english,
+train,1073,hi,call_later,"busy hoon, come back later",entirely_latin_or_english,call_later
+train,1074,ta,reschedule,reschedule bhaaii umm busy now,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1075,ta,stop_calling,"Um, stop calling, azhaikkadheenga",entirely_latin_or_english,stop_calling
+train,1076,hi,stop_calling,"Stop calling, i: i'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1077,ml,stop_calling,"Umm, stop calling, who is it?",entirely_latin_or_english,stop_calling
+train,1078,ta,stop_calling,"Umm, who's callin' me now?",entirely_latin_or_english,
+train,1079,hi,call_later,"Abhi nahi, busy hoon, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1080,ta,confirm,"varuven, confirm, no",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1081,ta,reschedule,can you reschedule me please,entirely_latin_or_english,reschedule
+train,1082,hi,confirm,"Theek hai, I need to confirm the order status.",entirely_latin_or_english,confirm
+train,1083,ml,unclear,"come, busy now, can't explain",entirely_latin_or_english,call_later
+train,1084,ta,confirm,"Aam sari varuven, confirm busy?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1085,hi,decline,"Nahi, kya kya kare? (2)",entirely_latin_or_english,decline
+train,1086,ml,decline,"Pattilla, I'm too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1087,ml,stop_calling,"Come on, stop that call",entirely_latin_or_english,stop_calling
+train,1089,ml,confirm,"Sheri varam, busy, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1090,ml,call_later,"Pine vlikku, later",entirely_latin_or_english,call_later
+train,1091,ml,decline,"Can't do it, I'm busy",entirely_latin_or_english,call_later
+train,1092,hi,decline,"Nahi aa sakta, abhi kya karna hai?",entirely_latin_or_english,decline
+train,1093,ta,decline,"na, i'm busy now",entirely_latin_or_english,call_later
+train,1094,ml,call_later,"Pinne vilikku, ippol later",entirely_latin_or_english,call_later
+train,1095,en,unclear,romanised: 'what event?',generator_artifact,
+train,1097,ml,reschedule,Can you reschedule for tomorrow?,entirely_latin_or_english,reschedule
+train,1099,ml,call_later,"Haan haan, call me later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1100,hi,stop_calling,"Stop calling, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1101,ta,decline,"Haan haan, no, too much going on",entirely_latin_or_english,decline
+train,1102,ta,call_later,"Piragu, when you free, call me later",entirely_latin_or_english,call_later
+train,1104,ta,call_later,"Piragu, later, call me, busy",entirely_latin_or_english,call_later
+train,1106,en,unclear,native: 'I don't know who called me',generator_artifact,
+train,1107,hi,unclear,kya hua? pata nahi,entirely_latin_or_english,decline
+train,1108,ta,confirm,"Aam sari, confirm, later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1111,en,reschedule,Polite: I would like to reschedule the meeting for another time.,generator_artifact,reschedule
+train,1112,hi,reschedule,"Reschedule for another time, please",entirely_latin_or_english,reschedule
+train,1113,ml,reschedule,"Reschedule, please, can you do later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1114,en,confirm,Romanised: Can I come tomorrow? I'm suer.,generator_artifact,
+train,1115,en,reschedule,Reschedule the meeting to a later hour.,multiple_label_cues,reschedule;call_later
+train,1117,ta,stop_calling,"Stop calling, it's me, azhaikkadheenga",entirely_latin_or_english,stop_calling
+train,1118,ml,stop_calling,"Stop calling, busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1119,ml,stop_calling,"Stop calling me, umm, please",entirely_latin_or_english,stop_calling
+train,1120,ml,decline,i'm not available,entirely_latin_or_english,
+train,1121,hi,confirm,"Haan haan, are you confirming the details?",entirely_latin_or_english,confirm
+train,1122,ml,stop_calling,"Come on, stop calling now busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1123,hi,stop_calling,"Come, stop calling, sure later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1124,ml,unclear,"Haan haan, can't hear you clearly",entirely_latin_or_english,confirm
+train,1125,ml,stop_calling,"Stop calling, vilikalle",entirely_latin_or_english,stop_calling
+train,1126,hi,reschedule,dusra time ki reschedule karo,entirely_latin_or_english,reschedule
+train,1128,hi,decline,"Nahi, hi. I'm not in the mood.",entirely_latin_or_english,decline
+train,1129,ml,call_later,"Pinne vilikku, sure later",entirely_latin_or_english,call_later
+train,1130,ta,stop_calling,"Umm, busy, stop calling later, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1131,ml,decline,can't handle this right now,entirely_latin_or_english,
+train,1132,ta,reschedule,Can you move my appointment?,entirely_latin_or_english,
+train,1133,ta,unclear,"yaar, it's busy, later?",entirely_latin_or_english,call_later
+train,1134,hi,call_later,"Later, abhi nahi",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1135,ml,reschedule,"Reschedule, I'm available later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1136,en,unclear,polite: 'I am not sure what you're saying',generator_artifact,confirm
+train,1137,ta,confirm,"sari, confirm, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1139,hi,reschedule,"Reschedule karo, dusra time. Um, kya karo?",entirely_latin_or_english,reschedule
+train,1140,hi,confirm,"Haan haan, jai ho",entirely_latin_or_english,confirm
+train,1141,ta,stop_calling,"Ayyo, stop calling me please",entirely_latin_or_english,stop_calling
+train,1142,en,reschedule,Reschedule the meeting to a later time.,multiple_label_cues,reschedule;call_later
+train,1143,hi,confirm,"Haan haan, can you confirm the time slot?",entirely_latin_or_english,confirm
+train,1144,hi,call_later,"Baad mein call karungi, shukriya",entirely_latin_or_english,call_later
+train,1145,hi,decline,"Nahi, hi. I can't come later.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1146,hi,unclear,"Haaan, kya event? Pata nahi.",entirely_latin_or_english,decline
+train,1147,ml,confirm,"Sheri, who's calling?",entirely_latin_or_english,confirm
+train,1148,ml,reschedule,Can you reschedule my appointment?,entirely_latin_or_english,reschedule
+train,1149,ta,stop_calling,"Phone pannadheenga, stop calling",entirely_latin_or_english,stop_calling
+train,1150,ta,confirm,"aam confirm, i am busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1151,ml,unclear,"Ariyilla, who is it?",entirely_latin_or_english,
+train,1152,ml,unclear,"Ethu event, busy, no clue",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1153,en,stop_calling,"Stop calling, later.",multiple_label_cues,call_later;stop_calling
+train,1155,ml,reschedule,"Schedule change, busy, when?",entirely_latin_or_english,call_later
+train,1156,ml,reschedule,Reschedule when you're busy?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1157,ml,stop_calling,"Stop calling me, please umm",entirely_latin_or_english,stop_calling
+train,1158,ml,reschedule,"Reschedule me for next week, sure?",entirely_latin_or_english,reschedule
+train,1159,ta,decline,"Naa, varamatten, no",entirely_latin_or_english,decline
+train,1160,hi,stop_calling,"Stop calling, i'm busy, no",multiple_label_cues;entirely_latin_or_english,decline;call_later;stop_calling
+train,1161,ta,decline,"Haan haan, I'm not sure, later maybe",entirely_latin_or_english,call_later
+train,1162,hi,reschedule,"reschedule karo, dusra time karo",entirely_latin_or_english,reschedule
+train,1163,hi,decline,"Nahi, nahi aa sakta. (2) Romanised Latin spelling as a person or ASR might write it",entirely_latin_or_english,decline
+train,1164,ml,stop_calling,"Stop calling, I'm free",entirely_latin_or_english,stop_calling
+train,1165,hi,confirm,"Ji haan, kya kisi bhi baat karta hai?",entirely_latin_or_english,confirm
+train,1166,hi,stop_calling,"Hey, stop calling me, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1167,ml,call_later,"Pinne, busy, call later, sure?",entirely_latin_or_english,call_later
+train,1169,ta,unclear,"thi, who is that?",entirely_latin_or_english,
+train,1170,ml,stop_calling,"stop calling, sure please",entirely_latin_or_english,stop_calling
+train,1172,ml,decline,"I'm not free right now, sorry",entirely_latin_or_english,
+train,1173,ta,call_later,"Haan haan, call me later please",entirely_latin_or_english,call_later
+train,1176,en,decline,"Not coming, I'm sorry, I'll have to decline.",multiple_label_cues,confirm;decline
+train,1177,ml,decline,"Umm, no, not now",entirely_latin_or_english,decline
+train,1178,ml,call_later,pinne vilik: later,entirely_latin_or_english,call_later
+train,1179,ta,reschedule,"Reschedule me, please",entirely_latin_or_english,reschedule
+train,1180,ta,call_later,"Call later busy, umm",entirely_latin_or_english,call_later
+train,1181,en,stop_calling,"Stop calling me, please. (1)",generator_artifact,stop_calling
+train,1182,hi,stop_calling,"Stop calling me, please, umm",entirely_latin_or_english,stop_calling
+train,1183,ml,decline,"Umm, not interested right now",entirely_latin_or_english,
+train,1184,ml,reschedule,"Vere samayam, when can we do it?",entirely_latin_or_english,
+train,1186,en,call_later,"Call later, please. (1) Native script natural phrasing",generator_artifact,call_later
+train,1187,ta,call_later,"Call me later, sure?",entirely_latin_or_english,call_later
+train,1188,ta,decline,"Naa, come later, sure",entirely_latin_or_english,call_later
+train,1189,ta,call_later,"Piragu, call later, haan haan, okay",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1190,ml,decline,ill a bit busy right now,entirely_latin_or_english,call_later
+train,1191,ta,call_later,"Piragu, call me later, umm, okay?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1192,ml,stop_calling,"Come stop calling, it's me",entirely_latin_or_english,stop_calling
+train,1195,ml,stop_calling,Stop callin' me umm,entirely_latin_or_english,stop_calling
+train,1197,ta,decline,"illai, i'm busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1198,hi,stop_calling,"Um, stop calling, sure",entirely_latin_or_english,stop_calling
+train,1199,ml,decline,umm i can't do that right now,entirely_latin_or_english,
+train,1200,ml,unclear,"Ethu event, ariyilla, confused",entirely_latin_or_english,
+train,1201,ml,unclear,"umh, not sure about that",entirely_latin_or_english,
+train,1202,ta,unclear,haan haan i dont know,entirely_latin_or_english,
+train,1203,ml,call_later,"Pine vlik, busy later",entirely_latin_or_english,call_later
+train,1204,en,reschedule,Romanised: Reschedule la meti per domani pomeriggio.,generator_artifact,reschedule
+train,1205,en,decline,"Not coming, haan haan, I'm really sorry.",multiple_label_cues,confirm;decline
+train,1206,ta,stop_calling,"stop calling, come later, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1208,ta,decline,"Not now, busy, maybe later",entirely_latin_or_english,call_later
+train,1209,ta,reschedule,"Schedule change, help me reschedule",entirely_latin_or_english,reschedule
+train,1210,ml,confirm,"Sheri, can you say again?",entirely_latin_or_english,confirm
+train,1215,ml,unclear,"ummm, who's calling right now?",entirely_latin_or_english,
+train,1217,hi,unclear,Kya event? Not clear,entirely_latin_or_english,
+train,1218,en,stop_calling,"Stop calling me, no more.",multiple_label_cues,decline;stop_calling
+train,1219,ta,reschedule,"schedule maru, vere neram, later",entirely_latin_or_english,call_later
+train,1220,hi,call_later,"Call later, but busy now",entirely_latin_or_english,call_later
+train,1221,hi,decline,"Nahi, nahi aa sakta. (3) Code-mixed with English words like come/busy/sure/later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1222,ml,decline,i'm not available now,entirely_latin_or_english,
+train,1223,hi,decline,"Nahi, kya kya kare? (5)",entirely_latin_or_english,decline
+train,1225,ta,unclear,"kina? theriyala, no",entirely_latin_or_english,decline
+train,1227,en,decline,"Not coming, can't attend, I'm out.",multiple_label_cues,confirm;decline
+train,1228,hi,reschedule,"reschedule karo, dusra time badlo",entirely_latin_or_english,reschedule
+train,1229,ta,unclear,"en na, who is calling me?",entirely_latin_or_english,
+train,1230,ta,call_later,"Call later, sure, umm",entirely_latin_or_english,call_later
+train,1231,ml,decline,"Varilla, I'm busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1232,hi,unclear,Not sure who this is for,entirely_latin_or_english,
+train,1234,hi,decline,"Nahi, hi, kya karta hai?",entirely_latin_or_english,decline
+train,1235,ta,unclear,i was busy,entirely_latin_or_english,call_later
+train,1236,ml,reschedule,"Reschedule for later, I'm free",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1237,hi,reschedule,"Reschedule karo, dusra time. Haan haan, kya karta hai?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1239,ta,stop_calling,"Umm, stop calling, please",entirely_latin_or_english,stop_calling
+train,1240,hi,confirm,"Haan haan, jai ho. Confirming contact.",entirely_latin_or_english,confirm
+train,1241,hi,decline,"Nahi, hai haan, kya karta hai kisi?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1242,ml,decline,i'm busy so no,multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1243,ta,decline,"umm, not today",entirely_latin_or_english,
+train,1244,ta,decline,"nah, i'm too busy",entirely_latin_or_english,call_later
+train,1245,ta,reschedule,"Reschedule, my time is busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1246,en,unclear,"impolite: 'haan haan, i don't know'",generator_artifact,
+train,1247,en,confirm,Native: I'm sure I will come later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,1248,en,unclear,native: 'I'm not sure what time they called',generator_artifact,confirm
+train,1249,ml,unclear,"aah, i'm busy, can't help",entirely_latin_or_english,call_later
+train,1250,ta,unclear,lmao confused,entirely_latin_or_english,
+train,1251,ta,decline,"Varamatten, no, please",entirely_latin_or_english,decline
+train,1253,ml,reschedule,"Reschedule, I'm not free now.",entirely_latin_or_english,reschedule
+train,1254,en,unclear,polite: 'I don't know who called me',generator_artifact,
+train,1255,en,unclear,native: 'someone else is calling',generator_artifact,
+train,1256,ta,unclear,"Yeah, it's confusing, can you clarify?",entirely_latin_or_english,
+train,1257,ta,call_later,"Appuram, call later, i'm free",entirely_latin_or_english,call_later
+train,1258,ta,unclear,"en na, who's on the call?",entirely_latin_or_english,
+train,1259,ml,reschedule,"Umm, can we reschedule the event?",entirely_latin_or_english,reschedule
+train,1260,hi,unclear,"Umm, who calling?",entirely_latin_or_english,
+train,1262,ml,unclear,ethu event? i think it's someone else,entirely_latin_or_english,
+train,1263,en,unclear,Romanised: mɛtɪŋ is tomorrow.,generator_artifact,
+train,1264,ml,confirm,"haan, sure, confirm",entirely_latin_or_english,confirm
+train,1265,ml,unclear,"Ethu event, umm, not sure",entirely_latin_or_english,
+train,1267,en,unclear,native: 'what event is happening',generator_artifact,
+train,1268,ta,unclear,nope can't hear well,entirely_latin_or_english,
+train,1269,hi,decline,"Nahi, kya kisi bhi karega? (3)",entirely_latin_or_english,decline
+train,1270,ta,reschedule,"Res: maru, reschedule later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1271,ta,decline,"Umm, no, varam, too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1272,ta,unclear,"en na, busy, later?",entirely_latin_or_english,call_later
+train,1273,hi,decline,"Nahi aa sakta, jai salaam! Um, kya karta hai?",entirely_latin_or_english,decline
+train,1274,ta,unclear,"Haan, unclear, busy now, later?",entirely_latin_or_english,call_later
+train,1275,hi,stop_calling,"Stop calling me, I'm busy, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1277,ta,decline,"illai, varamatten",entirely_latin_or_english,decline
+train,1278,ml,unclear,"ummm, ariyilla, what did you mean?",entirely_latin_or_english,
+train,1279,hi,reschedule,"Reschedule when you can, sure",entirely_latin_or_english,reschedule
+train,1280,ta,call_later,"Call after 5, busy now, haan",entirely_latin_or_english,call_later
+train,1281,ml,call_later,"Pinne, come later please",entirely_latin_or_english,call_later
+train,1282,hi,unclear,Kya event? Haan haan,entirely_latin_or_english,confirm
+train,1283,hi,unclear,"Hm, kaun ho? Umm, busy.",entirely_latin_or_english,call_later
+train,1284,hi,unclear,"Umm, who's this?",entirely_latin_or_english,
+train,1285,ta,call_later,"Piragu, I'm busy now, call later",entirely_latin_or_english,call_later
+train,1286,ml,confirm,"Yeah, I'm busy, can you confirm?",entirely_latin_or_english,call_later
+train,1287,ml,reschedule,"Pinneedu, reschedule my slot?",entirely_latin_or_english,reschedule
+train,1288,ta,decline,"Can't do it, sure, later",entirely_latin_or_english,call_later
+train,1290,ml,confirm,"Confirm, come later",entirely_latin_or_english,call_later
+train,1291,ml,decline,can't handle this now,entirely_latin_or_english,
+train,1293,en,unclear,"polite: 'umm, i don't know'",generator_artifact,
+train,1295,ta,unclear,i dont understand,entirely_latin_or_english,
+train,1296,ta,call_later,"Piragu, busy now, call me later, haan haan",entirely_latin_or_english,call_later
+train,1297,hi,confirm,"Theek hai, tum kya karta hai?",entirely_latin_or_english,confirm
+train,1298,ta,unclear,"hmm, i'm busy, come later",entirely_latin_or_english,call_later
+train,1299,ml,call_later,Pinne vilik: ippol busy,entirely_latin_or_english,call_later
+train,1300,ml,decline,haan ha and no,multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1301,ml,call_later,"Pinne vilik, umm, call later sure",entirely_latin_or_english,call_later
+train,1302,hi,call_later,"Later, haan, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1303,en,decline,"No, I'm not coming, I'm busy.",multiple_label_cues,confirm;decline;call_later
+train,1304,ml,confirm,"Yes, I confirm it's fine",entirely_latin_or_english,confirm
+train,1305,ta,stop_calling,"Haan haan, stop calling busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1307,hi,unclear,Kya event? Hmmm,entirely_latin_or_english,
+train,1308,hi,stop_calling,"Stop calling, I'm busy, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1309,ml,stop_calling,"stop calling, umm now",entirely_latin_or_english,stop_calling
+train,1310,ta,call_later,"Piragu, call later, umm busy",entirely_latin_or_english,call_later
+train,1312,hi,reschedule,"Reschedule karo, time badlo",entirely_latin_or_english,reschedule
+train,1313,ml,stop_calling,"Vilikkaruth, stop calling, yeah",entirely_latin_or_english,stop_calling
+train,1314,hi,call_later,"Later, but busy, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1317,ml,confirm,"Varam, help me understand",entirely_latin_or_english,confirm
+train,1318,ml,reschedule,Reschedule haan haan sure later,multiple_label_cues;entirely_latin_or_english,confirm;reschedule;call_later
+train,1319,en,reschedule,"Reschedule, sure, to a different day.",multiple_label_cues,confirm;reschedule
+train,1320,hi,decline,"Nahi aa sakta, hi! I'm busy.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1321,hi,stop_calling,"Band karo, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1322,ml,stop_calling,"Stop calling, I'm gone",entirely_latin_or_english,stop_calling
+train,1323,ml,confirm,"Athey, can you call me?",entirely_latin_or_english,
+train,1324,ta,confirm,"aam confirm, sari",entirely_latin_or_english,confirm
+train,1325,hi,call_later,"Haan haan, call later, umm",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1326,hi,decline,"Nahi, hai haan, nahi aa sakta",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1327,ta,call_later,Pir: call me later?,entirely_latin_or_english,call_later
+train,1328,ml,call_later,"Pinne, call later, come",entirely_latin_or_english,call_later
+train,1329,ta,decline,"varamatten, i'm not free",entirely_latin_or_english,decline
+train,1331,en,unclear,"impolite: 'haan haan, hmm'",generator_artifact,
+train,1332,ta,reschedule,"Schedule maru, umm, when do you want?",entirely_latin_or_english,
+train,1333,hi,reschedule,"Dusra time, reschedule karo. (5)ASR-noisy variants with typos or dropped letters",entirely_latin_or_english,reschedule
+train,1334,ml,call_later,"Pinne, busy, call umm later?",entirely_latin_or_english,call_later
+train,1335,ml,confirm,"ummm, i think it's okay",entirely_latin_or_english,confirm
+train,1336,ml,reschedule,"Reschedule, please? I'm busy now.",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1337,hi,decline,"Nahi, kya kare? (1) Native script: nahi, kya kare? (2) Romanised: nahi, kya kare? (3) Code-mixed: nahi, kya kare? (4) Polite: nahi, kya kare? (5) ASR-noisy: nahi, kya kare?",generator_artifact;entirely_latin_or_english,decline
+train,1339,ml,stop_calling,"Stop calling, I'm sure",entirely_latin_or_english,stop_calling
+train,1340,hi,call_later,"Later, come when you're free",entirely_latin_or_english,call_later
+train,1342,ml,stop_calling,"Stop calling me, sure",entirely_latin_or_english,stop_calling
+train,1343,ml,call_later,pinne later haan haan,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1344,ml,stop_calling,"Stop calling, sure, umm",entirely_latin_or_english,stop_calling
+train,1345,en,unclear,impolite: 'I'm not sure who called me',generator_artifact,confirm
+train,1346,ml,decline,"Illa, I'm tied up",entirely_latin_or_english,decline
+train,1347,ml,reschedule,"Schedule reset, umm, when's good?",entirely_latin_or_english,
+train,1348,ml,unclear,"Aarudu, no idea what you say",entirely_latin_or_english,decline
+train,1349,hi,decline,"Nahi, nahi aa sakta. (5) ASR-noisy variants with typos or dropped letters",entirely_latin_or_english,decline
+train,1350,ta,decline,"Varamatten, illai, I'm busy now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1351,ta,stop_calling,"Stop calling, azhaikkadheenga, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1353,en,stop_calling,Stop calling me. (1),generator_artifact,stop_calling
+train,1355,ml,unclear,"Umm, later, maybe",entirely_latin_or_english,call_later
+train,1356,ta,unclear,is this the right person,entirely_latin_or_english,
+train,1357,ml,unclear,"Later, not clear at all",entirely_latin_or_english,call_later
+train,1358,hi,confirm,"Haan haan, jai hai",entirely_latin_or_english,confirm
+train,1359,hi,unclear,Who's calling me right now?,entirely_latin_or_english,
+train,1360,ta,reschedule,"Reschedule, I'm busy now, umm",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1361,en,stop_calling,"Please stop calling, I'm not interested.",multiple_label_cues,decline;stop_calling
+train,1365,hi,call_later,"Come later, busy right now",entirely_latin_or_english,call_later
+train,1366,ta,reschedule,"Haan haan, reschedule sure",entirely_latin_or_english,reschedule
+train,1367,ta,decline,"varamatten, illai",entirely_latin_or_english,decline
+train,1369,hi,reschedule,dusra time re-schedule karo,entirely_latin_or_english,reschedule
+train,1370,ml,stop_calling,"Haaan, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1371,hi,confirm,"Aangu, tum kya karta hai?",entirely_latin_or_english,
+train,1372,en,decline,"Not interested, I'm not coming.",multiple_label_cues,confirm;decline
+train,1373,hi,confirm,"Aangu, kya kare?",entirely_latin_or_english,
+train,1374,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya kisi bhi time karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1375,hi,reschedule,"Reschedule time, dusra baar",entirely_latin_or_english,reschedule
+train,1376,ta,stop_calling,"Haan haan, stop calling, sure later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1377,hi,decline,"Nahi aa sakta, bhai. Jaan hai, nahi.",entirely_latin_or_english,decline
+train,1378,ml,stop_calling,"Stop calling, I'm away",entirely_latin_or_english,stop_calling
+train,1380,ml,decline,"Umm, nope, can't do it now",entirely_latin_or_english,
+train,1382,ml,call_later,pinne later ippol,entirely_latin_or_english,call_later
+train,1383,en,reschedule,"Reschedule, umm, to a later date.",multiple_label_cues,reschedule;call_later
+train,1384,hi,unclear,"Umm, pata nahi, kaun ho?",entirely_latin_or_english,decline
+train,1386,ml,reschedule,"Reschedule, I'm free now",entirely_latin_or_english,reschedule
+train,1387,hi,unclear,who is this? i don't get it,entirely_latin_or_english,
+train,1388,ml,reschedule,"Schedule change for later, please",entirely_latin_or_english,call_later
+train,1389,ta,unclear,i think it's busy,entirely_latin_or_english,call_later
+train,1390,ta,decline,"nope, busy now",entirely_latin_or_english,call_later
+train,1391,ta,confirm,"Aam sari, confirm, no",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1392,hi,call_later,"Haan haan, busy hoon, abhi nahi",multiple_label_cues;entirely_latin_or_english,confirm;decline;call_later
+train,1393,hi,call_later,"Haan, call later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1395,ml,confirm,"Sheri, confirm that you want",entirely_latin_or_english,confirm
+train,1396,hi,stop_calling,"Stop call, busy, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1397,ml,call_later,"Pinne, ippol busy, later?",entirely_latin_or_english,call_later
+train,1398,ml,reschedule,"Haan haan, reschedule for tomorrow?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1399,ta,stop_calling,"Azhaikkadheenga, stop calling, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1400,hi,call_later,"Later karo, shukriya, busy hoon",entirely_latin_or_english,call_later
+train,1401,ta,confirm,"Aam sari varuven, confirm later umm",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1403,ml,confirm,"Yeh, yeah, sure, confirm this",entirely_latin_or_english,
+train,1404,hi,reschedule,"Reschedule karo, dusra time. Haan haan, mera kya kare?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1405,hi,call_later,"call later, sure",entirely_latin_or_english,call_later
+train,1406,ml,confirm,"Haan haan, busy now, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1408,hi,confirm,"Haan haan, jai ho. Jai ho, jai ho.",entirely_latin_or_english,confirm
+train,1409,ml,decline,"I'm busy right now, can't help",entirely_latin_or_english,call_later
+train,1410,ta,confirm,"Aam sari varuven, confirm umm",entirely_latin_or_english,confirm
+train,1411,hi,confirm,"Hi, confirm the date and time of the appointment.",entirely_latin_or_english,
+train,1412,ml,decline,"Pattilla, no, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1413,ta,reschedule,"Reschedule, my time is taken",entirely_latin_or_english,reschedule
+train,1414,ta,unclear,"en na event, who called?",entirely_latin_or_english,
+train,1415,ta,reschedule,"Reschedule, I'm sure it's okay",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1416,ml,stop_calling,"Pleeease stop calling, busy right now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1418,ml,call_later,"Pinne vilikku, ippol busy later",entirely_latin_or_english,call_later
+train,1420,ml,unclear,"hmm, what's going on?",entirely_latin_or_english,
+train,1421,ta,call_later,"Appuram, i'll call later, sure",entirely_latin_or_english,call_later
+train,1423,ml,call_later,"Pinne vilikku, see ya later",entirely_latin_or_english,call_later
+train,1424,ml,reschedule,"Reschedule, umm, when's good?",entirely_latin_or_english,reschedule
+train,1426,ml,unclear,"haan haan, not understanding",entirely_latin_or_english,confirm
+train,1427,hi,decline,"Nahi, kya kya kare? (3)",entirely_latin_or_english,decline
+train,1428,ml,reschedule,"Um, reschedule me when you can?",entirely_latin_or_english,reschedule
+train,1429,hi,stop_calling,"Stop calling me, please, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1430,ta,confirm,"a, confirm this",entirely_latin_or_english,
+train,1431,hi,stop_calling,"Haan haan, stop calling me",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,1432,en,confirm,Romanised: I'm suur I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,1433,ta,confirm,"aam, yep, confirm",entirely_latin_or_english,confirm
+train,1434,hi,call_later,"Later, busy, okay",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1435,hi,decline,"Nahi, kya kisi bhi karega? (4)",entirely_latin_or_english,decline
+train,1436,hi,decline,"Nahi, hi. I can't speak right now.",entirely_latin_or_english,decline
+train,1437,hi,decline,"Nahi, yaar. I am busy now.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1438,hi,call_later,"baad mein call karo, umm haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1439,hi,reschedule,"Dusra time, reschedule karo. Um, kya kisi bhi time karo?",entirely_latin_or_english,reschedule
+train,1440,en,confirm,"Polite: I'm available, thanks.",generator_artifact,
+train,1441,hi,stop_calling,"Come stop calling, please, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1442,hi,decline,"Nahi, bhai. Kya karta hoon?",entirely_latin_or_english,decline
+train,1443,ml,confirm,"Haan, I'm free",entirely_latin_or_english,confirm
+train,1444,ta,stop_calling,"Stop calling me, please, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1445,ta,call_later,"Appuram, call later, yeah",entirely_latin_or_english,call_later
+train,1446,ml,decline,"Umm, I'm not feeling well",entirely_latin_or_english,
+train,1448,ta,call_later,"Piragu: call me later, umm",entirely_latin_or_english,call_later
+train,1450,en,unclear,"native: 'What event are you talking about?""",generator_artifact,
+train,1451,en,stop_calling,Please stop calling me. (1),generator_artifact,stop_calling
+train,1452,en,reschedule,Reschedule the event for a later time.,multiple_label_cues,reschedule;call_later
+train,1453,hi,confirm,"Haan haan, aap ka kya kare?",entirely_latin_or_english,confirm
+train,1454,ta,confirm,aam confirm busy no,multiple_label_cues;entirely_latin_or_english,confirm;decline;call_later
+train,1455,hi,call_later,"Umm, call later, busy",entirely_latin_or_english,call_later
+train,1456,ml,stop_calling,"Stop calling, I'm not here",entirely_latin_or_english,stop_calling
+train,1457,ta,unclear,why unclear now?,entirely_latin_or_english,
+train,1458,ml,call_later,"Pinne, later, call umm",entirely_latin_or_english,call_later
+train,1459,hi,confirm,"Theek hai, kya kare?",entirely_latin_or_english,confirm
+train,1460,ta,decline,"illai, can't do now",entirely_latin_or_english,decline
+train,1461,ta,unclear,"hmm, what's this, i don't know",entirely_latin_or_english,
+train,1462,en,decline,"Not coming, I'm sorry, I'll not attend.",multiple_label_cues,confirm;decline
+train,1463,ta,call_later,"Later, come call me when you're free",entirely_latin_or_english,call_later
+train,1464,hi,decline,"Nahi, kya kya kare? (1)",generator_artifact;entirely_latin_or_english,decline
+train,1465,ml,reschedule,"Reschedule when I'm free, please",entirely_latin_or_english,reschedule
+train,1466,ta,stop_calling,"Azhaikkadheenga, stop",entirely_latin_or_english,stop_calling
+train,1467,hi,stop_calling,"Stop calling, please umm",entirely_latin_or_english,stop_calling
+train,1468,ta,confirm,"Aam, this is sari, confirm please",entirely_latin_or_english,confirm
+train,1469,hi,unclear,"Umm, kya event?",entirely_latin_or_english,
+train,1471,ml,reschedule,Reschedule event for tomorrow umm,entirely_latin_or_english,reschedule
+train,1473,ta,confirm,"aam confirm, varuven yes",entirely_latin_or_english,confirm
+train,1474,ta,reschedule,"Piragu paarkalam, come later, sure?",entirely_latin_or_english,call_later
+train,1475,hi,stop_calling,"Stop calling, I'm busy now, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1476,hi,reschedule,"Dusra time, reschedule karo,",entirely_latin_or_english,reschedule
+train,1477,en,decline,"Not coming, I'm too busy.",multiple_label_cues,confirm;decline;call_later
+train,1478,ta,call_later,"Piragu, umm, call later, yeah",entirely_latin_or_english,call_later
+train,1479,hi,stop_calling,"Come, stop calling",entirely_latin_or_english,stop_calling
+train,1480,ml,reschedule,"Res: schedule for later, busy now",entirely_latin_or_english,call_later
+train,1481,ml,decline,"Hmm, I'm not sure about that",entirely_latin_or_english,
+train,1482,ml,stop_calling,"Stop calling me, come back later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1484,en,stop_calling,"Stop calling, I'm busy.",multiple_label_cues,call_later;stop_calling
+train,1485,hi,unclear,"Hm, kya event? Pata nahi.",entirely_latin_or_english,decline
+train,1486,ta,reschedule,"Schedule maru, reschedule later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1487,ml,stop_calling,"Stop calling, I'm out",entirely_latin_or_english,stop_calling
+train,1488,ml,confirm,"Varam, confirm this please",entirely_latin_or_english,confirm
+train,1489,hi,call_later,"Later, haan haan, busy hoon",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1490,hi,unclear,what's the event? i don't know,entirely_latin_or_english,
+train,1491,ml,stop_calling,"stop calling, sure now",entirely_latin_or_english,stop_calling
+train,1492,ta,unclear,"hmm, i think i misunderstood",entirely_latin_or_english,
+train,1493,ml,unclear,"Hmm, not sure what you mean",entirely_latin_or_english,
+train,1494,ml,confirm,"Sheri, confirm that okay",entirely_latin_or_english,confirm
+train,1495,ta,reschedule,"Piragu paarkalam, busy, reschedule now?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1496,en,stop_calling,Please stop contacting me. (1),generator_artifact,stop_calling
+train,1497,hi,confirm,"Haan haan, kya kare?",entirely_latin_or_english,confirm
+train,1498,en,unclear,impolite: 'I don't know how are you',generator_artifact,
+train,1499,ta,unclear,what time is it,entirely_latin_or_english,
+train,1500,ta,decline,"haan haan, later please",entirely_latin_or_english,call_later
+train,1501,ml,reschedule,Can you reschedule my meeting later?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1502,ml,call_later,pinne ippol busy later,entirely_latin_or_english,call_later
+train,1503,ml,reschedule,Schedule changes busy now come later,entirely_latin_or_english,call_later
+train,1504,hi,stop_calling,"Stop calling, I'm busy, please, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1505,ml,unclear,"later, but can you repeat?",entirely_latin_or_english,call_later
+train,1506,ml,unclear,"Hmm, who's speaking?",entirely_latin_or_english,
+train,1507,ta,unclear,"Yaar, unclear, what's the event?",entirely_latin_or_english,
+train,1508,hi,call_later,Baad mein call karunga,entirely_latin_or_english,call_later
+train,1509,hi,confirm,"Ji haan, confirm the location please.",entirely_latin_or_english,confirm
+train,1510,hi,decline,"Nahi, hi! I'm too busy.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1511,ta,stop_calling,"Umm, haan haan, stop calling",entirely_latin_or_english,stop_calling
+train,1512,ta,stop_calling,"Azhaikkadheenga, stop calling please",entirely_latin_or_english,stop_calling
+train,1513,ml,reschedule,"Reschedule, busy now, when?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1514,ml,stop_calling,"stop calling, hey",entirely_latin_or_english,stop_calling
+train,1515,ml,stop_calling,"Vilikalle, stop callin' now",entirely_latin_or_english,stop_calling
+train,1518,ml,decline,varilla busy,multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1519,hi,stop_calling,"Call mat karo, stop it",entirely_latin_or_english,stop_calling
+train,1520,ml,unclear,"busy, can't hear you clearly",entirely_latin_or_english,call_later
+train,1522,hi,confirm,"Ji haan, confirm the order number.",entirely_latin_or_english,confirm
+train,1523,ta,reschedule,"Reschedule later, umm busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1524,ta,unclear,"umm, what did you say again?",entirely_latin_or_english,
+train,1527,ta,stop_calling,"Stop calling, no more, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later;stop_calling
+train,1528,ta,stop_calling,"Stop calling, sure, yeah",entirely_latin_or_english,stop_calling
+train,1530,ta,call_later,"Piragu, appuram, call later?",entirely_latin_or_english,call_later
+train,1531,hi,confirm,"Hi, confirm the time of the call.",entirely_latin_or_english,
+train,1532,ta,unclear,"haan haan, not sure about this",entirely_latin_or_english,
+train,1534,ml,call_later,"Pinne, busy, call later?",entirely_latin_or_english,call_later
+train,1535,ml,stop_calling,"Vilikkaruth, stop calling, bye",entirely_latin_or_english,stop_calling
+train,1536,ml,confirm,"Mmm, I'm sure, later",entirely_latin_or_english,call_later
+train,1538,hi,decline,"Nahi, kya kisi bhi karega? (1)",generator_artifact;entirely_latin_or_english,decline
+train,1539,ta,stop_calling,"Umm, stop",entirely_latin_or_english,stop_calling
+train,1541,ml,call_later,"Pinne, ippol busy, haan haan?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1542,hi,call_later,"Call later, kya kar raha hai?",entirely_latin_or_english,call_later
+train,1544,hi,unclear,"lmao, i don't get it",entirely_latin_or_english,
+train,1545,hi,decline,"Nahi, dikkhu. Nahi aa sakta.",entirely_latin_or_english,decline
+train,1546,ml,confirm,"Okey dokey, confirm",entirely_latin_or_english,
+train,1548,en,decline,"Can't come, I'm busy, not interested.",multiple_label_cues,decline;call_later
+train,1549,ml,reschedule,"Pinneedu, reschedule when you can",entirely_latin_or_english,reschedule
+train,1550,ta,confirm,yeah confirm sure aam,entirely_latin_or_english,confirm
+train,1551,hi,confirm,"Haan haan, I want to confirm the payment method.",entirely_latin_or_english,confirm
+train,1552,ml,decline,i'm busy so nope,entirely_latin_or_english,call_later
+train,1554,ta,confirm,"Aam sari, noise, varuven",entirely_latin_or_english,confirm
+train,1555,ml,unclear,"can you repeat, please?",entirely_latin_or_english,
+train,1556,ta,call_later,"Piragu, call later, i'm free now",entirely_latin_or_english,call_later
+train,1557,ml,stop_calling,"Stop calling me, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,1558,ml,decline,ill a bit busy,entirely_latin_or_english,call_later
+train,1559,hi,decline,"Nahi, hi. I'm not free.",entirely_latin_or_english,decline
+train,1560,ta,call_later,"Piragu, call later when you free",entirely_latin_or_english,call_later
+train,1561,hi,decline,"Nahi aa sakta, kya karte hain?",entirely_latin_or_english,decline
+train,1562,en,stop_calling,Remove my number from calls. (1),generator_artifact,stop_calling
+train,1563,ml,decline,"I'm too busy, sorry",entirely_latin_or_english,call_later
+train,1564,hi,call_later,"Later, busy hoon, umm",entirely_latin_or_english,call_later
+train,1565,en,reschedule,Reschedule the meeting to a later date.,multiple_label_cues,reschedule;call_later
+train,1567,ml,confirm,"Sure, I'll do it later",entirely_latin_or_english,call_later
+train,1568,ml,decline,"No, I can't help",entirely_latin_or_english,decline
+train,1569,hi,stop_calling,"Haan haan, stop calling, sure",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+train,1570,hi,confirm,"Theek hai, tum kya kia hai?",entirely_latin_or_english,confirm
+train,1571,hi,stop_calling,"Umm, stop calling please, i'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1572,ta,decline,"no, sorry, not today",entirely_latin_or_english,decline
+train,1573,ta,stop_calling,"Stop calling, I'm busy, azhaikkadheenga",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1574,ml,confirm,"yep, confirm that please",entirely_latin_or_english,
+train,1575,en,stop_calling,"Stop calling me, I'm not interested. (1)",generator_artifact;multiple_label_cues,decline;stop_calling
+train,1576,ml,unclear,"mml, not getting it, please",entirely_latin_or_english,
+train,1577,ml,confirm,"sure, i'm busy now, later",entirely_latin_or_english,call_later
+train,1578,ta,confirm,"haan haan, confirm please",entirely_latin_or_english,
+train,1580,hi,unclear,Kaun hai? Pata nahi,entirely_latin_or_english,decline
+train,1581,ta,confirm,"aam, confirm, come",entirely_latin_or_english,confirm
+train,1582,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya kisay kisi bhi time karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1583,hi,unclear,"haan ha, not clear",entirely_latin_or_english,confirm
+train,1584,en,unclear,"Polite: Um, the meeting is tomorrow.",generator_artifact,
+train,1585,ml,confirm,"haan, confirm please",entirely_latin_or_english,confirm
+train,1586,hi,stop_calling,"Phone mat karo, stop it",entirely_latin_or_english,stop_calling
+train,1587,ml,unclear,"Haan haan, busy, please repeat",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1588,hi,reschedule,Can you reschedule me?,entirely_latin_or_english,reschedule
+train,1589,ml,stop_calling,"Stop calling, come on, no",multiple_label_cues;entirely_latin_or_english,decline;stop_calling
+train,1590,hi,unclear,"Hmmm, who is this?",entirely_latin_or_english,
+train,1591,ta,stop_calling,"Haan haan, stop calling, please",entirely_latin_or_english,stop_calling
+train,1592,ml,call_later,"Pinne vilikku, later umm",entirely_latin_or_english,call_later
+train,1593,hi,reschedule,"Dusra time, reschedule karo, 12:00 PM",entirely_latin_or_english,reschedule
+train,1595,ml,decline,i'm not interested,entirely_latin_or_english,
+train,1597,ta,reschedule,"Vere neram, schedule maru umm",entirely_latin_or_english,
+train,1598,en,decline,"I'm not coming, I'm busy.",multiple_label_cues,confirm;decline;call_later
+train,1600,ta,call_later,"Piragu, call me later, umm",entirely_latin_or_english,call_later
+train,1601,ta,decline,"Illai, varamatten, no thanks",entirely_latin_or_english,decline
+train,1602,ta,confirm,"Aam sari varuven, confirm later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1603,hi,stop_calling,"Stop calling, umm",entirely_latin_or_english,stop_calling
+train,1604,ta,unclear,"yaar, what's the issue here?",entirely_latin_or_english,
+train,1605,hi,confirm,"Theek hai, ek baar karte hai",entirely_latin_or_english,confirm
+train,1606,ta,stop_calling,"Stop calling, I: I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1607,hi,confirm,"Theek hai, confirm the delivery address.",entirely_latin_or_english,confirm
+train,1610,ta,decline,"Varam, illai, no way, too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1611,hi,call_later,"Abhi nahi, later k, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1612,hi,reschedule,"Reschedule karo, dusra time. Um, mera kya kare?",entirely_latin_or_english,reschedule
+train,1613,ml,reschedule,"Schedule change later, sure I can help",entirely_latin_or_english,call_later
+train,1614,hi,reschedule,"Reschedule karo, dusra time. 😊",entirely_latin_or_english,reschedule
+train,1615,hi,stop_calling,"Stop call, busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1616,en,stop_calling,I can't be called. (1),generator_artifact,
+train,1618,hi,confirm,"Haan haan, kya karta hai tum?",entirely_latin_or_english,confirm
+train,1619,ta,stop_calling,"Azhaikkad, stop calling me",entirely_latin_or_english,stop_calling
+train,1620,ta,confirm,"Aam sari varuven, confirm yes",entirely_latin_or_english,confirm
+train,1621,ta,reschedule,"Reschedule, piragu paarkalam",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1622,ta,confirm,varuven confirm sure,entirely_latin_or_english,confirm
+train,1623,ta,call_later,"Piragu, I'll call you later, sure.",entirely_latin_or_english,call_later
+train,1624,ta,confirm,"Aam sari varuven, confirm later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1626,hi,confirm,"Theek hai, I need to confirm the shipping method.",entirely_latin_or_english,confirm
+train,1627,ml,call_later,pinne busy later umm,entirely_latin_or_english,call_later
+train,1628,en,call_later,"Call me later, yeah. (Unclear)",multiple_label_cues,confirm;call_later
+train,1629,en,unclear,"romanised: 'haan haan, i don't know what you're saying'",generator_artifact,
+train,1630,ta,unclear,ummm what was that?,entirely_latin_or_english,
+train,1631,ta,unclear,"Theriy, unclear, who's this?",entirely_latin_or_english,
+train,1632,ta,decline,"Can't, busy, nope",entirely_latin_or_english,call_later
+train,1633,ta,unclear,"Hmm, who called you? Not sure, umm",entirely_latin_or_english,
+train,1634,ta,unclear,"yaar ithu naan, kina?",entirely_latin_or_english,
+train,1635,ta,stop_calling,"Phone pannadheenga, stop calling, haan haan",entirely_latin_or_english,stop_calling
+train,1636,ml,reschedule,"Aap schedule change karte hain, later?",entirely_latin_or_english,call_later
+train,1638,hi,call_later,"Later, I'll call you soon, sure",entirely_latin_or_english,call_later
+train,1639,ml,decline,"I'm too busy, can't help",entirely_latin_or_english,call_later
+train,1641,ml,reschedule,Reschedule meeting for tomorrow,entirely_latin_or_english,reschedule
+train,1642,ta,reschedule,"schedule changes, busy, come later",entirely_latin_or_english,call_later
+train,1643,ta,stop_calling,"Come on, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1644,en,decline,"No, I can't come, I'm already busy.",multiple_label_cues,decline;call_later
+train,1645,hi,reschedule,"Dusra time, reschedule karo. (3)code-mixed with English words like come/busy/sure/later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1647,ml,confirm,"Confirming, but I'm busy now",entirely_latin_or_english,call_later
+train,1648,ml,confirm,"yeah, confirm that",entirely_latin_or_english,
+train,1649,hi,confirm,"Aaunga, confirm. Contact is busy.",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1650,ml,confirm,"Yes, confirm okay, umm",entirely_latin_or_english,confirm
+train,1652,ta,call_later,"Piragu, call later, later ok",entirely_latin_or_english,call_later
+train,1653,ta,stop_calling,"Sure, stop, busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1654,ml,confirm,"Confirm, busy right now",entirely_latin_or_english,call_later
+train,1655,ml,confirm,"Haan haan, I'm free now",entirely_latin_or_english,confirm
+train,1656,hi,decline,"Nahi, kya kare? (3)",entirely_latin_or_english,decline
+train,1657,hi,stop_calling,"Stop calling, please, umm",entirely_latin_or_english,stop_calling
+train,1658,ml,decline,i'm too busy now,entirely_latin_or_english,call_later
+train,1659,hi,reschedule,"Dusra time, reschedule karo. 20 words.",entirely_latin_or_english,reschedule
+train,1660,ml,unclear,"who called me, i'm busy",entirely_latin_or_english,call_later
+train,1661,ta,stop_calling,"Stop callin' me, please.",entirely_latin_or_english,stop_calling
+train,1662,hi,reschedule,"Dusra time, reschedule karo. 2 words.",entirely_latin_or_english,reschedule
+train,1665,ml,stop_calling,"Vilikkaruth, stop calling",entirely_latin_or_english,stop_calling
+train,1667,ta,decline,"Illai, varamatten, no, not today",entirely_latin_or_english,decline
+train,1668,hi,decline,"Nahi aa sakta, hi! I'm busy now.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1669,ml,confirm,"yeah, i'm busy, confirm",entirely_latin_or_english,call_later
+train,1670,hi,decline,"Nahi, hi! I'm not available.",entirely_latin_or_english,decline
+train,1671,ta,decline,"No, umm, too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1672,ta,stop_calling,"Stop calling, come, azhaikkadheenga",entirely_latin_or_english,stop_calling
+train,1673,hi,confirm,"Hi, can you confirm the date of the meeting?",entirely_latin_or_english,
+train,1675,ta,decline,"nah, sorry, later",entirely_latin_or_english,call_later
+train,1676,ml,confirm,"I'm busy, can you come later?",entirely_latin_or_english,call_later
+train,1677,ml,reschedule,"Schedule this meeting later, please",entirely_latin_or_english,call_later
+train,1678,ta,decline,"come, no",entirely_latin_or_english,decline
+train,1679,hi,confirm,"Hi, please confirm the time of the meeting.",entirely_latin_or_english,
+train,1680,en,unclear,romanised: 'i don't know',generator_artifact,
+train,1681,en,reschedule,"Impolite: I’m busy, can’t reschedule the meeting.",generator_artifact;multiple_label_cues,reschedule;call_later
+train,1682,hi,decline,"Nahi, hi. I'm not speaking.",entirely_latin_or_english,decline
+train,1683,en,stop_calling,"Please stop calling me, I'm not interested.",multiple_label_cues,decline;stop_calling
+train,1684,hi,stop_calling,"Stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1685,ta,confirm,sari confirm umm later,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1686,en,unclear,native: 'I don't know who you are',generator_artifact,
+train,1687,ta,decline,"umm, i'm busy",entirely_latin_or_english,call_later
+train,1688,hi,confirm,"Haan haan, jhootha hai",entirely_latin_or_english,confirm
+train,1689,hi,call_later,"Umm, later, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1690,ta,reschedule,"Piragu paarkalam, reschedule",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1691,en,confirm,"Impolite: I'll come, but I'm not sure.",generator_artifact,confirm
+train,1692,hi,confirm,"Aaunga, jai ho",entirely_latin_or_english,confirm
+train,1693,hi,decline,"Nahi aa sakta, bhai. Pehle kya karta hai?",entirely_latin_or_english,decline
+train,1694,hi,stop_calling,"Stop calling, I'm busy right now.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1695,en,reschedule,Code-mixed: Come reschedule the meeting for later.,multiple_label_cues,reschedule;call_later
+train,1696,hi,decline,"Nahi aa sakta, hi. I'm busy.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1697,ml,confirm,"No, I don't want to confirm",entirely_latin_or_english,decline
+train,1699,hi,decline,"Nahi aa sakta, kya kya karega? (2)",entirely_latin_or_english,decline
+train,1700,ml,confirm,"Haan, confirm it please",entirely_latin_or_english,confirm
+train,1701,ta,unclear,hmm theriyala,entirely_latin_or_english,
+train,1702,en,stop_calling,"Don't call me, I'm not interested. (1)",generator_artifact;multiple_label_cues,decline;stop_calling
+train,1703,hi,confirm,"Theek hai, confirm. Contact is available.",entirely_latin_or_english,confirm
+train,1704,hi,call_later,"Later, come, busy",entirely_latin_or_english,call_later
+train,1705,hi,confirm,"Aangu, confirm the customer name.",entirely_latin_or_english,
+train,1706,en,unclear,polite: 'I'm not sure what time they called',generator_artifact,confirm
+train,1707,ml,stop_calling,"Stop calling, later, yes",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+train,1708,hi,unclear,"Umm, busy, not sure",entirely_latin_or_english,call_later
+train,1709,ml,decline,nope not interested,entirely_latin_or_english,
+train,1711,ml,unclear,"umh, ariyilla, confused",entirely_latin_or_english,
+train,1712,ml,decline,"Sure, but I'll do it later",entirely_latin_or_english,call_later
+train,1713,hi,stop_calling,"Stop calling, i'm busy, yes",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+train,1714,ta,confirm,"Aam sari varuven, confirm haan haan",entirely_latin_or_english,confirm
+train,1716,ml,stop_calling,"Vilik, stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1717,hi,confirm,"Haan haan, jeez, kya kia hai?",entirely_latin_or_english,confirm
+train,1718,ml,decline,"Illa, not available now",entirely_latin_or_english,decline
+train,1719,en,reschedule,Romanised: Reschedule the event for a different date.,generator_artifact,reschedule
+train,1720,hi,decline,"Nahi aa sakta, kya kare? (2)",entirely_latin_or_english,decline
+train,1722,ta,stop_calling,"Um, stop calling, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1723,ta,unclear,ummm not understanding,entirely_latin_or_english,
+train,1724,hi,unclear,"Haaan, kya event? Not clear.",entirely_latin_or_english,
+train,1725,ml,decline,illl a bit busy,entirely_latin_or_english,call_later
+train,1726,ta,decline,"Haan, no, thanks",entirely_latin_or_english,decline
+train,1727,en,confirm,Romanised: I'm sūr I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,1730,hi,stop_calling,"Stop calling, come on",entirely_latin_or_english,stop_calling
+train,1731,hi,stop_calling,"Call stop, umm, busy, yeah",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1732,hi,unclear,"Kya hua? Umm, not clear.",entirely_latin_or_english,
+train,1733,ta,unclear,yeh i think it was,entirely_latin_or_english,
+train,1734,hi,call_later,"baad mein, come",entirely_latin_or_english,call_later
+train,1735,hi,call_later,"Later, umm, busy",entirely_latin_or_english,call_later
+train,1738,en,decline,"I'm not coming, I'm not interested.",multiple_label_cues,confirm;decline
+train,1739,ml,decline,"Pattilla, I'm not free",entirely_latin_or_english,decline
+train,1743,hi,call_later,"Later, sure but busy",entirely_latin_or_english,call_later
+train,1744,ta,reschedule,"Schedule maru, come later",entirely_latin_or_english,call_later
+train,1745,en,decline,"Not coming, I'm not available.",multiple_label_cues,confirm;decline
+train,1746,ta,decline,"no, i'm busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1747,en,confirm,Polite: I'm sure I'll be there later.,generator_artifact;multiple_label_cues,confirm;call_later
+train,1749,ml,confirm,"Okay, I'm sure, confirm now",entirely_latin_or_english,confirm
+train,1750,ml,unclear,"hmm, who called again?",entirely_latin_or_english,
+train,1752,ta,unclear,"yaar, it's unclear, umm",entirely_latin_or_english,
+train,1753,ml,call_later,ippol busy now umm,entirely_latin_or_english,call_later
+train,1754,ml,unclear,"aah, ariy ariyilla",entirely_latin_or_english,
+train,1755,hi,reschedule,Dusra time ke liye reschedule karo,entirely_latin_or_english,reschedule
+train,1756,hi,decline,"Nahi, kya kare? (5)",entirely_latin_or_english,decline
+train,1757,ml,reschedule,Reschedule the event for later,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1758,hi,decline,"Nahi, kya aap kya kare? (1)",generator_artifact;entirely_latin_or_english,decline
+train,1760,ta,call_later,"Call me later, please",entirely_latin_or_english,call_later
+train,1761,ml,unclear,"aah, busy, not sure",entirely_latin_or_english,call_later
+train,1762,ml,decline,"Haan ha, nope, can't help",entirely_latin_or_english,confirm
+train,1763,ta,decline,"na, later",entirely_latin_or_english,call_later
+train,1764,ml,unclear,"Haan haan, come on, explain",entirely_latin_or_english,confirm
+train,1765,ta,unclear,"yaar, not clear, umm",entirely_latin_or_english,
+train,1766,ml,unclear,"Come, this is confusing",entirely_latin_or_english,
+train,1767,hi,reschedule,"Reschedule karo, dusra time. Haan haan, kya kisi bhi pahle karo?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1768,ml,unclear,"who called, i'm busy now",entirely_latin_or_english,call_later
+train,1769,ta,call_later,"Piragu, haan haan, call later.",entirely_latin_or_english,call_later
+train,1770,ml,reschedule,"Res aap schedule change karte hain, later?",entirely_latin_or_english,call_later
+train,1772,ta,reschedule,"Res: schedule change, need help",entirely_latin_or_english,
+train,1773,en,unclear,native: 'hmm',generator_artifact,
+train,1775,ta,stop_calling,"Stop callin' me, I'm busy.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1776,en,unclear,romanised: 'someone else is calling',generator_artifact,
+train,1777,ta,call_later,"Piragu, call later, sure",entirely_latin_or_english,call_later
+train,1778,hi,confirm,"Aaunga, ek baar karte hai",entirely_latin_or_english,confirm
+train,1779,ta,stop_calling,"Stop calling, busy, yeah",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1780,ta,confirm,"varuven, confirm, please",entirely_latin_or_english,confirm
+train,1781,ta,stop_calling,"Azhaikkadheenga, stop calling me now",entirely_latin_or_english,stop_calling
+train,1782,ml,call_later,pinne later umm,entirely_latin_or_english,call_later
+train,1783,ta,confirm,"aam confirm, umm",entirely_latin_or_english,confirm
+train,1784,hi,unclear,"Who's this? Hah, confused",entirely_latin_or_english,
+train,1785,ta,reschedule,"Vere ner, schedule maru later",entirely_latin_or_english,call_later
+train,1786,ta,reschedule,"Schedule maru, busy",entirely_latin_or_english,call_later
+train,1787,ml,decline,"No, I'm not sure",entirely_latin_or_english,decline
+train,1789,hi,decline,"Nahi, hi! I'm not sure.",entirely_latin_or_english,decline
+train,1791,ml,stop_calling,"stop calling, later now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1792,ta,call_later,"Piragu, can you call me later?",entirely_latin_or_english,call_later
+train,1793,en,stop_calling,"Stop calling me, I'm not interested.",multiple_label_cues,decline;stop_calling
+train,1794,hi,reschedule,"Reschedule, kya hai",entirely_latin_or_english,reschedule
+train,1795,hi,call_later,"Baad mein call kardo, shaan hai",entirely_latin_or_english,call_later
+train,1797,ml,unclear,"Ariyilla, not understanding",entirely_latin_or_english,
+train,1798,ml,call_later,"Pinne, call later, ippol busy?",entirely_latin_or_english,call_later
+train,1799,ta,decline,"haan haan, i can't",entirely_latin_or_english,
+train,1801,ta,reschedule,"Reschedule, umm later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1802,ta,call_later,"Piragu, busy, call later, sure.",entirely_latin_or_english,call_later
+train,1803,en,unclear,"Polite: I am unsure, but I will call you later.",generator_artifact,call_later
+train,1804,ml,stop_calling,"Stop calling, I'm not free",entirely_latin_or_english,stop_calling
+train,1805,ta,reschedule,"schedule maru, vere ner, later",entirely_latin_or_english,call_later
+train,1806,ml,unclear,"hmm, that's not clear at all",entirely_latin_or_english,
+train,1807,ta,decline,"Haan haan, no, not now, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1808,en,reschedule,Romanised: Reschedule the appointment to a different time.,generator_artifact,reschedule
+train,1809,ta,confirm,"varuven, confirm, yes",entirely_latin_or_english,confirm
+train,1812,hi,confirm,"Hi, can you confirm the time of the meeting?",entirely_latin_or_english,
+train,1813,ml,reschedule,Reschedule the call for tomorrow?,entirely_latin_or_english,reschedule
+train,1814,ml,call_later,"Haan haan, pinne vilikku, call later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1815,ta,decline,"haan, not now, busy",entirely_latin_or_english,call_later
+train,1817,ta,call_later,"Umm, can you call me later?",entirely_latin_or_english,call_later
+train,1818,en,unclear,"romanised: 'what event are you talking about?""",generator_artifact,
+train,1819,hi,unclear,"Not clear, busy",entirely_latin_or_english,call_later
+train,1820,hi,decline,"Nahi, kya kare? (4)",entirely_latin_or_english,decline
+train,1821,en,decline,"Not coming, I'm sorry, but I can't.",multiple_label_cues,confirm;decline
+train,1822,hi,reschedule,"Dusra time, reschedule karo. 11 words.",entirely_latin_or_english,reschedule
+train,1823,hi,call_later,"Abhi nahi, later karo, busy hoon",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1824,hi,call_later,"abhi nahi, haan",multiple_label_cues;entirely_latin_or_english,confirm;decline;call_later
+train,1825,en,decline,"No, I can't, I'm busy.",multiple_label_cues,decline;call_later
+train,1826,hi,call_later,"Umm, call later, sure",entirely_latin_or_english,call_later
+train,1827,ml,decline,"Haan haan, I'm not free",entirely_latin_or_english,confirm
+train,1828,ta,reschedule,"Haan haan, reschedule maru",entirely_latin_or_english,reschedule
+train,1830,ml,stop_calling,"Haaan, stop calling me, sure",entirely_latin_or_english,stop_calling
+train,1831,ta,stop_calling,"Um, stop callin' me now.",entirely_latin_or_english,stop_calling
+train,1832,ta,confirm,"aam confirm this, yes",entirely_latin_or_english,confirm
+train,1833,hi,reschedule,"Dusra time, reschedule karo. (1)",generator_artifact;entirely_latin_or_english,reschedule
+train,1834,ta,reschedule,"Reschedule maru, umm busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1835,ta,confirm,aam confirm umm yes,entirely_latin_or_english,confirm
+train,1836,hi,call_later,"Kya hua? Call later, please?",entirely_latin_or_english,call_later
+train,1837,ta,stop_calling,"Stop, phone pannadheenga",entirely_latin_or_english,stop_calling
+train,1838,ta,reschedule,"Schedule maru, reschedule come",entirely_latin_or_english,reschedule
+train,1839,hi,reschedule,"Um, can we reschedule the call later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+train,1840,ta,confirm,varuven confirm later,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1841,en,stop_calling,"Don't call me, I'm busy. (1)",generator_artifact;multiple_label_cues,call_later;stop_calling
+train,1843,hi,confirm,"Theek hai, confirm the delivery date.",entirely_latin_or_english,confirm
+train,1844,hi,stop_calling,"Hey, stop calling me",entirely_latin_or_english,stop_calling
+train,1845,hi,decline,"Nahi, kya kare? Haan haan, kya kare?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+train,1846,ml,call_later,"Pine vlikku, busy later",entirely_latin_or_english,call_later
+train,1848,ml,decline,too busy with other stuff,entirely_latin_or_english,call_later
+train,1849,ml,confirm,"Okay, confirm that please",entirely_latin_or_english,confirm
+train,1850,ml,call_later,"pinne, busy later haan haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1852,ta,call_later,"Piragu, later, appuram, call.",entirely_latin_or_english,call_later
+train,1854,ml,decline,"No thanks, illa",entirely_latin_or_english,decline
+train,1855,hi,stop_calling,"Hai, stop the calls, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1856,ml,call_later,"Pinne vilikku, busy",entirely_latin_or_english,call_later
+train,1857,en,reschedule,Reschedule the event to a later date.,multiple_label_cues,reschedule;call_later
+train,1858,en,reschedule,Native: Reschedule the event for a different date.,generator_artifact,reschedule
+train,1859,hi,call_later,"Call later, I'm busy now, yes",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1860,hi,call_later,"Call later, umm",entirely_latin_or_english,call_later
+train,1861,ml,call_later,"Pin a vlik, busy later",entirely_latin_or_english,call_later
+train,1862,ta,stop_calling,"Haan haan, stop calling, sure.",entirely_latin_or_english,stop_calling
+train,1863,ta,reschedule,"Piragu paarkalam, sure later",entirely_latin_or_english,call_later
+train,1864,hi,decline,"Nahi, hi! I'm not free.",entirely_latin_or_english,decline
+train,1865,hi,reschedule,"Dusra time, reschedule karo. Haan haan, mera kya kare?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+train,1866,ml,reschedule,"Reschedule my event, please?",entirely_latin_or_english,reschedule
+train,1867,ml,decline,pattilla not now,entirely_latin_or_english,decline
+train,1869,ml,reschedule,"Reschedule my call, please?",entirely_latin_or_english,reschedule
+train,1870,en,reschedule,"Reschedule, please, to a later date.",multiple_label_cues,reschedule;call_later
+train,1871,en,stop_calling,Stop calling me now. (1),generator_artifact,stop_calling
+train,1872,ta,call_later,"Appur: i'll call later, come when you can",entirely_latin_or_english,call_later
+train,1873,ta,stop_calling,"Haan haan, stop calling, come later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1875,ml,confirm,"Yeah, I'm free, confirm now",entirely_latin_or_english,
+train,1876,hi,stop_calling,"Haa, stop calling, i'm busy, sure.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1877,ml,call_later,"Pinne, i'm sure later",entirely_latin_or_english,call_later
+train,1878,hi,stop_calling,"Stop calling, yeah",entirely_latin_or_english,stop_calling
+train,1879,hi,confirm,"Aap kya kare, jaise ki theek hai?",entirely_latin_or_english,confirm
+train,1880,ml,reschedule,Kya aap reschedule kar sakte hain?,entirely_latin_or_english,reschedule
+train,1882,ml,confirm,"i'm busy, confirm now",entirely_latin_or_english,call_later
+train,1883,ml,unclear,"umh, that was unclear",entirely_latin_or_english,
+train,1884,ml,unclear,"sure, but what does it mean?",entirely_latin_or_english,
+train,1885,hi,unclear,"Hm, busy? Pata nahi.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1886,en,stop_calling,"Stop calling, come busy. (code-mixed)",multiple_label_cues,call_later;stop_calling
+train,1887,hi,unclear,"Umm, kaun ho? Not sure.",entirely_latin_or_english,
+train,1890,ml,unclear,"Hm, who called this? aarudu",entirely_latin_or_english,
+train,1892,hi,decline,"Nahi, kya kisi bhi karega? (2)",entirely_latin_or_english,decline
+train,1893,ml,unclear,"Aarudu, can you repeat?",entirely_latin_or_english,
+train,1894,hi,confirm,"Ji haan, can you confirm the order status?",entirely_latin_or_english,confirm
+train,1895,ta,confirm,"Aam sari, confirm, umm",entirely_latin_or_english,confirm
+train,1896,hi,stop_calling,"Stop calling me please, umm, I'm busy.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1897,hi,stop_calling,"Stop calling, i'm busy, yeah",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1898,en,reschedule,Native: Reschedule the meeting for tomorrow afternoon.,generator_artifact,reschedule
+train,1899,ml,decline,ummm can't do it now,entirely_latin_or_english,
+train,1900,ml,unclear,"Come, but unclear, please",entirely_latin_or_english,
+train,1901,ml,call_later,"Pinne, I'll call later, sure.",entirely_latin_or_english,call_later
+train,1902,ta,decline,"no, come later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1903,ml,reschedule,"Schedule change, kya later?",entirely_latin_or_english,call_later
+train,1904,ta,call_later,"Piragu, umm, call later?",entirely_latin_or_english,call_later
+train,1905,en,unclear,romanised: 'i don't know who you are',generator_artifact,
+train,1908,ml,confirm,"Sheri, varam, busy, can you come?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+train,1910,en,confirm,Romanised: I'm not suer if I can come.,generator_artifact,
+train,1911,ml,stop_calling,"No, stop calling me now",multiple_label_cues;entirely_latin_or_english,decline;stop_calling
+train,1912,ml,decline,"Varilla, I'm too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+train,1913,ta,call_later,"Appuram, call me later, sure",entirely_latin_or_english,call_later
+train,1914,ml,stop_calling,"Hey, stop calling, I'm sure busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1915,ta,stop_calling,"Haan haan, stop calling, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+train,1916,hi,call_later,"Baad mein call karungi, sure hai",entirely_latin_or_english,call_later
+train,1917,ta,unclear,"Haan haan, unclear, come back later?",entirely_latin_or_english,call_later
+train,1918,hi,confirm,"Aap kya kare, jaise ki aaunga?",entirely_latin_or_english,confirm
+train,1920,hi,decline,"Nahi aa sakta, hi, kya karta hai?",entirely_latin_or_english,decline
+val,1,ml,unclear,"Umm, sure, but unclear",entirely_latin_or_english,
+val,2,en,unclear,polite: 'I'm not sure who called me',generator_artifact,confirm
+val,3,ta,decline,"no, too busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,4,ta,stop_calling,"Stop calling, come here, azhaikkadheenga",entirely_latin_or_english,stop_calling
+val,6,ta,unclear,"theriyala, can you repeat?",entirely_latin_or_english,
+val,7,ml,stop_calling,"Stop calling, sure, bye",entirely_latin_or_english,stop_calling
+val,8,hi,reschedule,"Time badlo, kya hai",entirely_latin_or_english,reschedule
+val,9,hi,stop_calling,"Stop call, busy, come",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,10,ta,decline,"no, busy now",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,11,ml,unclear,"aah, ariyilla, confused",entirely_latin_or_english,
+val,12,ta,call_later,"Piragu, appuram, later, call.",entirely_latin_or_english,call_later
+val,13,hi,confirm,"Ji haan, kya kya karta hai?",entirely_latin_or_english,confirm
+val,14,ta,unclear,can you repeat,entirely_latin_or_english,
+val,15,en,unclear,impolite: 'I don't know what time is it',generator_artifact,
+val,16,hi,call_later,"busy, later",entirely_latin_or_english,call_later
+val,18,ml,confirm,"I'm not sure, come again?",entirely_latin_or_english,
+val,19,hi,confirm,"Aangu, confirm the phone number.",entirely_latin_or_english,
+val,20,hi,unclear,"Hm, pata nahi",entirely_latin_or_english,decline
+val,21,en,unclear,"Romanised: eō nōn ād eō dōnō, etsi eō nōn ād eō dōnō.",generator_artifact,
+val,22,ta,decline,"Naa, not interested, sorry",entirely_latin_or_english,
+val,23,hi,confirm,"Haan haan, kya kari?",entirely_latin_or_english,confirm
+val,24,ta,stop_calling,"Stop calling, it's me, azhaikkad: no",multiple_label_cues;entirely_latin_or_english,decline;stop_calling
+val,25,ml,unclear,"hmm, who is this number?",entirely_latin_or_english,
+val,26,ml,call_later,"Pinne, call later, busy, umm",entirely_latin_or_english,call_later
+val,27,hi,call_later,"Later, I'll call you, busy",entirely_latin_or_english,call_later
+val,28,ml,decline,"Nope, I'm busy right now",entirely_latin_or_english,call_later
+val,29,hi,decline,"Nahi, hi! I can't accept the offer.",entirely_latin_or_english,decline
+val,30,hi,decline,"Nahi aa sakta, jana hai kya?",entirely_latin_or_english,decline
+val,32,ml,unclear,"aah, ethu event, no clue",entirely_latin_or_english,decline
+val,33,hi,confirm,"Aaunga, kya pata hain?",entirely_latin_or_english,confirm
+val,34,ta,decline,"not sure, busy",entirely_latin_or_english,call_later
+val,35,ta,decline,"Um, okay, I'm busy, can't do now",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,37,ml,decline,"I'm not feeling well, can't help",entirely_latin_or_english,
+val,38,ta,call_later,"Piragu, busy, call later, haan",entirely_latin_or_english,call_later
+val,39,hi,reschedule,"Dusra time, reschedule karo. (5)",entirely_latin_or_english,reschedule
+val,40,ml,confirm,"Athey, I need to check this",entirely_latin_or_english,
+val,41,ml,confirm,"Umm, what's the number?",entirely_latin_or_english,
+val,42,hi,call_later,"Umm, busy, call later",entirely_latin_or_english,call_later
+val,43,ml,confirm,"Sheri, can you be clearer?",entirely_latin_or_english,confirm
+val,45,ta,stop_calling,"Azhaikkadheenga, stop calling me",entirely_latin_or_english,stop_calling
+val,46,hi,unclear,who is speaking? i'm confused,entirely_latin_or_english,
+val,47,ta,reschedule,"Reschedule later, umm",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,48,en,decline,"Not coming, I'm afraid.",multiple_label_cues,confirm;decline
+val,49,ml,call_later,"Pinne, ippol busy, come later?",entirely_latin_or_english,call_later
+val,50,hi,call_later,"Come, busy, but later okay",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,51,ta,call_later,"Call later, busy umm",entirely_latin_or_english,call_later
+val,52,ml,call_later,"Pinne, sure later",entirely_latin_or_english,call_later
+val,53,ta,stop_calling,"Stop calling, later, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,54,ta,reschedule,"Reschedule, busy umm",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,56,hi,confirm,"Jai ho, jai ho. Haan haan, jai ho.",entirely_latin_or_english,confirm
+val,57,ml,stop_calling,"Stop calling, come on, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,58,hi,decline,"Nahi, tumhari kya karta hai? Hi, tumhari kya karta hai?",entirely_latin_or_english,decline
+val,59,hi,unclear,Who called this? Not sure,entirely_latin_or_english,
+val,60,ta,unclear,"en na, who calling now?",entirely_latin_or_english,
+val,61,hi,unclear,Who is calling right now?,entirely_latin_or_english,
+val,62,ml,call_later,"Pinne busy, umm, when can I call?",entirely_latin_or_english,call_later
+val,63,ml,call_later,"Pine vlikku, busy now",entirely_latin_or_english,call_later
+val,64,ta,unclear,yaar ithu enna event,entirely_latin_or_english,
+val,65,hi,stop_calling,"Stop calling, i'm busy, later.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,66,en,decline,"No, I won't, I'm busy.",multiple_label_cues,decline;call_later
+val,68,ml,call_later,"Pinne, call later, busy?",entirely_latin_or_english,call_later
+val,69,hi,reschedule,"Dusra time, reschedule karo. 5 words.",entirely_latin_or_english,reschedule
+val,70,ml,confirm,"Yeah, I'm sure",entirely_latin_or_english,
+val,73,hi,decline,"Nahi, kya kare? (2)",entirely_latin_or_english,decline
+val,74,en,confirm,"Code-mixed: I'll be there later, sure.",multiple_label_cues,confirm;call_later
+val,76,ml,confirm,"This is confusing, tell me again",entirely_latin_or_english,
+val,77,en,unclear,native: 'i don't know',generator_artifact,
+val,78,ml,reschedule,Reschedule meeting when I'm free,entirely_latin_or_english,reschedule
+val,79,en,reschedule,Reschedule the event to a later day.,multiple_label_cues,reschedule;call_later
+val,80,ml,call_later,"Pine vlik, call later",entirely_latin_or_english,call_later
+val,81,hi,confirm,"Jai ho, jai ho, haan haan",entirely_latin_or_english,confirm
+val,82,ta,call_later,"Call later, busy now",entirely_latin_or_english,call_later
+val,84,ta,reschedule,"Vere neram, schedule busy",entirely_latin_or_english,call_later
+val,85,ml,reschedule,"Schedule change, when's okay?",entirely_latin_or_english,confirm
+val,86,hi,call_later,"Haan, later, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,87,hi,decline,"Nahi, abhi kya karna hai?",entirely_latin_or_english,decline
+val,88,ta,call_later,"Piragu, call later, later",entirely_latin_or_english,call_later
+val,90,ml,reschedule,"Come, reschedule meeting for tomorrow?",entirely_latin_or_english,reschedule
+val,91,ta,decline,"no, i'm swamped",entirely_latin_or_english,decline
+val,92,ml,decline,ummm sorry no,entirely_latin_or_english,decline
+val,93,hi,unclear,"Hmmm, not sure",entirely_latin_or_english,
+val,94,ml,stop_calling,"Stop calling, yes, later",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+val,95,ta,reschedule,"Reschedule, umm, when is good?",entirely_latin_or_english,reschedule
+val,96,hi,call_later,"Umm... call later, kya hua?",entirely_latin_or_english,call_later
+val,97,ml,unclear,"Umm, come, no idea",entirely_latin_or_english,decline
+val,98,hi,reschedule,"Reschedule karo, dusra time. Umm, kya kya karo?",entirely_latin_or_english,reschedule
+val,99,ml,confirm,"Hmm, I'm busy, maybe later?",entirely_latin_or_english,call_later
+val,100,en,decline,"No, I can't come, I'm busy",multiple_label_cues,decline;call_later
+val,101,ml,call_later,"Pinne vilikku, come later",entirely_latin_or_english,call_later
+val,103,hi,decline,"Nahi aa sakta, hi. I'm busy now.",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,104,ta,confirm,aam confirm sure,entirely_latin_or_english,confirm
+val,106,hi,stop_calling,"Haan haan, stop calling, I'm busy now",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+val,109,ta,confirm,"Aam sari varuven, confirm haan haan?",entirely_latin_or_english,confirm
+val,111,ta,stop_calling,"Phone pannadheenga, please stop",entirely_latin_or_english,stop_calling
+val,112,ml,stop_calling,"Vilik, stop calling, sure",entirely_latin_or_english,stop_calling
+val,113,hi,confirm,"Ji haan, tum kya karta hai?",entirely_latin_or_english,confirm
+val,114,en,confirm,Native: Can I come tomorrow? I'm sure.,generator_artifact,confirm
+val,116,ta,unclear,ummm what was that,entirely_latin_or_english,
+val,117,ta,unclear,"en na, who is it?",entirely_latin_or_english,
+val,118,en,confirm,"Native: I'll be there later, sure.",generator_artifact;multiple_label_cues,confirm;call_later
+val,119,hi,call_later,"Umm, busy hoon abhi, kuch later",entirely_latin_or_english,call_later
+val,120,ta,confirm,confirm sari come later,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,121,en,confirm,"Impolite: I'm available, haan haan.",generator_artifact,
+val,122,en,unclear,"polite: 'umm, who is calling?'",generator_artifact,
+val,123,hi,reschedule,"Dusra time, reschedule karo. Haan haan, kya karta hai?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+val,124,hi,call_later,baad mein call karungi,entirely_latin_or_english,call_later
+val,125,ml,stop_calling,"Vilikalle, stop, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,126,ml,decline,pattilla busy,multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,127,ml,decline,"Can't help you today, umm",entirely_latin_or_english,
+val,129,hi,decline,"Nahi, hi. I can't accept the offer.",entirely_latin_or_english,decline
+val,130,hi,reschedule,reschedule karo dusra time,entirely_latin_or_english,reschedule
+val,131,ta,confirm,sari confirm no,multiple_label_cues;entirely_latin_or_english,confirm;decline
+val,134,ml,decline,"Varilla, I'm not free now",entirely_latin_or_english,decline
+val,135,hi,stop_calling,"Stop calling, i'm busy, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later;stop_calling
+val,136,hi,stop_calling,"Stop callin', umm, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,137,hi,stop_calling,"Hey, stop calling, i'm busy right now.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,138,en,stop_calling,"Stop calling, sure.",multiple_label_cues,confirm;stop_calling
+val,139,hi,call_later,"abhi nahi, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,140,ml,decline,"Pattilla, nope, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,141,ta,unclear,"thi, no, maybe later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,142,hi,unclear,who's that? i'm lost,entirely_latin_or_english,
+val,144,en,unclear,"romanised: 'hm, i'm not sure what you're saying'",generator_artifact,confirm
+val,145,ml,unclear,"Ethu event, noise, no",entirely_latin_or_english,decline
+val,146,ta,reschedule,"Piragu paarkalam, come later",entirely_latin_or_english,call_later
+val,147,ta,call_later,"Pir, appuram, call later, yeah.",entirely_latin_or_english,call_later
+val,148,ta,call_later,"Piragu, call later, umm",entirely_latin_or_english,call_later
+val,149,hi,decline,"Nahi, hai haan, kya karte hain?",multiple_label_cues;entirely_latin_or_english,confirm;decline
+val,150,ta,confirm,aam confirm yes later,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,151,ta,reschedule,"Piragu paarkalam, reschedule, later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,152,ta,decline,"Haan haan, no, can't help, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,153,hi,unclear,"Haaan, busy? Not sure.",entirely_latin_or_english,call_later
+val,154,ml,stop_calling,"Vilikalle, stop, umm",entirely_latin_or_english,stop_calling
+val,156,ml,unclear,"Later, but I'm unclear",entirely_latin_or_english,call_later
+val,159,hi,call_later,"later, umm",entirely_latin_or_english,call_later
+val,160,ml,stop_calling,"Please stop callin' me, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,161,ta,decline,"Umm, no, thank you",entirely_latin_or_english,decline
+val,162,ta,unclear,"en na, who called this?",entirely_latin_or_english,
+val,163,ml,reschedule,Can you reschedule my appointment for later?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,164,hi,stop_calling,"Stop call, busy, yeah",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,165,ta,unclear,"Umm... not sure, who's this?",entirely_latin_or_english,
+val,166,ta,confirm,"ummm, is this the right person?",entirely_latin_or_english,
+val,167,ta,decline,"Haan haan, not now, busy",entirely_latin_or_english,call_later
+val,168,hi,reschedule,"reschedule karo, dusra time",entirely_latin_or_english,reschedule
+val,169,ml,unclear,"Haan ha, unclear signal",entirely_latin_or_english,confirm
+val,171,hi,stop_calling,Stop calling later,multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,172,ta,reschedule,"Schedule maru, umm later",entirely_latin_or_english,call_later
+val,173,ml,reschedule,"Res: schedule tomorrow, umm",entirely_latin_or_english,
+val,174,hi,reschedule,"dusra time karo, re-schedule karo",entirely_latin_or_english,reschedule
+val,175,hi,decline,"Nahi, kya kare? (1)",generator_artifact;entirely_latin_or_english,decline
+val,176,hi,confirm,"Haan haan, I want to confirm the payment details.",entirely_latin_or_english,confirm
+val,177,ml,stop_calling,"Pleeease stop calling, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+val,178,ml,reschedule,"Umm, can we reschedule this meeting for later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,180,ta,confirm,"Aam sari varuven, confirm sure umm",entirely_latin_or_english,confirm
+val,181,ml,confirm,"Sure, I'll confirm later",entirely_latin_or_english,call_later
+val,182,ta,reschedule,"Reschedule, I'll be free later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,183,hi,confirm,"Haan haan, jahaan hai kya?",entirely_latin_or_english,confirm
+val,184,ml,confirm,"Varam, please confirm",entirely_latin_or_english,confirm
+val,185,ta,confirm,"varu, confirm no? haan",entirely_latin_or_english,decline
+val,186,hi,confirm,"Ji haan, ab kya karna hai?",entirely_latin_or_english,confirm
+val,187,ml,reschedule,"Pinneedu, reschedule schedule for tomorrow",entirely_latin_or_english,reschedule
+val,188,ta,stop_calling,"Umm, stop calling, busy now, sure",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,189,hi,stop_calling,"Stop calling, i'm busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,190,ml,decline,nope not interested at all,entirely_latin_or_english,
+val,191,ta,reschedule,"Schedule change, umm later",entirely_latin_or_english,call_later
+val,192,en,unclear,"Impolite: Haan, the meeting is tomorrow.",generator_artifact,
+val,193,ml,call_later,"Pinne vilikku, call later please?",entirely_latin_or_english,call_later
+val,194,hi,unclear,Kaun ho? Umm,entirely_latin_or_english,
+val,195,ta,stop_calling,"Phone pannad: stop it, no more",multiple_label_cues;entirely_latin_or_english,decline;stop_calling
+val,197,ta,confirm,"Aam sari varuven, confirm busy umm",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,198,ta,call_later,"Appur, call later, busy",entirely_latin_or_english,call_later
+val,199,ml,decline,nope can't help,entirely_latin_or_english,
+val,200,ta,decline,"Umm, no, too much, later",multiple_label_cues;entirely_latin_or_english,decline;call_later
+val,201,ta,confirm,"Aam sari varuven, confirm now",entirely_latin_or_english,confirm
+val,204,hi,stop_calling,"Stop calling me, I'm busy, umm",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,205,en,unclear,impolite: 'I don't know what event you're talking about',generator_artifact,
+val,208,en,reschedule,Reschedule the meeting to a later day.,multiple_label_cues,reschedule;call_later
+val,209,en,decline,"Not coming, not interested.",multiple_label_cues,confirm;decline
+val,211,en,decline,"No, I can't come, I'm busy today.",multiple_label_cues,decline;call_later
+val,212,ml,stop_calling,"Stop it, stop calling me",entirely_latin_or_english,stop_calling
+val,213,ml,stop_calling,"Stop calling me, please",entirely_latin_or_english,stop_calling
+val,214,ta,call_later,"Piragu, call later, yes",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,215,hi,reschedule,"Haan, reschedule for next week?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+val,216,ta,unclear,come on busy,entirely_latin_or_english,call_later
+val,217,ml,unclear,who called? i don't know,entirely_latin_or_english,
+val,218,ml,reschedule,"Reschedule my call, I'm free later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,219,ml,decline,i'm not sure i can do that,entirely_latin_or_english,
+val,220,ml,confirm,"Umm, confirm later, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+val,221,ml,unclear,"Ethu event, busy, sorry",entirely_latin_or_english,call_later
+val,223,ta,call_later,"Haan haan, call later, please",entirely_latin_or_english,call_later
+val,224,ta,stop_calling,"Phone pannadheenga, stop it",entirely_latin_or_english,stop_calling
+val,225,ml,reschedule,"Haan haan, I'm free now, reschedule?",multiple_label_cues;entirely_latin_or_english,confirm;reschedule
+val,226,ta,stop_calling,"Stop calling now, I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+val,229,ml,reschedule,"Reschedule me, I'm busy now",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,230,hi,unclear,Who is this? Not clear,entirely_latin_or_english,
+val,232,ta,stop_calling,"Stop calling, azhaikkadheenga",entirely_latin_or_english,stop_calling
+val,234,ta,reschedule,"Reschedule, busy, umm, later?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+val,235,hi,reschedule,"Dusra time, reschedule karo. (1)native script natural phrasing",generator_artifact;entirely_latin_or_english,reschedule
+val,237,hi,unclear,"Hah, who's this?",entirely_latin_or_english,
+val,238,hi,decline,"Nahi, hi. I'm not able to help.",entirely_latin_or_english,decline
+val,239,en,reschedule,Polite: I’d like to reschedule the meeting for a later time.,generator_artifact;multiple_label_cues,reschedule;call_later
+val,240,ml,call_later,"Um, pinne vilikku, later please?",entirely_latin_or_english,call_later
+test,1,hi,stop_calling,"Stop calling me, please, I'm busy right now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,4,ml,reschedule,"Um, I'm busy now, can we move it later?",entirely_latin_or_english,call_later
+test,5,ml,call_later,"Pinne vilikku, come umm later",entirely_latin_or_english,call_later
+test,7,ta,confirm,"aam confirm, come later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,8,hi,unclear,"Hmm, can't tell who it is.",entirely_latin_or_english,
+test,9,hi,stop_calling,"Come on, stop calling, sure, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,10,hi,unclear,Kya event? Umm,entirely_latin_or_english,
+test,11,ta,reschedule,"Neram, when can we reschedule?",entirely_latin_or_english,reschedule
+test,15,ml,unclear,"who is this, busy now?",entirely_latin_or_english,call_later
+test,16,hi,unclear,Pata n? Who is it?,entirely_latin_or_english,
+test,17,hi,confirm,"Haan haan, sir, can you confirm the time?",entirely_latin_or_english,confirm
+test,19,ta,stop_calling,"Azhaikkadheenga, stop calling now!",entirely_latin_or_english,stop_calling
+test,20,hi,unclear,"Who's calling? Umm, not sure",entirely_latin_or_english,
+test,21,ml,decline,"Pattilla, can't help you today",entirely_latin_or_english,decline
+test,22,ta,unclear,"theriyala, can you say again?",entirely_latin_or_english,
+test,23,ta,call_later,"Call later, sure but busy now",entirely_latin_or_english,call_later
+test,24,ta,stop_calling,"Umm, who's callin' me?",entirely_latin_or_english,
+test,25,ml,reschedule,Can you reschedule my meeting?,entirely_latin_or_english,reschedule
+test,26,ta,confirm,"sari, busy now?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,27,ml,stop_calling,"Vilikkaruth, stop calling, please",entirely_latin_or_english,stop_calling
+test,28,ml,reschedule,"Vere samayam, schedule reset?",entirely_latin_or_english,
+test,29,ml,stop_calling,"Vilikalle, stop, please",entirely_latin_or_english,stop_calling
+test,30,hi,confirm,"Haan haan, kya kya karta hai?",entirely_latin_or_english,confirm
+test,31,ta,call_later,"Call later, haan, busy",entirely_latin_or_english,call_later
+test,32,ml,unclear,"I don't understand what you're saying, aarudu",entirely_latin_or_english,
+test,33,hi,decline,"Nahi, kya kisi bhi kara raha hai?",entirely_latin_or_english,decline
+test,34,ta,reschedule,"Schedule maru, reschedule when possible",entirely_latin_or_english,reschedule
+test,35,ml,unclear,"come, too busy, can't hear well",entirely_latin_or_english,call_later
+test,36,ta,decline,"Varamatten, illai, not now, busy",multiple_label_cues;entirely_latin_or_english,decline;call_later
+test,37,ta,confirm,"varuven, sure, confirm later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,38,hi,call_later,"umm, baad mein",entirely_latin_or_english,call_later
+test,39,hi,call_later,Umm... later? I'm busy now,entirely_latin_or_english,call_later
+test,40,en,unclear,Romanised: 'I'm not sure if you're calling about the meeting or something else.',generator_artifact,confirm
+test,41,ml,stop_calling,"stop calling, busy later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,42,en,unclear,"impolite: 'haan haan, who is calling?'",generator_artifact,
+test,43,ml,confirm,"Varam, is this clear?",entirely_latin_or_english,confirm
+test,44,ta,reschedule,"Reschedule, please, when is free?",entirely_latin_or_english,reschedule
+test,46,hi,reschedule,"Dusra time, reschedule karo. 7 words.",entirely_latin_or_english,reschedule
+test,48,ml,unclear,"later, but I need more info",entirely_latin_or_english,call_later
+test,49,ml,unclear,"Haan haan, not sure, unclear",entirely_latin_or_english,confirm
+test,50,hi,reschedule,"Dusra time, reschedule karo. 10 words.",entirely_latin_or_english,reschedule
+test,51,ta,reschedule,"Kana schedule, busy now",entirely_latin_or_english,call_later
+test,52,hi,confirm,"Aap kya kare, haan haan?",entirely_latin_or_english,confirm
+test,53,hi,unclear,"Pata nahi, kaun ho",entirely_latin_or_english,decline
+test,54,hi,decline,"Nahi, kya kya kara raha hai?",entirely_latin_or_english,decline
+test,55,ml,decline,"I'm busy, can't do it",entirely_latin_or_english,call_later
+test,56,en,unclear,polite: 'I am not sure who you are',generator_artifact,confirm
+test,57,ml,confirm,"Okay, busy now, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,58,hi,decline,"Nahi, kya kya karta hoon",entirely_latin_or_english,decline
+test,59,hi,reschedule,"Dusra time, reschedule karo. (4)",entirely_latin_or_english,reschedule
+test,60,hi,stop_calling,"Stop callin' me, please",entirely_latin_or_english,stop_calling
+test,61,ml,call_later,"Pinne vilikku, haan haan later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,62,ml,stop_calling,"Umm, stop calling",entirely_latin_or_english,stop_calling
+test,63,en,decline,"Not coming, I'll stay away.",multiple_label_cues,confirm;decline
+test,64,hi,reschedule,"Reschedule, please, later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,65,hi,stop_calling,"Stop calling, later",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,66,ml,decline,"I'm not feeling good, sorry",entirely_latin_or_english,
+test,67,ta,decline,"nah, sure, i'm free",entirely_latin_or_english,
+test,68,ml,call_later,"Pinne vilikku, busy now, call later",entirely_latin_or_english,call_later
+test,69,ml,call_later,"pinne, come later sure",entirely_latin_or_english,call_later
+test,71,ta,decline,"no, not sure",entirely_latin_or_english,decline
+test,72,hi,decline,"Nahi, hi. I can't help.",entirely_latin_or_english,decline
+test,73,ta,stop_calling,"Phone pannadheenga, stop calling, sure",entirely_latin_or_english,stop_calling
+test,75,ml,confirm,Who called me? Umm...,entirely_latin_or_english,
+test,76,hi,call_later,"Call later, umm, sure",entirely_latin_or_english,call_later
+test,78,ta,stop_calling,"Sure, stop calling, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,79,ml,call_later,"Pinne, come later",entirely_latin_or_english,call_later
+test,80,ta,confirm,"Aam sari, noise, umm",entirely_latin_or_english,confirm
+test,81,hi,reschedule,"Dusra time, reschedule karo.",entirely_latin_or_english,reschedule
+test,83,hi,unclear,kaun hai? kya event?,entirely_latin_or_english,
+test,84,ml,unclear,"Come on, busy right now",entirely_latin_or_english,call_later
+test,86,ta,unclear,"Enna event, unclear, who is it?",entirely_latin_or_english,
+test,87,ta,confirm,"aam confirm, later ok",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,88,hi,decline,"Nahi, kya kare hai? (1)",generator_artifact;entirely_latin_or_english,decline
+test,89,ml,reschedule,"Um, change schedule, umm, busy now?",entirely_latin_or_english,call_later
+test,91,hi,stop_calling,"Haan haan, stop calling now, sure",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+test,92,ta,unclear,this is confusing,entirely_latin_or_english,
+test,93,hi,call_later,"Call later, shaan hai",entirely_latin_or_english,call_later
+test,94,hi,decline,"Nahi aa sakta, kya kya karta hai?",entirely_latin_or_english,decline
+test,95,ml,call_later,pinne vilikku ippol busy,entirely_latin_or_english,call_later
+test,98,hi,confirm,"Ji haan, tum kya kia hai?",entirely_latin_or_english,confirm
+test,99,en,unclear,polite: 'I am not sure what event you're talking about',generator_artifact,confirm
+test,101,ta,stop_calling,Phone pannad: stop calling now,entirely_latin_or_english,stop_calling
+test,102,ta,stop_calling,"Haan haan, stop, busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,103,hi,call_later,"Baad mein, later karo, busy",entirely_latin_or_english,call_later
+test,104,ml,reschedule,"Reschedule, pinneedu, busy?",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,105,ml,confirm,"Okay, I'm busy, can you come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,106,ta,decline,"Illai, varamatten, no, not me",entirely_latin_or_english,decline
+test,107,ta,unclear,nope not sure,entirely_latin_or_english,
+test,108,hi,decline,"Nahi, nahi aa sakta. (1) Native script natural phrasing",generator_artifact;entirely_latin_or_english,decline
+test,109,ml,confirm,"Athey, varam, busy now, come later?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,110,ml,call_later,"Pinne vilikku, later",entirely_latin_or_english,call_later
+test,112,ml,confirm,"Yes, I'm here, confirm that okay?",entirely_latin_or_english,confirm
+test,113,ta,call_later,"Piragu, later, call me, umm",entirely_latin_or_english,call_later
+test,114,en,decline,"Can't come, I'm busy.",multiple_label_cues,decline;call_later
+test,116,ml,reschedule,"Schedule maaroo, busy abhi, when later?",entirely_latin_or_english,call_later
+test,117,ml,unclear,"Ethu event, unclear, huh",entirely_latin_or_english,
+test,118,ta,decline,"Naa, later, come",entirely_latin_or_english,call_later
+test,120,ta,call_later,"Appuram, can you call me later sure",entirely_latin_or_english,call_later
+test,121,ta,confirm,"Aam sari, noise, haan",entirely_latin_or_english,confirm
+test,122,en,confirm,"Romanised: I'm a vālī, sūr.",generator_artifact,
+test,124,hi,call_later,"Haan, call later, busy",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,125,hi,unclear,"Not sure, who's calling?",entirely_latin_or_english,
+test,128,en,confirm,Native: I'm not sure if I can come.,generator_artifact,confirm
+test,130,ml,unclear,"aaru, this is mixed up",entirely_latin_or_english,
+test,131,ml,reschedule,"Reschedule me for later, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;reschedule;call_later
+test,132,ta,unclear,"Enna event, unclear, maybe later?",entirely_latin_or_english,call_later
+test,133,ta,decline,"varamatten, nope",entirely_latin_or_english,decline
+test,134,ta,stop_calling,stop callin' i'm busy,multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,135,en,unclear,native: 'what event?',generator_artifact,
+test,136,hi,confirm,"Ji haan, kya kare?",entirely_latin_or_english,confirm
+test,137,hi,decline,"Nahi aa sakta, abhi. Haan haan.",multiple_label_cues;entirely_latin_or_english,confirm;decline
+test,138,en,unclear,romanised: 'hmm',generator_artifact,
+test,139,hi,confirm,"Theek hai, could you confirm the date?",entirely_latin_or_english,confirm
+test,140,ml,confirm,"Varam, confirm please",entirely_latin_or_english,confirm
+test,141,ta,confirm,aam confirm come later,multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,142,ml,unclear,"Umm, who called this number?",entirely_latin_or_english,
+test,143,ta,unclear,"Theriyala, unclear, maybe later",entirely_latin_or_english,call_later
+test,144,ml,stop_calling,"Stop calling, busy, no",multiple_label_cues;entirely_latin_or_english,decline;call_later;stop_calling
+test,145,ta,unclear,who called this number?,entirely_latin_or_english,
+test,147,ta,confirm,"Aam sari, confirm? umm",entirely_latin_or_english,confirm
+test,148,en,reschedule,Reschedule the call to a later time.,multiple_label_cues,reschedule;call_later
+test,149,hi,reschedule,"Dusra time, reschedule karo. (2)",entirely_latin_or_english,reschedule
+test,150,hi,stop_calling,"Haan haan, stop calling now, sure.",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+test,151,en,stop_calling,"Stop calling, I'm busy. (polite)",multiple_label_cues,call_later;stop_calling
+test,152,en,stop_calling,Don't call me unless I consent. (1),generator_artifact,stop_calling
+test,153,hi,stop_calling,"Stop calling, please, haan haan",multiple_label_cues;entirely_latin_or_english,confirm;stop_calling
+test,154,en,stop_calling,"Stop calling me, no.",multiple_label_cues,decline;stop_calling
+test,155,ml,stop_calling,"Haaan, stop callin', I'm busy",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,157,ml,decline,"Illa, I'm not available now",entirely_latin_or_english,decline
+test,158,ta,unclear,"Enna, unclear, who called?",entirely_latin_or_english,
+test,159,ta,confirm,"Aam, sari, varuven, yes, confirm this",entirely_latin_or_english,confirm
+test,160,ta,call_later,"Piragu, call later, busy",entirely_latin_or_english,call_later
+test,161,en,confirm,"Impolite: Can I come, but I'm not sure.",generator_artifact,confirm
+test,162,ml,stop_calling,"Stop calling later, please",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,163,ta,call_later,"Call me later, umm, sure",entirely_latin_or_english,call_later
+test,164,hi,confirm,"Ji haan, kya sab kare?",entirely_latin_or_english,confirm
+test,165,hi,unclear,"Umm, kya event? Not clear.",entirely_latin_or_english,
+test,166,hi,confirm,"Hi, confirm the details of the call again.",entirely_latin_or_english,
+test,167,ta,decline,"Varamatten, no, umm",entirely_latin_or_english,decline
+test,170,ml,confirm,"Varam, I'm busy, can you come?",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,171,ml,confirm,"Ok, I'm busy now",entirely_latin_or_english,call_later
+test,172,ta,reschedule,haan haan reschedule when can i come?,entirely_latin_or_english,reschedule
+test,173,en,decline,"Can't come, I'm too busy.",multiple_label_cues,decline;call_later
+test,174,hi,unclear,kaun ho? kya event? hmm,entirely_latin_or_english,
+test,176,ml,decline,sorry i'm busy now,entirely_latin_or_english,call_later
+test,178,ml,stop_calling,"Stop calling me, I'm busy now",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,180,ta,call_later,"Piragu, call later, appuram",entirely_latin_or_english,call_later
+test,182,hi,stop_calling,"Stop calling me, i'm busy, umm.",multiple_label_cues;entirely_latin_or_english,call_later;stop_calling
+test,183,ml,unclear,Ethu event? I don't get it,entirely_latin_or_english,
+test,184,ml,call_later,pinne vilikku ippol: busy,entirely_latin_or_english,call_later
+test,185,ml,decline,nah not today,entirely_latin_or_english,
+test,187,hi,reschedule,"Reschedule when free, umm",entirely_latin_or_english,reschedule
+test,188,ta,reschedule,"reschedule me now, sure",entirely_latin_or_english,reschedule
+test,189,hi,confirm,"Aangua, jai ho",entirely_latin_or_english,
+test,190,ta,call_later,"Piragu, call later, haan haan",entirely_latin_or_english,call_later
+test,191,hi,reschedule,Can you reschedule the event?,entirely_latin_or_english,reschedule
+test,192,ta,unclear,i heard that,entirely_latin_or_english,
+test,193,en,stop_calling,I don't want to be called. (1),generator_artifact,stop_calling
+test,194,hi,stop_calling,"Stop, calling me",entirely_latin_or_english,stop_calling
+test,195,hi,confirm,"Hi, can you confirm the details of the call?",entirely_latin_or_english,
+test,196,hi,reschedule,Can you reschedule my meeting for tomorrow?,entirely_latin_or_english,reschedule
+test,197,ml,reschedule,"Reschedule, please, I'm busy",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,198,ta,unclear,"not clear, umm, please",entirely_latin_or_english,
+test,200,ml,stop_calling,"Hai, stop calling, come on, no",multiple_label_cues;entirely_latin_or_english,decline;stop_calling
+test,201,ta,stop_calling,"Haan haan, stop calling now",entirely_latin_or_english,stop_calling
+test,202,ta,stop_calling,"Phone pannadheenga, stop it please",entirely_latin_or_english,stop_calling
+test,203,hi,call_later,"Abhi nahi, busy hoon",multiple_label_cues;entirely_latin_or_english,decline;call_later
+test,204,ta,decline,"nah, sure, later",entirely_latin_or_english,call_later
+test,205,hi,unclear,"Hm, can't tell who this is",entirely_latin_or_english,
+test,207,en,unclear,"romanised: 'hello, how are you'",generator_artifact,
+test,208,hi,call_later,"kya haan, busy hoon, call later",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,209,ta,confirm,"aam, can you confirm that?",entirely_latin_or_english,confirm
+test,210,ml,stop_calling,"Vilikalle, stop callin', please",entirely_latin_or_english,stop_calling
+test,211,en,reschedule,Reschedule the appointment to a later date.,multiple_label_cues,reschedule;call_later
+test,212,ta,reschedule,"Piragu paarkalam, need to reschedule later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,213,ml,decline,nah not sure,entirely_latin_or_english,
+test,214,hi,decline,"Nahi, hi. I can't help right now.",entirely_latin_or_english,decline
+test,215,ta,reschedule,"reschedule now, busy, sure",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,216,ml,decline,"I'm not interested, haan",entirely_latin_or_english,confirm
+test,217,ml,decline,too many tasks,entirely_latin_or_english,
+test,218,hi,stop_calling,"Band karo, stop callin' please",entirely_latin_or_english,stop_calling
+test,220,ta,decline,"haan haan, no",entirely_latin_or_english,decline
+test,221,hi,reschedule,"Dusra time, reschedule karo. Um, menej karo.",entirely_latin_or_english,reschedule
+test,222,ml,confirm,"I'm sure it's okay, let's do this",entirely_latin_or_english,confirm
+test,223,ml,call_later,"Pinne, i'm free later",entirely_latin_or_english,call_later
+test,224,ml,reschedule,Reschedule when you're not busy?,multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,225,ta,reschedule,"reschedule me, please, umm",entirely_latin_or_english,reschedule
+test,226,ml,call_later,"Pinne vilikku, busy umm",entirely_latin_or_english,call_later
+test,227,ta,call_later,"Piragu: call me later, busy",entirely_latin_or_english,call_later
+test,229,en,unclear,"native: 'Haan haan, I don't know what you're saying'",generator_artifact,
+test,230,ml,decline,ummm not now,entirely_latin_or_english,
+test,231,ta,reschedule,"Reschedule, busy sure later",multiple_label_cues;entirely_latin_or_english,reschedule;call_later
+test,232,en,stop_calling,Don't call me again. (1),generator_artifact,stop_calling
+test,233,hi,call_later,"Umm, later, I'm busy, haan",multiple_label_cues;entirely_latin_or_english,confirm;call_later
+test,234,ta,call_later,"Appuram, i'm busy, call me later",entirely_latin_or_english,call_later
+test,236,ta,decline,"varam, illai",entirely_latin_or_english,decline
+test,237,ml,reschedule,"Pinneedu, when can we do it?",entirely_latin_or_english,
+test,238,hi,call_later,"Um hum, call later, sure?",entirely_latin_or_english,call_later
+test,239,hi,decline,"Nahi, nahi aa sakta. (4) Polite and impolite forms with fillers like umm or haan haan",multiple_label_cues;entirely_latin_or_english,confirm;decline
+test,240,ta,stop_calling,"Haan haan, stop",entirely_latin_or_english,stop_calling
