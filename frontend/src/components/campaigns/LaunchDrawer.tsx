@@ -127,12 +127,12 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
     <>
       {/* Backdrop */}
       <div
-        onClick={done || error ? onClose : undefined}
+        onClick={onClose}
         style={{
           position: "fixed", inset: 0, zIndex: 1000,
           background: "rgba(10,16,28,.55)",
           backdropFilter: "blur(3px)",
-          cursor: done || error ? "pointer" : "default",
+          cursor: "pointer",
           transition: "opacity .2s",
         }}
       />
@@ -163,14 +163,13 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
               {campaign.name}
             </h2>
           </div>
-          {(done || error) && (
-            <button
-              onClick={onClose}
-              style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
-            >
-              ✕
-            </button>
-          )}
+          <button
+            onClick={onClose}
+            title={(!done && !error) ? "Close panel (launch continues in background)" : "Close"}
+            style={{ background: "rgba(23,38,58,.06)", border: "none", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#5A6E84" }}
+          >
+            ✕
+          </button>
         </div>
 
         {/* Steps */}
@@ -204,6 +203,12 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
           @keyframes spin { to { transform: rotate(360deg); } }
           @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.6} }
         `}</style>
+
+        {!done && !error && (
+          <div style={{ marginTop: 24, fontSize: 12, color: "#8A9BB0", textAlign: "center", background: "#F8FAFC", padding: "10px 14px", borderRadius: 8 }}>
+            You can safely close this panel. The launch will continue in the background.
+          </div>
+        )}
 
         {/* Result */}
         {done && (
