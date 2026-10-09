@@ -119,6 +119,8 @@ services:
     image: pr002-ai:latest
     container_name: pr002-ai
     restart: unless-stopped
+    env_file:
+      - ./ai/.env
     environment:
       AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN}
       AI_STUB: ${AI_STUB:-false}
