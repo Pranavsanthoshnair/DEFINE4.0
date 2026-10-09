@@ -97,7 +97,7 @@ def test_intent_confirm(client):
     data = r.json()
     assert data["intent"] == "confirm"
     assert 0.0 <= data["confidence"] <= 1.0
-    assert data["source"] in ("rules", "model", "llm")
+    assert data["source"] in ("rules", "model", "llm", "tap")
     assert isinstance(data["latency_ms"], int)
 
 
@@ -136,6 +136,41 @@ def test_intent_allowed_intents_filtering(client):
     )
     assert r.status_code == 200
     assert r.json()["intent"] in ("confirm", "decline", "unclear")
+
+
+def test_intent_tap_returns_selected_intent(client):
+    r = client.post(
+        "/v1/intent",
+        json={
+            "text": "",
+            "language": "en",
+            "chosen_intent": "stop_calling",
+            "allowed_intents": ["confirm", "stop_calling"],
+        },
+        headers=HEADERS,
+    )
+    assert r.status_code == 200
+    assert r.json() == {
+        "intent": "stop_calling",
+        "confidence": 1.0,
+        "source": "tap",
+        "latency_ms": 0,
+    }
+
+
+def test_intent_tap_rejects_disallowed_intent(client):
+    r = client.post(
+        "/v1/intent",
+        json={
+            "text": "",
+            "language": "en",
+            "chosen_intent": "stop_calling",
+            "allowed_intents": ["confirm", "decline"],
+        },
+        headers=HEADERS,
+    )
+    assert r.status_code == 422
+    assert r.json()["detail"]["error"]["code"] == "tap_intent_not_allowed"
 
 
 # ── /v1/stt ───────────────────────────────────────────────────────────────────

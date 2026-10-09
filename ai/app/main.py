@@ -150,6 +150,24 @@ def create_app() -> FastAPI:
                                   "message": f"'{body.language}' is not supported"}},
             )
 
+        if body.chosen_intent is not None:
+            if body.chosen_intent not in body.allowed_intents:
+                raise HTTPException(
+                    422,
+                    detail={
+                        "error": {
+                            "code": "tap_intent_not_allowed",
+                            "message": "chosen_intent must be included in allowed_intents",
+                        }
+                    },
+                )
+            return IntentResponse(
+                intent=body.chosen_intent,
+                confidence=1.0,
+                source="tap",
+                latency_ms=0,
+            )
+
         if settings.ai_stub:
             return _stub_intent(body.text)
 
