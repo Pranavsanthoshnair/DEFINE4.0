@@ -1,33 +1,13 @@
 "use client";
 
-/**
- * Campaigns page — real backend + demo mode
- *
- * Real mode:  fetches from GET /api/v1/campaigns/
- * Demo mode:  shows hardcoded rich sample data
- *
- * Features:
- *  - CSV import contacts
- *  - Launch campaign (triggers ElevenLabs TTS + channel detection)
- *  - Browser call simulator
- *  - Live status polling for running campaigns
- */
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PageHeader from "@/components/ui/PageHeader";
 import BrowserCallSimulator from "@/components/campaigns/BrowserCallSimulator";
 import { useDemo } from "@/context/DemoModeContext";
+import { DEMO_CAMPAIGNS } from "@/lib/demo-data";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
-
-// ── Demo data ──────────────────────────────────────────────────────────────
-
-const DEMO_CAMPAIGNS = [
-  { id: "demo-1", name: "Annual Tech Summit 2026 VIP Invite", status: "running", language: "en,hi,ta", contact_count: 2450, confirmed: 2063, rate: "84.2%" },
-  { id: "demo-2", name: "Keynote RSVP Confirmation Wave 1",  status: "completed", language: "en,hi",    contact_count: 1200, confirmed: 1102, rate: "91.8%" },
-  { id: "demo-3", name: "Workshop Reminder — Day 2",          status: "scheduled", language: "en,mr",    contact_count: 860,  confirmed: 0,    rate: "—" },
-];
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
