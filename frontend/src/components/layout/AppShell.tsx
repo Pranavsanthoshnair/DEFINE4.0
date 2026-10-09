@@ -14,10 +14,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar />
 
       <main
-        className="flex-1 overflow-auto"
+        className="flex-1 overflow-auto perspective-container"
         style={{ padding: "var(--gap)", position: "relative", zIndex: 1 }}
       >
-        {children}
+        <div className="page-enter-3d">
+          {children}
+        </div>
       </main>
     </div>
   );

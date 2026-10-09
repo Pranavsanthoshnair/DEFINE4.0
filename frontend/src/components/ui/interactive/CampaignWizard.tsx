@@ -63,14 +63,14 @@ export default function CampaignWizard() {
             <div
               key={step}
               onClick={() => idx < currentStep && setCurrentStep(idx)}
-              className={`flex items-center gap-3 ${idx < currentStep ? "cursor-pointer" : ""}`}
+              className={`flex items-center gap-3 transition-transform ${idx < currentStep ? "cursor-pointer hover:scale-105" : ""}`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
+                className={`btn-3d w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
                   isCurrent
-                    ? "bg-brand-red !text-white ring-4 ring-red-100 shadow-sm"
+                    ? "bg-brand-red !text-white ring-4 ring-red-100 shadow-md scale-110"
                     : isDone
-                    ? "bg-stone-900 !text-white"
+                    ? "bg-stone-900 !text-white shadow-xs"
                     : "bg-stone-100 text-stone-600 border border-stone-200"
                 }`}
               >
@@ -78,7 +78,7 @@ export default function CampaignWizard() {
               </div>
               <div className="hidden sm:block">
                 <div className="text-[10px] uppercase font-mono text-stone-400">Step 0{idx + 1}</div>
-                <div className={`text-xs font-medium ${isCurrent ? "text-stone-900 font-semibold" : "text-stone-500"}`}>
+                <div className={`text-xs font-medium ${isCurrent ? "text-stone-900 font-bold" : "text-stone-500"}`}>
                   {step}
                 </div>
               </div>
@@ -87,8 +87,8 @@ export default function CampaignWizard() {
         })}
       </div>
 
-      {/* Step Content */}
-      <div className="bg-white rounded-xl border border-stone-200 p-6 sm:p-8 shadow-sm">
+      {/* Step Content with 3D Card Depth */}
+      <div className="card-3d bg-white rounded-xl border border-stone-200 p-6 sm:p-8 shadow-sm">
         {currentStep === 0 && (
           <div className="space-y-6">
             <div>
@@ -361,10 +361,10 @@ export default function CampaignWizard() {
             type="button"
             onClick={handleBack}
             disabled={currentStep === 0}
-            className={`px-4 py-2 text-xs font-mono font-medium rounded-lg transition-colors ${
+            className={`btn-3d px-4 py-2 text-xs font-mono font-medium rounded-lg transition-all ${
               currentStep === 0
                 ? "text-stone-300 border border-stone-200 cursor-not-allowed"
-                : "text-stone-700 border border-stone-300 hover:bg-stone-50"
+                : "text-stone-700 border border-stone-300 hover:bg-stone-50 shadow-xs"
             }`}
           >
             Back
@@ -374,14 +374,14 @@ export default function CampaignWizard() {
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="px-6 py-2 bg-brand-red hover:bg-brand-red-hover !text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all flex items-center gap-2"
+            className="btn-3d px-6 py-2.5 bg-brand-red hover:bg-brand-red-hover !text-white text-xs font-mono font-bold uppercase tracking-wider rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"
           >
             {isSubmitting ? (
               <span>Deploying Campaign...</span>
             ) : currentStep === STEPS.length - 1 ? (
-              <span>Launch Campaign</span>
+              <span>Launch Campaign 🚀</span>
             ) : (
-              <span>Next Step</span>
+              <span>Next Step →</span>
             )}
           </button>
         </div>

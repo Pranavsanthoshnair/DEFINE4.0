@@ -80,8 +80,8 @@ export default function ContactsPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Stats and Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-stone-200">
+      {/* Stats and Action Bar with 3D Depth */}
+      <div className="card-3d flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-stone-200 shadow-sm">
         <div className="flex items-center gap-4 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-stone-900"></span>
@@ -93,7 +93,7 @@ export default function ContactsPanel() {
           </div>
           {invalidCount > 0 && (
             <div className="flex items-center gap-1.5 text-brand-red">
-              <span className="w-2.5 h-2.5 rounded-full bg-brand-red"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-brand-red animate-pulse"></span>
               <span>Errors: <strong>{invalidCount}</strong></span>
             </div>
           )}
@@ -110,15 +110,15 @@ export default function ContactsPanel() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-mono font-medium rounded-lg transition-colors flex items-center gap-1.5"
+            className="btn-3d px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-mono font-medium rounded-lg transition-all flex items-center gap-1.5 border border-stone-200 shadow-xs"
           >
-            Upload CSV
+            <span>↑</span> Upload CSV
           </button>
           <button
             type="button"
             onClick={() => setActiveTab(activeTab === "paste" ? "table" : "paste")}
-            className={`px-3 py-1.5 text-xs font-mono font-medium rounded-lg transition-colors ${
-              activeTab === "paste" ? "bg-stone-900 !text-white font-bold shadow-sm" : "bg-stone-100 hover:bg-stone-200 text-stone-700"
+            className={`btn-3d px-3.5 py-1.5 text-xs font-mono font-medium rounded-lg transition-all ${
+              activeTab === "paste" ? "bg-stone-900 !text-white font-bold shadow-md transform -translate-y-0.5" : "bg-stone-100 hover:bg-stone-200 text-stone-700 border border-stone-200"
             }`}
           >
             {activeTab === "paste" ? "View Table" : "Paste Raw"}
@@ -127,7 +127,7 @@ export default function ContactsPanel() {
             <button
               type="button"
               onClick={() => setContacts([])}
-              className="px-3 py-1.5 text-brand-red hover:bg-red-50 text-xs font-mono font-medium rounded-lg transition-colors"
+              className="btn-3d px-3 py-1.5 text-brand-red hover:bg-red-50 text-xs font-mono font-medium rounded-lg transition-colors border border-red-200"
             >
               Clear All
             </button>
