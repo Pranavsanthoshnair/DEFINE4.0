@@ -19,6 +19,9 @@ import hmac
 import hashlib
 import math
 import re
+import base64
+import json
+from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
 
@@ -154,7 +157,14 @@ class ScalableSuppressionFilter:
         active_layer = self.layers[-1]
         if active_layer.is_full:
             active_layer = self._add_layer()
-        return active_layer.add(canonical)
+        added = active_layer.add(canonical)
+        try:
+            from app.core.config import settings
+            self.save(Path(settings.media_dir) / "suppression-filter.json")
+        except Exception:
+            # Suppression remains active in memory; persistence is retried on the next write.
+            pass
+        return added
 
     def is_suppressed(self, raw_number: str) -> bool:
         """Check all filter layers. True if suppressed in any layer."""
@@ -188,6 +198,50 @@ class ScalableSuppressionFilter:
             "layers": layer_stats,
         }
 
+    def save(self, path: str | Path) -> None:
+        """Persist layers so suppression survives worker restarts."""
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        payload = {
+            "initial_capacity": self.initial_capacity,
+            "initial_fpr": self.initial_fpr,
+            "layers": [{
+                "layer_no": layer.layer_no, "capacity": layer.capacity,
+                "target_fpr": layer.target_fpr, "n_items": layer.n_items,
+                "m_bits": layer.m_bits, "k": layer.k,
+                "bits": base64.b64encode(bytes(layer.bit_array)).decode("ascii"),
+            } for layer in self.layers],
+        }
+        target.write_text(json.dumps(payload, separators=(",", ":")), encoding="utf-8")
+
+    @classmethod
+    def load(cls, path: str | Path, *, hmac_key: str | bytes) -> "ScalableSuppressionFilter":
+        """Load a persisted filter, falling back to a new filter if absent."""
+        target = Path(path)
+        if not target.exists():
+            return cls(hmac_key=hmac_key)
+        payload = json.loads(target.read_text(encoding="utf-8"))
+        result = cls(
+            initial_capacity=int(payload.get("initial_capacity", 10_000)),
+            initial_fpr=float(payload.get("initial_fpr", 0.001)),
+            hmac_key=hmac_key,
+        )
+        result.layers = []
+        for item in payload.get("layers", []):
+            layer = KeyedBloomFilterLayer(
+                int(item["layer_no"]), int(item["capacity"]),
+                float(item["target_fpr"]), result.hmac_key,
+            )
+            layer.n_items = int(item.get("n_items", 0))
+            raw = base64.b64decode(item["bits"])
+            if len(raw) != layer.byte_count:
+                raise ValueError("Invalid suppression filter layer size")
+            layer.bit_array[:] = raw
+            result.layers.append(layer)
+        if not result.layers:
+            result._add_layer()
+        return result
+
 
 # Global in-process suppression instance
 _filter_instance: ScalableSuppressionFilter | None = None
@@ -197,5 +251,6 @@ def get_suppression_filter() -> ScalableSuppressionFilter:
     global _filter_instance
     if _filter_instance is None:
         from app.core.config import settings
-        _filter_instance = ScalableSuppressionFilter(hmac_key=settings.bloom_hmac_key)
+        path = Path(settings.media_dir) / "suppression-filter.json"
+        _filter_instance = ScalableSuppressionFilter.load(path, hmac_key=settings.bloom_hmac_key)
     return _filter_instance

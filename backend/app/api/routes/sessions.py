@@ -39,6 +39,21 @@ EXECUTION_TYPE = "BROWSER_VOICE"
 
 # Intent taxonomy used by browser sessions
 BROWSER_INTENTS = ["confirm", "decline", "reschedule", "call_later", "stop_calling", "unclear"]
+BROWSER_DTMF_MAP = {"1": "confirm", "2": "decline", "3": "call_later", "0": "unclear"}
+BROWSER_RESPONSE_TEXT = {
+    "confirm": "Thank you for confirming. We look forward to seeing you. Goodbye!",
+    "decline": "We understand. Thank you for letting us know. Goodbye!",
+    "reschedule": "Noted. We will follow up with updated timing. Goodbye!",
+    "call_later": "Of course. Someone will call you back later. Goodbye!",
+    "stop_calling": "You have been removed from our calling list. Goodbye!",
+    "unclear": "We could not process your response. We will follow up. Goodbye!",
+}
+
+
+async def _localized_campaign_prompt(campaign: dict, language: str) -> str:
+    """Resolve the campaign template/brief and translate it before browser TTS."""
+    from app.services.tts_service import build_localized_prompt
+    return await build_localized_prompt(campaign, language)
 
 
 # ── Voices endpoint ───────────────────────────────────────────────────────────
@@ -88,6 +103,7 @@ class RespondResult(BaseModel):
     confidence: Optional[float]
     decision_method: str
     outcome: str
+    response_text: str
     is_simulation: bool = True
     error: Optional[str] = None
 
@@ -116,7 +132,7 @@ async def start_browser_session(payload: StartSessionRequest):
     """
     # Verify campaign exists
     sb = get_supabase()
-    camp_resp = sb.table("campaigns").select("id,name,language,status").eq("id", payload.campaign_id).single().execute()
+    camp_resp = sb.table("campaigns").select("*").eq("id", payload.campaign_id).single().execute()
     if not camp_resp.data:
         raise HTTPException(status_code=404, detail="Campaign not found")
 
@@ -133,7 +149,7 @@ async def start_browser_session(payload: StartSessionRequest):
         "language": lang,
         "status": "active",
         "is_simulation": True,
-        "prompt_text": f"Hello! You have been invited to {campaign.get('name', 'a campaign')}. Please respond.",
+        "prompt_text": await _localized_campaign_prompt(campaign, lang),
         "created_at": now,
         "updated_at": now,
     }
@@ -172,21 +188,13 @@ async def get_session_tts(session_id: str):
     prompt = session.get("prompt_text", "Hello, please respond.")
     lang = session.get("language", "en")
 
-    # 1. Try ElevenLabs
-    if elevenlabs.is_available():
-        try:
-            audio = await elevenlabs.tts(prompt, language=lang)
-            return Response(content=audio, media_type="audio/mpeg")
-        except Exception as exc:
-            log.warning("elevenlabs_tts_failed_fallback", error=str(exc))
-
-    # 2. Try AI service TTS
+    # Use the same provider selection as campaign audio generation.
     try:
-        ai = get_ai_client()
-        audio = await ai.tts(text=prompt, language=lang)
-        return Response(content=audio, media_type="audio/wav")
+        from app.services.tts_service import synthesize_text
+        audio, provider = await synthesize_text(prompt, lang)
+        return Response(content=audio, media_type="audio/mpeg" if provider == "elevenlabs" else "audio/wav")
     except Exception as exc:
-        log.warning("ai_tts_failed", error=str(exc))
+        log.warning("session_tts_failed", error=str(exc))
 
     raise HTTPException(
         status_code=503,
@@ -225,8 +233,7 @@ async def process_browser_response(
 
     # ── DTMF shortcut (no AI needed) ─────────────────────────────────────────
     if dtmf:
-        dtmf_map = {"1": "confirm", "2": "decline", "3": "call_later", "0": "unclear"}
-        intent = dtmf_map.get(dtmf.strip(), "unclear")
+        intent = BROWSER_DTMF_MAP.get(dtmf.strip(), "unclear")
         transcript = f"[keypad:{dtmf}]"
         confidence = None
         decision_method = "dtmf_keypad"
@@ -242,8 +249,11 @@ async def process_browser_response(
         try:
             # Try STT first via AI service, then classify via unified pipeline
             ai = get_ai_client()
-            stt_result = await ai.stt(audio_bytes=audio_bytes, language=lang)
+            stt_result = await ai.stt(audio_bytes=audio_bytes, language=None)
             transcript = stt_result.text
+            detected_lang = (stt_result.language or lang).lower().split("-")[0]
+            if len(detected_lang) == 2:
+                lang = detected_lang
 
             from app.services.intent_service import classify_intent
             intent, confidence, decision_method = await classify_intent(
@@ -258,21 +268,34 @@ async def process_browser_response(
     # ── Text path ──────────────────────────────────────────────────────────────
     elif text:
         transcript = text.strip()
-        try:
-            from app.services.intent_service import classify_intent
-            intent, confidence, decision_method = await classify_intent(
-                text=transcript, language=lang
-            )
-        except Exception as exc:
-            log.warning("text_intent_failed", error=str(exc))
-            intent, confidence, decision_method = "unclear", 0.0, "error"
-            error = str(exc)
+        if transcript in BROWSER_DTMF_MAP:
+            intent = BROWSER_DTMF_MAP[transcript]
+            confidence = None
+            decision_method = "dtmf_keypad"
+            transcript = f"[keypad:{transcript}]"
+        else:
+            try:
+                from app.services.intent_service import classify_intent
+                intent, confidence, decision_method = await classify_intent(
+                    text=transcript, language=lang
+                )
+            except Exception as exc:
+                log.warning("text_intent_failed", error=str(exc))
+                intent, confidence, decision_method = "unclear", 0.0, "error"
+                error = str(exc)
 
     else:
         raise HTTPException(status_code=400, detail="Provide audio, text, or dtmf in the request")
 
     # ── Persist outcome ────────────────────────────────────────────────────────
     outcome = intent or "unclear"
+    response_text = BROWSER_RESPONSE_TEXT.get(outcome, BROWSER_RESPONSE_TEXT["unclear"])
+    if lang != "en":
+        try:
+            from app.services.tts_service import localize_text
+            response_text = await localize_text(response_text, lang, source_language="en")
+        except Exception as exc:
+            log.warning("browser_response_translation_failed", error_type=type(exc).__name__)
     now = _now()
 
     sb = get_supabase()
@@ -307,6 +330,7 @@ async def process_browser_response(
         confidence=confidence,
         decision_method=decision_method,
         outcome=outcome,
+        response_text=response_text,
         is_simulation=True,
         error=error,
     )

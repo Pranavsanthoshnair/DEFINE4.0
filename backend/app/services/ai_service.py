@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import Optional
 import structlog
 
+from app.ai_client.client import get_ai_client
 from app.core.config import settings
 
 log = structlog.get_logger()
@@ -36,11 +37,16 @@ class AIService:
         Returns raw script text.
         (NOT YET IMPLEMENTED.)
         """
-        raise NotImplementedError("AIService.generate_script is not implemented")
+        tone_text = f" Tone: {tone}." if tone else ""
+        return (f"Hello. {brief.strip()}{tone_text} "
+                "Please press 1 to confirm, 2 to decline, or 3 to request a later call.")
 
     async def translate_script(self, script: str, target_language: str) -> str:
         """
         Translate an existing script to a target language.
         (NOT YET IMPLEMENTED.)
         """
-        raise NotImplementedError("AIService.translate_script is not implemented")
+        result = await get_ai_client().translate(
+            {"script": script}, source_lang="en", target_lang=target_language
+        )
+        return result.segments.get("script", script)

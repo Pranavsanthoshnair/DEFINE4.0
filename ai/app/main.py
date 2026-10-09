@@ -70,7 +70,17 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         from app.intent.model import OnnxIntentModel
         from app.intent.pipeline import set_onnx_model
 
-        intent_model = OnnxIntentModel(settings.models_dir)
+        # Docker mounts weights at /models. During local development the same
+        # model is checked into the project at ai/models/intent, so use that
+        # directory automatically when the configured mount is unavailable.
+        model_root = Path(settings.models_dir)
+        configured_model = model_root / "intent" / "model.onnx"
+        local_model_root = Path(__file__).resolve().parents[1] / "models"
+        if not configured_model.exists() and (local_model_root / "intent" / "model.onnx").exists():
+            model_root = local_model_root
+            log.info("intent_model_using_project_weights", model_dir=str(model_root))
+
+        intent_model = OnnxIntentModel(model_root)
         set_onnx_model(intent_model)
 
         # Probe Sarvam connectivity on startup — warm the singleton client

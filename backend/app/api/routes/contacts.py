@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import hashlib
 import io
 import uuid
 from datetime import datetime, timezone
@@ -13,6 +12,8 @@ from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
 
 from app.db.supabase_client import get_supabase
+from app.security.crypto import decrypt, encrypt, phone_hash, normalise_phone
+from app.security.suppression import get_suppression_filter
 
 router = APIRouter()
 
@@ -36,8 +37,12 @@ class ContactIn(BaseModel):
 class ContactOut(BaseModel):
     id: str
     name: Optional[str] = None
+    phone: Optional[str] = None
     phone_last4: str
     language: str
+    segment: Optional[str] = None
+    status: str = "pending"
+    campaign: Optional[str] = None
     consent: bool
     opted_out: bool
     created_at: str
@@ -49,30 +54,49 @@ class ImportResult(BaseModel):
     errors: List[str]
 
 
+def _decrypt_optional(value: object) -> Optional[str]:
+    """Decode encrypted text returned by Supabase bytea columns."""
+    if not value:
+        return None
+    try:
+        if isinstance(value, str):
+            raw = value[2:] if value.startswith("\\x") else value
+            value = bytes.fromhex(raw)
+        return decrypt(bytes(value))
+    except (TypeError, ValueError):
+        return None
+
+
+def _masked_phone(phone_last4: object) -> str:
+    last4 = str(phone_last4 or "????")
+    return f"••••{last4}"
+
+
 # ── Routes ───────────────────────────────────────────────────────────────────
 
 @router.post("/", response_model=ContactOut, status_code=status.HTTP_201_CREATED)
 async def create_contact(body: ContactIn):
     """Add a single contact to the database."""
-    phone = body.phone.strip().replace(" ", "").replace("-", "")
-    if len(phone) < 7:
+    phone = normalise_phone(body.phone)
+    if not phone:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Phone number too short — expected at least 7 digits.",
         )
-    phone_hash = hashlib.sha256(phone.encode()).hexdigest()
     phone_last4 = phone[-4:] if len(phone) >= 4 else phone.ljust(4, "0")
+    if get_suppression_filter().is_suppressed(phone):
+        raise HTTPException(status_code=409, detail="Contact is suppressed")
     try:
         sb = get_supabase()
         now = datetime.now(timezone.utc).isoformat()
         row = {
             "id": str(uuid.uuid4()),
-            "phone_enc": phone.encode("utf-8").hex(),   # hex — replace with AES in prod
-            "phone_hash": phone_hash,
+            "phone_enc": encrypt(phone).hex(),
+            "phone_hash": phone_hash(phone),
             "phone_last4": phone_last4,
+            "name_enc": encrypt(body.name).hex() if body.name else None,
             "language": body.language,
             "segment": body.segment,
-            "notes": body.notes,
             "consent": True,
             "consent_source": "single_import",
             "consent_at": now,
@@ -80,16 +104,28 @@ async def create_contact(body: ContactIn):
             "opted_out": False,
             "created_at": now,
         }
-        if body.campaign_id:
-            row["campaign_id"] = body.campaign_id
         # Upsert on phone_hash to prevent duplicates
         resp = sb.table(_TABLE).upsert(row, on_conflict="phone_hash").execute()
         r = (resp.data or [{}])[0]
+        contact_id = str(r.get("id", row["id"]))
+        if body.campaign_id:
+            sb.table("campaign_contacts").upsert(
+                {
+                    "id": str(uuid.uuid4()),
+                    "campaign_id": body.campaign_id,
+                    "contact_id": contact_id,
+                    "status": "pending",
+                },
+                on_conflict="campaign_id,contact_id",
+            ).execute()
         return ContactOut(
-            id=str(r.get("id", row["id"])),
-            name=None,
+            id=contact_id,
+            name=body.name,
+            phone=_masked_phone(phone_last4),
             phone_last4=phone_last4,
             language=body.language,
+            segment=body.segment,
+            status="pending",
             consent=True,
             opted_out=False,
             created_at=now,
@@ -110,22 +146,53 @@ async def list_contacts(
         sb = get_supabase()
         resp = (
             sb.table(_TABLE)
-            .select("id,phone_last4,name_enc,language,consent,opted_out,created_at")
+            .select("id,phone_last4,name_enc,language,segment,consent,opted_out,created_at")
             .order("created_at", desc=True)
             .range(offset, offset + limit - 1)
             .execute()
         )
+        contacts = resp.data or []
+        contact_ids = [str(r["id"]) for r in contacts]
+        campaign_by_contact: dict[str, tuple[str, str]] = {}
+        if contact_ids:
+            links = (
+                sb.table("campaign_contacts")
+                .select("contact_id,campaign_id,status")
+                .in_("contact_id", contact_ids)
+                .execute()
+                .data
+                or []
+            )
+            campaign_ids = list({str(link["campaign_id"]) for link in links if link.get("campaign_id")})
+            campaigns_by_id = {}
+            if campaign_ids:
+                campaigns_by_id = {
+                    str(c["id"]): c.get("name")
+                    for c in sb.table("campaigns").select("id,name").in_("id", campaign_ids).execute().data or []
+                }
+            campaign_by_contact = {
+                str(link["contact_id"]): (
+                    str(link.get("status") or "pending"),
+                    campaigns_by_id.get(str(link.get("campaign_id"))) or "",
+                )
+                for link in links
+                if link.get("contact_id")
+            }
         return [
             ContactOut(
                 id=str(r["id"]),
-                name=None,  # name_enc is encrypted — not returned raw
+                name=_decrypt_optional(r.get("name_enc")),
+                phone=_masked_phone(r.get("phone_last4")),
                 phone_last4=r.get("phone_last4", "????"),
                 language=r.get("language", "en"),
+                segment=r.get("segment"),
+                status=campaign_by_contact.get(str(r["id"]), ("pending", ""))[0],
+                campaign=campaign_by_contact.get(str(r["id"]), ("pending", ""))[1] or None,
                 consent=bool(r.get("consent", False)),
                 opted_out=bool(r.get("opted_out", False)),
                 created_at=str(r.get("created_at", "")),
             )
-            for r in (resp.data or [])
+            for r in contacts
         ]
     except Exception as exc:
         raise HTTPException(
@@ -135,7 +202,10 @@ async def list_contacts(
 
 
 @router.post("/import", response_model=ImportResult, status_code=status.HTTP_202_ACCEPTED)
-async def import_contacts_csv(file: UploadFile = File(...)):
+async def import_contacts_csv(
+    file: UploadFile = File(...),
+    campaign_id: Optional[str] = Query(None),
+):
     """
     Import contacts from a CSV file.
     Required columns: phone
@@ -179,25 +249,34 @@ async def import_contacts_csv(file: UploadFile = File(...)):
     skipped = 0
 
     for i, row in enumerate(reader, start=2):  # row 1 = header
-        phone_raw = (row.get("phone") or "").strip().replace(" ", "").replace("-", "")
+        # CSV headers are user-supplied; make Name/PHONE/Language work the
+        # same as lowercase headers used by the API contract.
+        row = {(key or "").strip().lower(): value for key, value in row.items()}
+        phone_raw = (row.get("phone") or "").strip()
         if not phone_raw:
             errors.append(f"Row {i}: empty phone — skipped")
             skipped += 1
             continue
 
-        # Store only last-4 digits and a deterministic hash (no plain phone)
-        phone_hash = hashlib.sha256(phone_raw.encode()).hexdigest()
-        phone_last4 = phone_raw[-4:] if len(phone_raw) >= 4 else phone_raw.ljust(4, "0")
+        phone = normalise_phone(phone_raw)
+        if not phone or get_suppression_filter().is_suppressed(phone):
+            errors.append(f"Row {i}: invalid or suppressed phone - skipped")
+            skipped += 1
+            continue
+        phone_digest = phone_hash(phone)
+        phone_last4 = phone[-4:]
 
         lang = (row.get("language") or "en").strip()[:2].lower() or "en"
         now = datetime.now(timezone.utc).isoformat()
 
         rows_to_insert.append({
             "id": str(uuid.uuid4()),
-            "phone_enc": phone_raw.encode("utf-8").hex(),  # hex — replace with real AES in prod
-            "phone_hash": phone_hash,
+            "phone_enc": encrypt(phone).hex(),
+            "phone_hash": phone_digest,
             "phone_last4": phone_last4,
+            "name_enc": encrypt((row.get("name") or "").strip()).hex() if (row.get("name") or "").strip() else None,
             "language": lang,
+            "segment": (row.get("segment") or "General").strip() or "General",
             "consent": True,   # CSV import implies consent was obtained offline
             "consent_source": f"csv_import:{file.filename}",
             "consent_at": now,
@@ -215,7 +294,23 @@ async def import_contacts_csv(file: UploadFile = File(...)):
                 .upsert(rows_to_insert, on_conflict="phone_hash")
                 .execute()
             )
-            queued = len(resp.data or [])
+            inserted = resp.data or []
+            queued = len(inserted)
+            if campaign_id and inserted:
+                sb.table("campaign_contacts").upsert(
+                    [
+                        {
+                            "id": str(uuid.uuid4()),
+                            "campaign_id": campaign_id,
+                            "contact_id": row["id"],
+                            "language": row["language"],
+                            "segment": row.get("segment"),
+                            "status": "pending",
+                        }
+                        for row in rows_to_insert
+                    ],
+                    on_conflict="campaign_id,contact_id",
+                ).execute()
         except Exception as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

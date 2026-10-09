@@ -132,7 +132,8 @@ async def dispatch_campaigns() -> None:
                             CampaignContact.state == "pending",
                             CampaignContact.state == "waiting_retry",
                         ),
-                        CampaignContact.next_attempt_at <= now_utc,
+                        (CampaignContact.next_attempt_at.is_(None)) |
+                        (CampaignContact.next_attempt_at <= now_utc),
                     )
                 )
                 .order_by(CampaignContact.next_attempt_at)

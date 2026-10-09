@@ -137,7 +137,7 @@ export default function AddContactsDrawer({ campaignId: initialCampaignId, campa
         throw new Error(body?.detail ?? `HTTP ${res.status}`);
       }
       const data = await res.json();
-      const n = data.imported ?? data.total ?? "?";
+      const n = data.queued ?? data.imported ?? data.total ?? "?";
       setStatus("done"); setMessage(`✅ ${n} contacts imported!`);
       onSuccess(typeof n === "number" ? n : 0);
     } catch (e) {

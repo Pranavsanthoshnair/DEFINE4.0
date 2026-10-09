@@ -1,6 +1,6 @@
 [build-system]
 requires = ["setuptools>=68"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "veylo-ai"
@@ -35,6 +35,10 @@ dependencies = [
     # "optimum[onnxruntime]>=1.22",
     # "torch" (CPU wheel),
 ]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["ml*", "models*"]
 
 [project.optional-dependencies]
 test = [

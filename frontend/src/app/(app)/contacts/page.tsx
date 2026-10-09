@@ -20,6 +20,7 @@ type Contact = {
   id: string;
   name?: string;
   phone?: string;
+  phone_last4?: string;
   language?: string;
   segment?: string;
   status?: string;
@@ -112,7 +113,7 @@ export default function ContactsPage() {
                   <tr key={c.id} style={{ borderBottom: "1px solid rgba(23,38,58,.05)" }}>
                     <td style={{ padding: "12px 16px", fontFamily: "Manrope, sans-serif", fontWeight: 700, fontSize: 13, color: "#17263A" }}>
                       {c.name ?? "—"}
-                      {c.phone && <div style={{ fontWeight: 400, fontSize: 11, color: "#8A9BB0" }}>{c.phone}</div>}
+                      {(c.phone ?? c.phone_last4) && <div style={{ fontWeight: 400, fontSize: 11, color: "#8A9BB0" }}>{c.phone ?? `••••${c.phone_last4}`}</div>}
                     </td>
                     <td style={{ padding: "12px 16px", fontFamily: "Manrope, sans-serif", fontSize: 12, color: "#5A6E84" }}>{c.language ?? "—"}</td>
                     <td style={{ padding: "12px 16px", fontFamily: "Manrope, sans-serif", fontSize: 12, color: "#5A6E84" }}>{c.segment ?? "—"}</td>

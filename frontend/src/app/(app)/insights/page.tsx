@@ -22,10 +22,18 @@ export default function InsightsPage() {
       return;
     }
     setLoading(true);
-    // Fetch overview for follow-up counts
-    fetch(`${API}/api/overview/`)
-      .then(r => r.ok ? r.json() : null)
-      .then(d => setOverview(d))
+    Promise.all([
+      fetch(`${API}/api/overview/`).then(r => r.ok ? r.json() : null),
+      fetch(`${API}/api/v1/campaigns/?limit=1`).then(r => r.ok ? r.json() : []),
+    ])
+      .then(async ([summary, campaigns]) => {
+        setOverview(summary);
+        const list = Array.isArray(campaigns) ? campaigns : (campaigns?.items ?? campaigns?.campaigns ?? []);
+        if (list[0]?.id) {
+          const r = await fetch(`${API}/api/v1/analytics/${list[0].id}`);
+          if (r.ok) setAnalytics(await r.json());
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [isDemo]);

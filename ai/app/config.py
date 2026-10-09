@@ -6,6 +6,7 @@ All settings are read from environment variables.
 from __future__ import annotations
 
 from typing import Literal
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,7 +32,11 @@ class Settings(BaseSettings):
     # ── Sarvam AI ─────────────────────────────────────────────────────────────
     # Primary provider for STT, translate, and TTS.
     # Key is kept server-side only — never forwarded to frontend.
-    sarvam_api_key: str = ""
+    # Accept the original local-dev name as well as the documented name.
+    sarvam_api_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("SARVAM_API_KEY", "SARVAM_AI"),
+    )
     sarvam_stt_model: str = "saaras:v4"
     sarvam_translate_model: str = "mayura:v1"
     sarvam_tts_model: str = "bulbul:v3"

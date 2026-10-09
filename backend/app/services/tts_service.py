@@ -95,6 +95,52 @@ _SEGMENT_SCRIPTS: dict[str, str] = {
 }
 
 
+async def localize_text(text: str, language: str, source_language: str = "en") -> str:
+    """Translate campaign text before synthesis for the contact's language."""
+    target = language.lower().split("-")[0]
+    if not text or target == source_language.lower().split("-")[0]:
+        return text
+    from app.ai_client.client import get_ai_client
+    result = await get_ai_client().translate(
+        {"text": text}, source_lang=source_language, target_lang=target
+    )
+    return result.segments.get("text", text)
+
+
+async def build_localized_prompt(campaign: dict, language: str) -> str:
+    """Build the spoken invitation from template script or campaign brief."""
+    script = campaign.get("script") or campaign.get("template_script")
+    if isinstance(script, dict):
+        text = script.get("greeting") or script.get("prompt") or next(iter(script.values()), "")
+    else:
+        text = str(script or campaign.get("brief") or "")
+    if not text:
+        text = (
+            f"Hello! You have been invited to {campaign.get('name', 'this event')}. "
+            "Please press 1 to confirm, 2 to decline, or 3 to request a callback."
+        )
+    text = text.replace("{event_name}", str(campaign.get("name", "this event")))
+    text = text.replace("{org_name}", settings.org_name)
+    return await localize_text(text, language)
+
+
+async def synthesize_text(text: str, language: str, voice_id: Optional[str] = None) -> tuple[bytes, str]:
+    """Synthesize text using the configured provider and return audio plus provider name."""
+    language = language.lower().split("-")[0]
+    provider = settings.tts_provider.lower()
+    if provider in {"auto", "elevenlabs"} and elevenlabs.is_available():
+        try:
+            return await elevenlabs.tts(text=text, language=language, voice_id=voice_id), "elevenlabs"
+        except Exception:
+            if provider == "elevenlabs":
+                raise
+            log.warning("elevenlabs_failed_using_sarvam")
+    if provider == "elevenlabs":
+        raise RuntimeError("TTS_PROVIDER=elevenlabs but ELEVENLABS_API_KEY is not configured")
+    from app.ai_client.client import get_ai_client
+    return await get_ai_client().tts(text=text, language=language, voice=voice_id), "sarvam"
+
+
 async def generate_campaign_audio(
     campaign_id: str,
     campaign_name: str,
@@ -132,21 +178,24 @@ async def generate_campaign_audio(
         k: v.format_map(substitutions) for k, v in scripts.items()
     }
 
+    if language.lower().split("-")[0] != "en":
+        translated: dict[str, str] = {}
+        for key, value in scripts.items():
+            try:
+                translated[key] = await localize_text(value, language)
+            except Exception as exc:
+                log.warning("campaign_script_translation_failed", segment=key, error=str(exc))
+                translated[key] = value
+        scripts = translated
+
     audio_urls: dict[str, str] = {}
-    tts_provider = "elevenlabs" if elevenlabs.is_available() else "ai_service"
+    tts_provider = settings.tts_provider.lower()
 
     for segment_key, text in scripts.items():
         try:
-            if tts_provider == "elevenlabs":
-                audio_bytes = await elevenlabs.tts(
-                    text=text,
-                    language=language,
-                    voice_id=voice_id,
-                )
-            else:
-                from app.ai_client.client import get_ai_client
-                ai = get_ai_client()
-                audio_bytes = await ai.tts(text=text, language=language)
+            audio_bytes, tts_provider = await synthesize_text(
+                text=text, language=language, voice_id=voice_id
+            )
 
             # Store in cache and generate a servable URL
             token = _make_token(segment_key, campaign_id)

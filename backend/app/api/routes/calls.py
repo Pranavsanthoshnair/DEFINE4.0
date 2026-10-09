@@ -44,6 +44,12 @@ class CallRecord(BaseModel):
     outcome: Optional[str] = None
     duration_sec: Optional[int] = None
     created_at: str
+    contact: Optional[str] = None
+    intent: Optional[str] = None
+    confidence: Optional[float] = None
+    method: Optional[str] = None
+    lang: Optional[str] = None
+    transcript: Optional[str] = None
 
 
 @router.get("/", response_model=List[CallRecord])
@@ -57,25 +63,33 @@ async def list_calls(
         return []
     try:
         sb = get_supabase()
-        q = (
-            sb.table("calls")
-            .select("id,campaign_id,status,outcome,duration_sec,created_at")
-            .order("created_at", desc=True)
-            .range(offset, offset + limit - 1)
-        )
+        # Supabase stores campaign ownership on campaign_contacts; calls use
+        # campaign_contact_id.  Selecting * keeps this compatible with both
+        # the current Supabase schema and older rows with optional fields.
+        resp = sb.table("calls").select("*").order("created_at", desc=True).range(offset, offset + limit - 1).execute()
+        rows = resp.data or []
+        cc_ids = [str(r.get("campaign_contact_id")) for r in rows if r.get("campaign_contact_id")]
+        links = sb.table("campaign_contacts").select("id,campaign_id,contact_id").in_("id", cc_ids).execute().data if cc_ids else []
+        link_by_id = {str(r["id"]): r for r in links}
         if campaign_id:
-            q = q.eq("campaign_id", campaign_id)
-        resp = q.execute()
+            rows = [r for r in rows if str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("campaign_id")) == campaign_id]
+        contact_ids = [str(r.get("contact_id")) for r in links if r.get("contact_id")]
+        contacts = sb.table("contacts").select("id,phone_last4,language").in_("id", contact_ids).execute().data if contact_ids else []
+        contact_by_id = {str(r["id"]): r for r in contacts}
         return [
             CallRecord(
                 id=str(r["id"]),
-                campaign_id=r.get("campaign_id"),
+                campaign_id=link_by_id.get(str(r.get("campaign_contact_id")), {}).get("campaign_id"),
                 status=r.get("status", "unknown"),
                 outcome=r.get("outcome"),
                 duration_sec=r.get("duration_sec"),
                 created_at=str(r.get("created_at", "")),
+                contact=(f"••••{contact_by_id[str(link_by_id[str(r.get('campaign_contact_id'))].get('contact_id'))].get('phone_last4')}"
+                         if str(r.get("campaign_contact_id")) in link_by_id and link_by_id[str(r.get("campaign_contact_id"))].get("contact_id") in contact_by_id else None),
+                lang=(contact_by_id.get(str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("contact_id")), {}).get("language")
+                      or None),
             )
-            for r in (resp.data or [])
+            for r in rows
         ]
     except Exception as exc:
         raise HTTPException(

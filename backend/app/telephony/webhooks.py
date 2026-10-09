@@ -238,6 +238,12 @@ async def _finalize_call(session, call, cc, campaign, decision: FlowDecision) ->
             if contact:
                 contact.opted_out = True
                 contact.opted_out_at = now
+                try:
+                    from app.security.crypto import reveal_phone
+                    from app.security.suppression import get_suppression_filter
+                    get_suppression_filter().suppress(reveal_phone(contact))
+                except Exception as exc:  # noqa: BLE001
+                    log.warning("suppression_write_failed", contact_id=str(contact.id), error=str(exc))
         except Exception:  # noqa: BLE001
             pass
 

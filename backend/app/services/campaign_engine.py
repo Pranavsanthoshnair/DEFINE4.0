@@ -120,6 +120,9 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
         campaign_id=campaign_id,
         campaign_name=campaign_name,
         language=language,
+        custom_scripts=(campaign.get("script") or campaign.get("template_script")
+                        if isinstance(campaign.get("script") or campaign.get("template_script"), dict)
+                        else None),
     )
     # Save audio URLs to campaign
     sb = get_supabase()
@@ -180,14 +183,13 @@ async def _run_browser(campaign: dict, contacts: list[dict]) -> dict:
     Frontend can drive TTS + response flow for each.
     """
     campaign_id = campaign["id"]
-    prompt = (
-        f"Hello! You have been invited to {campaign.get('name', 'this event')}. "
-        f"Please respond to confirm or decline your attendance."
-    )
+    from app.services.tts_service import build_localized_prompt
 
     sessions_created = 0
     for contact in contacts:
         try:
+            language = contact.get("language") or campaign.get("language", "en")
+            prompt = await build_localized_prompt(campaign, language)
             _create_session(campaign_id, "BROWSER_VOICE", contact, prompt)
             sessions_created += 1
         except Exception as exc:

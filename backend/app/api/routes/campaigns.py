@@ -209,6 +209,77 @@ async def get_campaign_channel(campaign_id: str):
     }
 
 
+@router.get("/{campaign_id}/preflight")
+async def campaign_preflight(campaign_id: str):
+    """Validate campaign readiness before a launch."""
+    from app.db.models import Campaign, CampaignContact, Contact, Template
+    from app.db.session import AsyncSessionLocal
+    from sqlalchemy import func, select
+
+    try:
+        cid = uuid.UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign id")
+    async with AsyncSessionLocal() as db:
+        campaign = await db.get(Campaign, cid)
+        if campaign is None:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        template = await db.get(Template, campaign.template_id)
+        total = await db.scalar(select(func.count()).select_from(CampaignContact).where(
+            CampaignContact.campaign_id == cid)) or 0
+        eligible = await db.scalar(select(func.count()).select_from(CampaignContact).join(
+            Contact, CampaignContact.contact_id == Contact.id).where(
+                CampaignContact.campaign_id == cid,
+                CampaignContact.state.in_(["pending", "waiting_retry"]),
+                Contact.consent.is_(True), Contact.dnd.is_(False), Contact.opted_out.is_(False))) or 0
+        checks = {
+            "template": template is not None,
+            "contacts": total > 0,
+            "eligible_contacts": eligible > 0,
+            "caller_id": bool(campaign.caller_id or settings.exotel_caller_id or settings.twilio_phone_number),
+            "webhook_base_url": settings.public_base_url.startswith("https://"),
+        }
+        return {"campaign_id": campaign_id, "ready": all(checks.values()),
+                "checks": checks, "total_contacts": int(total), "eligible_contacts": int(eligible),
+                "status": campaign.status}
+
+
+@router.post("/{campaign_id}/preview-call")
+async def preview_call(campaign_id: str):
+    """Return the first neutral call-flow steps without contacting anyone."""
+    from app.db.models import Campaign, Template
+    from app.db.session import AsyncSessionLocal
+    from app.telephony.flow.context import CallContext, TemplateView
+    from app.telephony.flow.engine import next as flow_next
+    from app.telephony.flow.context import Answered
+    from app.telephony.providers.factory import get_provider
+
+    try:
+        cid = uuid.UUID(campaign_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid campaign id")
+    async with AsyncSessionLocal() as db:
+        campaign = await db.get(Campaign, cid)
+        if campaign is None:
+            raise HTTPException(status_code=404, detail="Campaign not found")
+        template = await db.get(Template, campaign.template_id)
+        if template is None:
+            raise HTTPException(status_code=409, detail="Campaign template not found")
+        ctx = CallContext(
+            call_id=uuid.uuid4(), language=template.source_language,
+            amd_result="human", flow_state={},
+            template=TemplateView(
+                dtmf_map=template.dtmf_map or {"1": "confirm", "2": "decline", "9": "stop_calling"},
+                speech_enabled=template.speech_enabled,
+                voicemail_policy=template.voicemail_policy,
+            ), audio={}, speech_threshold=campaign.speech_confidence_threshold,
+        )
+        decision = flow_next(ctx, Answered())
+        return {"campaign_id": campaign_id, "provider": get_provider().name,
+                "steps": get_provider().render_steps(decision.steps),
+                "template_id": str(template.id)}
+
+
 
 @router.delete("/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_campaign(campaign_id: str):

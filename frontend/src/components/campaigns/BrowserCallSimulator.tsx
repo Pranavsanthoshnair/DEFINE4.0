@@ -38,6 +38,7 @@ interface RespondResult {
   session_id: string;
   intent: string;
   transcript: string | null;
+  language: string;
   confidence: number | null;
   decision_method: string;
   response_text: string;
@@ -220,7 +221,7 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
 
       // ── STEP 5: Speak response ─────────────────────────────────────────────
       setPhase("responding");
-      await speak(data.response_text ?? "Thank you for your response.", language);
+      await speak(data.response_text ?? "Thank you for your response.", data.language ?? language);
 
       setPhase("done");
       onComplete?.(data);
@@ -251,7 +252,7 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
       setTranscript(data.transcript ?? textInput);
       setResult(data);
       setPhase("responding");
-      await speak(data.response_text, language);
+      await speak(data.response_text, data.language ?? language);
       setPhase("done");
       onComplete?.(data);
     } catch (err) {

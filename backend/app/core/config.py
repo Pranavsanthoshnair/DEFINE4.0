@@ -94,6 +94,7 @@ class Settings(BaseSettings):
     gemini_api_key: str = ""
     groq_api_key: str = ""
     tts_engine: str = "edge"              # edge | parler
+    tts_provider: str = "auto"             # auto | elevenlabs | sarvam
 
     # ── Legacy AI Provider ────────────────────────────────────────────────────
     ai_provider: str = "openai"
