@@ -111,7 +111,7 @@ loaded from the same folder with network access disabled. Sarvam remains the
 provider for STT, translation and TTS.
 
 Calibration and reported synthetic-test metrics from
-`models/intent/training_report.json`:
+`ai/models/intent/training_report.json`:
 
 | Metric | Reported value |
 |---|---:|
