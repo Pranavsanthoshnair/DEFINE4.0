@@ -240,19 +240,18 @@ async def process_browser_response(
             raise HTTPException(status_code=400, detail="Empty audio upload")
 
         try:
+            # Try STT first via AI service, then classify via unified pipeline
             ai = get_ai_client()
-            result = await ai.speech_intent(
-                audio_bytes=audio_bytes,
-                language=lang,
-                allowed_intents=BROWSER_INTENTS,
+            stt_result = await ai.stt(audio_bytes=audio_bytes, language=lang)
+            transcript = stt_result.text
+
+            from app.services.intent_service import classify_intent
+            intent, confidence, decision_method = await classify_intent(
+                text=transcript, audio=audio_bytes, language=lang
             )
-            transcript = result.text
-            intent = result.intent
-            confidence = result.confidence
-            decision_method = result.source or "rules"
         except Exception as exc:
-            log.warning("speech_intent_failed", error=str(exc))
-            error = f"Speech processing failed: {exc}. Using fallback."
+            log.warning("speech_processing_failed", error=str(exc))
+            error = f"Speech processing failed: {exc}"
             intent = "unclear"
             decision_method = "fallback"
 
@@ -260,26 +259,13 @@ async def process_browser_response(
     elif text:
         transcript = text.strip()
         try:
-            ai = get_ai_client()
-            result = await ai.intent(
-                text=transcript,
-                language=lang,
-                allowed_intents=BROWSER_INTENTS,
+            from app.services.intent_service import classify_intent
+            intent, confidence, decision_method = await classify_intent(
+                text=transcript, language=lang
             )
-            intent = result.intent
-            confidence = result.confidence
-            decision_method = result.source or "rules"
         except Exception as exc:
             log.warning("text_intent_failed", error=str(exc))
-            # Simple keyword fallback
-            t_lower = transcript.lower()
-            if any(w in t_lower for w in ["yes", "confirm", "attend", "coming", "will"]):
-                intent = "confirm"
-            elif any(w in t_lower for w in ["no", "can't", "cannot", "won't", "not"]):
-                intent = "decline"
-            else:
-                intent = "unclear"
-            decision_method = "keyword_fallback"
+            intent, confidence, decision_method = "unclear", 0.0, "error"
             error = str(exc)
 
     else:
