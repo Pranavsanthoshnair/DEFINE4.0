@@ -11,6 +11,7 @@ from fastapi import APIRouter
 
 from app.api.routes.campaigns import router as campaigns_router
 from app.api.routes.contacts import router as contacts_router
+from app.api.routes.calls import router as calls_router
 from app.api.routes.analytics import router as analytics_router
 from app.api.routes.health import router as health_router
 from app.api.routes.capabilities import router as capabilities_router
@@ -23,6 +24,9 @@ compat_router.include_router(campaigns_router, prefix="/api/campaigns", tags=["c
 
 # /api/contacts
 compat_router.include_router(contacts_router, prefix="/api/contacts", tags=["compat-contacts"])
+
+# /api/calls
+compat_router.include_router(calls_router, prefix="/api/calls", tags=["compat-calls"])
 
 # /api/analytics
 compat_router.include_router(analytics_router, prefix="/api/analytics", tags=["compat-analytics"])

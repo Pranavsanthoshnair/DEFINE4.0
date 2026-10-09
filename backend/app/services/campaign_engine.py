@@ -137,13 +137,23 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
             continue
         try:
             from app.telephony.providers.base import PlaceCallRequest
+            call_id = uuid.uuid4()
             result = await provider.place_call(PlaceCallRequest(
-                to=phone,
-                call_id=uuid.uuid4(),
-                webhook_url=f"{settings.webhook_base_url}/webhooks/{settings.webhook_secret}/answer",
-                campaign_id=campaign_id,
-                language=language,
-                audio_urls=audio_urls,
+                call_id=call_id,
+                to_number=phone,
+                caller_id=(
+                    settings.twilio_phone_number if provider_name == "twilio"
+                    else settings.exotel_caller_id
+                ),
+                status_callback_url=(
+                    f"{settings.webhook_base_url}/webhooks/{settings.webhook_secret}"
+                    f"/status?call_id={call_id}"
+                ),
+                flow_url=(
+                    f"{settings.webhook_base_url}/webhooks/{settings.webhook_secret}"
+                    f"/flow?call_id={call_id}"
+                ),
+                custom_field=str(call_id),
             ))
             placed += 1
             log.info("campaign_call_placed", provider=provider_name, phone="[REDACTED]")
