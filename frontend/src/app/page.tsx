@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import Sidebar from "@/components/layout/Sidebar";
 import SplitText from "@/components/motion/SplitText";
 import Reveal from "@/components/motion/Reveal";
 import Tilt from "@/components/motion/Tilt";
@@ -41,13 +40,11 @@ export default function LandingPage() {
         </Link>
       </header>
 
-      {/* Navigation Rail Sidebar */}
-      <Sidebar />
+
 
       {/* Main Hero & Content Grid */}
       <main
         style={{
-          marginLeft: 224,
           padding: "var(--gap)",
           position: "relative",
           zIndex: 1,
