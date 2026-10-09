@@ -173,6 +173,19 @@ export default function CampaignsPage() {
     }
   };
 
+  // ── Stop campaign ───────────────────────────────────────────────────────
+
+  const stopCampaign = async (campaign: Campaign) => {
+    if (!confirm(`Stop campaign "${campaign.name}"? It will be paused and can be relaunched.`)) return;
+    try {
+      await fetch(`${API}/api/v1/campaigns/${campaign.id}/stop`, { method: "POST" });
+      load();
+    } catch {
+      // ignore — reload will reflect actual state
+      load();
+    }
+  };
+
   // ── Launch campaign ─────────────────────────────────────────────────────
 
   const launch = (campaign: Campaign) => {
@@ -504,28 +517,50 @@ export default function CampaignsPage() {
                           👤 Add Contacts
                         </button>
                         {/* Launch */}
-                        {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
-                          <button
-                            onClick={() => launch(c)}
-                            style={{
-                              padding: "6px 12px",
-                              background: "#EA1D2C",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: 6,
-                              fontFamily: "Manrope, sans-serif",
-                              fontWeight: 700,
-                              fontSize: 11,
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 4,
-                            }}
-                          >
-                            🚀 Launch
-                          </button>
-                        )}
-                        {/* Simulator */}
+                         {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
+                           <button
+                             onClick={() => launch(c)}
+                             style={{
+                               padding: "6px 12px",
+                               background: "#EA1D2C",
+                               color: "#fff",
+                               border: "none",
+                               borderRadius: 6,
+                               fontFamily: "Manrope, sans-serif",
+                               fontWeight: 700,
+                               fontSize: 11,
+                               cursor: "pointer",
+                               display: "flex",
+                               alignItems: "center",
+                               gap: 4,
+                             }}
+                           >
+                             🚀 Launch
+                           </button>
+                         )}
+                         {/* Stop / De-launch */}
+                         {c.status === "running" && (
+                           <button
+                             onClick={() => stopCampaign(c)}
+                             style={{
+                               padding: "6px 12px",
+                               background: "#7c3aed",
+                               color: "#fff",
+                               border: "none",
+                               borderRadius: 6,
+                               fontFamily: "Manrope, sans-serif",
+                               fontWeight: 700,
+                               fontSize: 11,
+                               cursor: "pointer",
+                               display: "flex",
+                               alignItems: "center",
+                               gap: 4,
+                             }}
+                           >
+                             ⏹ Stop
+                           </button>
+                         )}
+                         {/* Simulator */}
                         <button
                           onClick={() => setSimulatorId(simulatorId === c.id ? null : c.id)}
                           style={{

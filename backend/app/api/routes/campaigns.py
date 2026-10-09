@@ -261,6 +261,33 @@ async def get_campaign_channel(campaign_id: str):
 
 
 
+@router.post("/{campaign_id}/stop", status_code=status.HTTP_200_OK)
+async def stop_campaign(campaign_id: str):
+    """
+    Stop / de-launch a running campaign.
+    Sets status back to 'paused' so it can be relaunched later.
+    """
+    try:
+        sb = get_supabase()
+        now = datetime.now(timezone.utc).isoformat()
+        resp = (
+            sb.table(_TABLE)
+            .update({"status": "paused", "updated_at": now})
+            .eq("id", campaign_id)
+            .execute()
+        )
+        if not resp.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        return {"campaign_id": campaign_id, "status": "paused"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
+
+
 @router.delete("/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_campaign(campaign_id: str):
     """Delete a campaign by ID."""

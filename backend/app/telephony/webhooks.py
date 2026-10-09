@@ -292,6 +292,109 @@ async def _call_maybe_complete(campaign_id: UUID) -> None:
         pass  # not yet implemented by M1
 
 
+# ── Supabase-based flow handler ───────────────────────────────────────────────
+
+async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
+    """
+    Handle the Exotel flow webhook using Supabase.
+    Looks up the call → campaign → audio_urls and returns Play+Hangup steps.
+    Falls back to a hardcoded greeting if no audio is pre-generated.
+    """
+    from app.db.supabase_client import get_supabase, is_supabase_configured
+
+    if not is_supabase_configured():
+        log.warning("flow_supabase_not_configured")
+        return JSONResponse(content={"flow": [{"action": "hangup"}]})
+
+    sb = get_supabase()
+
+    # Resolve campaign from call record
+    campaign_id: str | None = None
+    audio_urls: dict = {}
+    campaign_name: str = "this event"
+
+    if call_id_str:
+        try:
+            call_resp = sb.table("calls").select("campaign_id").eq("id", call_id_str).single().execute()
+            if call_resp.data:
+                campaign_id = call_resp.data.get("campaign_id")
+        except Exception as exc:
+            log.warning("flow_call_lookup_failed", error=str(exc))
+
+    if campaign_id:
+        try:
+            camp_resp = (
+                sb.table("campaigns")
+                .select("name,audio_urls")
+                .eq("id", campaign_id)
+                .single()
+                .execute()
+            )
+            if camp_resp.data:
+                campaign_name = camp_resp.data.get("name", campaign_name)
+                audio_urls = camp_resp.data.get("audio_urls") or {}
+        except Exception as exc:
+            log.warning("flow_campaign_lookup_failed", error=str(exc))
+
+    # Update call status to in_progress
+    if call_id_str:
+        try:
+            now = datetime.now(timezone.utc).isoformat()
+            sb.table("calls").update({"status": "in_progress", "updated_at": now}).eq("id", call_id_str).execute()
+        except Exception:
+            pass
+
+    # Build steps: play greeting audio then hangup
+    from app.telephony.providers.base import Play, Hangup
+    greeting_url = (
+        audio_urls.get("greeting")
+        or audio_urls.get("prompt")
+        or audio_urls.get("welcome")
+    )
+
+    steps = []
+    if greeting_url:
+        steps.append(Play(audio_url=greeting_url))
+        log.info("flow_playing_audio", campaign_id=campaign_id, url=greeting_url)
+    else:
+        # No pre-generated audio — nothing to play, just hang up gracefully
+        log.warning("flow_no_audio_url", campaign_id=campaign_id, audio_keys=list(audio_urls.keys()))
+
+    steps.append(Hangup())
+
+    rendered = provider.render_steps(steps)
+    log.info("flow_response_sent", campaign_id=campaign_id, steps=len(steps))
+    return JSONResponse(content=rendered)
+
+
+async def _handle_status_supabase(call_id_str: str | None, prov_event) -> None:
+    """Update call status in Supabase from a status webhook."""
+    from app.db.supabase_client import get_supabase, is_supabase_configured
+    if not is_supabase_configured() or not prov_event.provider_call_sid:
+        return
+    try:
+        sb = get_supabase()
+        now = datetime.now(timezone.utc).isoformat()
+        status_map = {
+            "completed": "completed", "busy": "busy",
+            "no_answer": "no_answer", "failed": "failed",
+            "ringing": "ringing", "answered": "in_progress",
+            "in_progress": "in_progress",
+        }
+        new_status = status_map.get(prov_event.type, prov_event.type)
+        updates: dict = {"status": new_status, "updated_at": now}
+        if prov_event.type in ("completed", "busy", "no_answer", "failed"):
+            updates["duration_sec"] = prov_event.data.get("duration", 0)
+
+        # Update by call_id if we have it, else by provider_call_sid
+        if call_id_str:
+            sb.table("calls").update(updates).eq("id", call_id_str).execute()
+        else:
+            sb.table("calls").update(updates).eq("provider_call_sid", prov_event.provider_call_sid).execute()
+    except Exception as exc:
+        log.warning("status_update_failed", error=str(exc))
+
+
 # ── Common webhook pipeline ────────────────────────────────────────────────────
 
 async def _handle_webhook(
@@ -307,88 +410,26 @@ async def _handle_webhook(
     query = dict(request.query_params)
 
     prov_event = provider.parse_webhook(kind, dict(request.headers), query, body)
+    call_id_str = str(prov_event.call_id) if prov_event.call_id else query.get("call_id")
 
     log.info(
         "webhook_received",
         kind=kind,
         event_type=prov_event.type,
         sid=prov_event.provider_call_sid,
-        call_id=str(prov_event.call_id),
+        call_id=call_id_str,
     )
 
-    try:
-        from app.db.session import get_db_session
-    except ImportError:
-        # Dev mode: no DB, just ack
+    # ── Flow webhook: serve audio to Exotel when call is answered ────────────
+    if kind == "flow":
+        return await _handle_flow_supabase(call_id_str, provider)
+
+    # ── Status webhook: update call record in Supabase ───────────────────────
+    if kind == "status":
+        await _handle_status_supabase(call_id_str, prov_event)
         return PlainTextResponse("OK")
 
-    async with get_db_session() as session:
-        # Idempotency check
-        inserted = await _insert_event(
-            session,
-            prov_event.call_id,
-            prov_event.provider_call_sid,
-            prov_event.type,
-            body,
-            prov_event.idempotency_key,
-        )
-        if not inserted:
-            log.info("duplicate_webhook", ikey=prov_event.idempotency_key)
-            await session.commit()
-            return PlainTextResponse("OK")
-
-        if prov_event.call_id is None:
-            await session.commit()
-            return PlainTextResponse("OK")
-
-        loaded = await _load_call_context(session, prov_event.call_id)
-        if loaded is None:
-            await session.commit()
-            return PlainTextResponse("OK")
-
-        call, cc, campaign, ctx = loaded
-
-        # Map ProviderEvent → FlowEvent
-        flow_event = _map_event(prov_event, ctx, kind)
-        if flow_event is None:
-            await session.commit()
-            return PlainTextResponse("OK")
-
-        # Update call status from provider
-        if prov_event.type == "answered":
-            call.status = "in_progress"
-            call.answered_at = datetime.now(tz=timezone.utc)
-        elif prov_event.type == "ringing":
-            call.status = "ringing"
-        elif prov_event.type in ("completed", "busy", "no_answer", "failed"):
-            status_map = {
-                "completed": "completed", "busy": "busy",
-                "no_answer": "no_answer", "failed": "failed",
-            }
-            call.status = status_map.get(prov_event.type, "failed")
-            call.duration_sec = prov_event.data.get("duration", 0)
-            call.hangup_cause = prov_event.data.get("hangup_cause", "")
-
-        # Handle recording_ready → call AI then feed SpeechResult
-        if isinstance(flow_event, RecordingReady) and ctx.template.speech_enabled:
-            decision = await _handle_recording(ctx, flow_event, session)
-        else:
-            decision = flow_next(ctx, flow_event)
-
-        await _persist_flow_decision(session, call, cc, campaign, decision)
-        await session.commit()
-
-        if decision.finalize:
-            await _call_maybe_complete(campaign.id)
-
-        # For flow requests, render the steps
-        if kind == "flow" and decision.steps:
-            rendered = provider.render_steps(decision.steps)
-            if isinstance(rendered, dict):
-                return JSONResponse(content=rendered)
-            return rendered
-
-        return PlainTextResponse("OK")
+    return PlainTextResponse("OK")
 
 
 def _map_event(prov_event, ctx: CallContext, kind: str):
