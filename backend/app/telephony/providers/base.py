@@ -103,7 +103,7 @@ class CallProvider:
     ) -> ProviderEvent:
         raise NotImplementedError
 
-    def render_steps(self, steps: list[CallStep]) -> Response:
+    def render_steps(self, steps: list[CallStep]) -> "Response | dict":
         """Turn neutral steps into whatever the provider expects."""
         raise NotImplementedError
 

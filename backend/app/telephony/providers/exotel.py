@@ -75,7 +75,7 @@ class ExotelProvider(CallProvider):
         self._sid = settings.exotel_sid.strip()
         self._key = settings.exotel_api_key.strip()
         self._token = settings.exotel_api_token.strip()
-        
+
         sub = (settings.exotel_subdomain or "api.in.exotel.com").strip().rstrip("/")
         if "exotel.com" in sub:
             host = sub
@@ -83,15 +83,16 @@ class ExotelProvider(CallProvider):
             host = f"{sub}.api.exotel.com"
         else:
             host = "api.in.exotel.com"
-        
+
         # Remove https:// prefix if user entered it in env
         if host.startswith("https://"):
             host = host[8:]
         elif host.startswith("http://"):
             host = host[7:]
-            
+
         self._base_url = f"https://{host}/v1/Accounts/{self._sid}"
         log.info("exotel_provider_init", base_url=self._base_url, sid=self._sid)
+
 
     @property
     def _auth(self) -> tuple[str, str]:
@@ -128,6 +129,9 @@ class ExotelProvider(CallProvider):
         sid = call_data.get("Sid") or call_data.get(_FIELD_CALL_SID, "")
         raw_status = call_data.get(_FIELD_STATUS, "initiated")
 
+        if not sid:
+            log.warning("exotel_place_call_no_sid", call_id=str(req.call_id), raw_status=raw_status)
+
         log.info(
             "exotel_place_call",
             call_id=str(req.call_id),
@@ -141,11 +145,15 @@ class ExotelProvider(CallProvider):
         )
 
     async def hangup(self, provider_call_sid: str) -> None:
-        async with httpx.AsyncClient(auth=self._auth, timeout=5.0) as client:
-            await client.post(
-                f"{self._base_url}/Calls/{provider_call_sid}.json",
-                data={"Status": "canceled"},
-            )
+        try:
+            async with httpx.AsyncClient(auth=self._auth, timeout=5.0) as client:
+                resp = await client.post(
+                    f"{self._base_url}/Calls/{provider_call_sid}.json",
+                    data={"Status": "completed"},
+                )
+                resp.raise_for_status()
+        except Exception as exc:
+            log.warning("exotel_hangup_failed", sid=provider_call_sid, error=str(exc))
 
     def parse_webhook(
         self,
@@ -156,6 +164,7 @@ class ExotelProvider(CallProvider):
     ) -> ProviderEvent:
         """Normalise Exotel form/JSON payload into ProviderEvent."""
         sid = body.get(_FIELD_CALL_SID, "")
+        phone_last4 = str(body.get(_FIELD_TO, ""))[-4:] or ""
         raw_call_id = body.get(_FIELD_CUSTOM_FIELD) or query.get("call_id")
         call_id: UUID | None = None
         if raw_call_id:
@@ -217,10 +226,10 @@ class ExotelProvider(CallProvider):
             idempotency_key=ikey,
         )
 
-    def render_steps(self, steps: list[CallStep]) -> dict:
+    def render_steps(self, steps: list[CallStep]) -> dict:  # type: ignore[override]
         """
         Render neutral steps to Exotel's dynamic-mode response format.
-        VERIFY: confirm the exact JSON/XML schema Exotel expects from a dynamic URL.
+        Returns a JSON-serialisable dict; the webhook handler wraps it in JSONResponse.
         """
         rendered = []
         for step in steps:
