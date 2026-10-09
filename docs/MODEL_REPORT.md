@@ -115,17 +115,23 @@ Calibration and reported synthetic-test metrics from
 
 | Metric | Reported value |
 |---|---:|
-| Intent temperature | 0.06954866647720337 |
-| Accuracy | 0.9791666666666666 |
-| Macro F1 | 0.9792624299489416 |
+| Reported calibrated temperature | 0.06954866647720337 |
+| In-distribution synthetic accuracy | 0.9791666666666666 |
+| In-distribution synthetic macro F1 | 0.9792624299489416 |
 | English accuracy | 1.0 |
 | Hindi accuracy | 1.0 |
 | Malayalam accuracy | 0.9340434419381788 |
 | Tamil accuracy | 0.9832915622389308 |
 
-The repository test currently measures 0.675 accuracy on its checked-in
-`ml/intent/data/test.jsonl`; the artifact and report/test split must be
-reconciled before the reported metrics are reproducible.
+The repository test measures 0.675 accuracy and 0.6841828746085789 macro F1
+on the checked-in `ml/intent/data/test.jsonl`. This split has 18/240 (7.5%)
+case/whitespace/punctuation-normalized near-duplicate texts in the training
+set. The Colab train/validation/test files are not present locally, so the
+artifact and report/test split cannot yet be reconciled. The 0.675 result is
+not claimed as a clean held-out, non-leaky evaluation.
+
+At temporary temperature 1.0, 0/240 predictions exceeded 0.6 confidence;
+this was a diagnostic on the repository test split, not a quality metric.
 
 ---
 
