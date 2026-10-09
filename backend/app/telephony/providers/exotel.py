@@ -226,10 +226,10 @@ class ExotelProvider(CallProvider):
             idempotency_key=ikey,
         )
 
-    def render_steps(self, steps: list[CallStep]) -> dict:
+    def render_steps(self, steps: list[CallStep]) -> dict:  # type: ignore[override]
         """
         Render neutral steps to Exotel's dynamic-mode response format.
-        VERIFY: confirm the exact JSON/XML schema Exotel expects from a dynamic URL.
+        Returns a JSON-serialisable dict; the webhook handler wraps it in JSONResponse.
         """
         rendered = []
         for step in steps:
