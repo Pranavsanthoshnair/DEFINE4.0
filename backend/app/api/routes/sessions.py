@@ -250,15 +250,20 @@ async def process_browser_response(
             # Try STT first via AI service, then classify via unified pipeline
             ai = get_ai_client()
             stt_result = await ai.stt(audio_bytes=audio_bytes, language=None)
-            transcript = stt_result.text
+            transcript = (text or stt_result.text or "").strip()
             detected_lang = (stt_result.language or lang).lower().split("-")[0]
             if len(detected_lang) == 2:
                 lang = detected_lang
 
-            from app.services.intent_service import classify_intent
-            intent, confidence, decision_method = await classify_intent(
-                text=transcript, audio=audio_bytes, language=lang
-            )
+            if not transcript:
+                intent = "unclear"
+                confidence = 0.0
+                decision_method = "no_speech_detected"
+            else:
+                from app.services.intent_service import classify_intent
+                intent, confidence, decision_method = await classify_intent(
+                    text=transcript, audio=audio_bytes, language=lang
+                )
         except Exception as exc:
             log.warning("speech_processing_failed", error=str(exc))
             error = f"Speech processing failed: {exc}"

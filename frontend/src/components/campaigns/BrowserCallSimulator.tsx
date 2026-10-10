@@ -72,6 +72,8 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
   const mrRef       = useRef<MediaRecorder | null>(null);
   const chunksRef   = useRef<Blob[]>([]);
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recogRef    = useRef<any>(null);
+  const speechTextRef = useRef<string>("");
 
   const startTimer = () => {
     setElapsed(0);
@@ -106,6 +108,42 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
       window.speechSynthesis.speak(utt);
     });
   }, []);
+
+  // ── Submit DTMF keypad key ────────────────────────────────────────────────
+  const submitDtmf = useCallback(async (digit: string, activeSessionId?: string) => {
+    const sId = activeSessionId || session?.id;
+    if (!sId) return;
+    if (recogRef.current) {
+      try { recogRef.current.stop(); } catch {}
+    }
+    if (mrRef.current && mrRef.current.state === "recording") {
+      try { mrRef.current.stop(); } catch {}
+    }
+    setPhase("processing");
+    setError(null);
+    startTimer();
+    try {
+      const form = new FormData();
+      form.append("dtmf", digit);
+      if (language) form.append("language", language);
+      const res = await fetch(`${API}/api/v1/sessions/browser/${sId}/respond`, {
+        method: "POST", body: form,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: RespondResult = await res.json();
+      stopTimer();
+      setTranscript(`[Keypad: ${digit}]`);
+      setResult(data);
+      setPhase("responding");
+      await speak(data.response_text, data.language ?? language);
+      setPhase("done");
+      onComplete?.(data);
+    } catch (err) {
+      stopTimer();
+      setError(err instanceof Error ? err.message : "Failed");
+      setPhase("error");
+    }
+  }, [session, language, speak, onComplete]);
 
   // ── STEP 1: Start session ──────────────────────────────────────────────────
   const startCall = useCallback(async () => {
@@ -153,7 +191,31 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
   const beginRecording = useCallback(async (sessionId: string) => {
     setPhase("listening");
     chunksRef.current = [];
+    speechTextRef.current = "";
     startTimer();
+
+    // Start Web Speech Recognition if supported by the browser
+    const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRec) {
+      try {
+        const recog = new SpeechRec();
+        recog.continuous = true;
+        recog.interimResults = true;
+        recog.lang = language === "hi" ? "hi-IN" : language === "ta" ? "ta-IN" : language === "ml" ? "ml-IN" : "en-IN";
+        recog.onresult = (event: any) => {
+          let str = "";
+          for (let i = 0; i < event.results.length; ++i) {
+            str += event.results[i][0].transcript;
+          }
+          speechTextRef.current = str;
+          setTranscript(str);
+        };
+        recog.start();
+        recogRef.current = recog;
+      } catch (e) {
+        console.warn("Speech recognition init error", e);
+      }
+    }
 
     let stream: MediaStream;
     try {
@@ -178,22 +240,25 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
 
     mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
     mr.onstop = async () => {
+      if (recogRef.current) {
+        try { recogRef.current.stop(); } catch {}
+      }
       stream.getTracks().forEach((t) => t.stop());
       stopTimer();
-      await submitResponse(sessionId);
+      await submitResponse(sessionId, speechTextRef.current);
     };
 
     mr.start(250); // Collect data every 250ms
     // Auto-stop after 8s
     setTimeout(() => { if (mr.state === "recording") mr.stop(); }, 8000);
-  }, []);
+  }, [language]);
 
   const stopRecording = useCallback(() => {
     if (mrRef.current?.state === "recording") mrRef.current.stop();
   }, []);
 
   // ── STEP 4: Submit audio → backend STT + intent ────────────────────────────
-  const submitResponse = useCallback(async (sessionId: string) => {
+  const submitResponse = useCallback(async (sessionId: string, spokenText = "") => {
     setPhase("processing");
     startTimer();
 
@@ -201,6 +266,7 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
       const blob = new Blob(chunksRef.current, { type: "audio/webm" });
       const form = new FormData();
       form.append("audio", blob, "response.webm");
+      if (spokenText) form.append("text", spokenText);
       if (language) form.append("language", language);
 
       const res = await fetch(`${API}/api/v1/sessions/browser/${sessionId}/respond`, {
@@ -216,7 +282,7 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
       const data: RespondResult = await res.json();
       stopTimer();
 
-      setTranscript(data.transcript ?? "");
+      setTranscript(data.transcript ?? spokenText ?? "");
       setResult(data);
 
       // ── STEP 5: Speak response ─────────────────────────────────────────────
@@ -323,6 +389,41 @@ export default function BrowserCallSimulator({ campaignId, language = "en", onCo
       {error && (
         <div style={{ background: "#fef2f2", border: "1px solid #fca5a5", borderRadius: 8, padding: "9px 12px", marginBottom: 12, fontSize: 12, color: "#dc2626", fontWeight: 600 }}>
           {error}
+        </div>
+      )}
+
+      {/* Quick DTMF Keypad shortcuts */}
+      {phase === "listening" && (
+        <div style={{ marginBottom: 10, background: "rgba(23,38,58,.03)", padding: "10px 12px", borderRadius: 10, border: "1px solid rgba(23,38,58,.06)" }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "#8A9BB0", marginBottom: 6, textTransform: "uppercase", letterSpacing: ".06em" }}>
+            Speak into mic OR tap response:
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 6 }}>
+            <button
+              onClick={() => submitDtmf("1")}
+              style={{ padding: "6px 4px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 6, color: "#16a34a", fontWeight: 700, fontSize: 11, cursor: "pointer" }}
+            >
+              [ 1 ] Accept
+            </button>
+            <button
+              onClick={() => submitDtmf("2")}
+              style={{ padding: "6px 4px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 6, color: "#dc2626", fontWeight: 700, fontSize: 11, cursor: "pointer" }}
+            >
+              [ 2 ] Decline
+            </button>
+            <button
+              onClick={() => submitDtmf("3")}
+              style={{ padding: "6px 4px", background: "#fffbeb", border: "1px solid #fef3c7", borderRadius: 6, color: "#d97706", fontWeight: 700, fontSize: 11, cursor: "pointer" }}
+            >
+              [ 3 ] Later
+            </button>
+            <button
+              onClick={() => submitDtmf("9")}
+              style={{ padding: "6px 4px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 6, color: "#64748b", fontWeight: 700, fontSize: 11, cursor: "pointer" }}
+            >
+              [ 9 ] Opt Out
+            </button>
+          </div>
         </div>
       )}
 

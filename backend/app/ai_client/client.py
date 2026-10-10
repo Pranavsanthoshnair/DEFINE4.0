@@ -302,12 +302,13 @@ class FakeAIClient:
         audio_bytes: bytes,
         language: str | None = None,
     ) -> SttResponse:
+        # Do not fabricate words if audio is empty or silence
         return SttResponse(
-            text="yes",
+            text="",
             language=language or "en",
-            confidence=0.95,
-            duration_ms=500,
-            latency_ms=10,
+            confidence=0.0,
+            duration_ms=0,
+            latency_ms=1,
             model="fake-stt",
         )
 
@@ -317,18 +318,15 @@ class FakeAIClient:
         language: str | None = None,
         allowed_intents: list[str] | None = None,
     ) -> SpeechIntentResponse:
-        label = "confirm"
-        if allowed_intents and label not in allowed_intents:
-            label = allowed_intents[0]
         return SpeechIntentResponse(
-            text="yes",
+            text="",
             language=language or "en",
-            intent=label,
-            confidence=0.95,
+            intent="unclear",
+            confidence=0.0,
             source="rules",
             stt_model="fake-stt",
-            latency_ms=5,
-            no_speech=False,
+            latency_ms=1,
+            no_speech=True,
         )
 
 
