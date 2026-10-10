@@ -302,28 +302,47 @@ async def _call_maybe_complete(campaign_id: UUID) -> None:
 
 async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
     """
-    Handle the Exotel flow webhook using Supabase.
-    Looks up the call → campaign → audio_urls and returns Play+Hangup steps.
-    Falls back to a hardcoded greeting if no audio is pre-generated.
+    Handle the flow webhook using Supabase.
+    Looks up call → campaign_contact → campaign → audio_urls.
+    Returns TwiML XML for Twilio, Exotel JSON for Exotel.
+    Falls back to a plain spoken greeting if no audio is pre-generated.
     """
     from app.db.supabase_client import get_supabase, is_supabase_configured
 
     if not is_supabase_configured():
         log.warning("flow_supabase_not_configured")
-        return JSONResponse(content={"flow": [{"action": "hangup"}]})
+        _fallback_steps = [Hangup()]
+        _rendered = provider.render_steps(_fallback_steps)
+        if provider.name == "twilio":
+            return PlainTextResponse(content=_rendered, media_type="application/xml")
+        return JSONResponse(content=_rendered)
 
     sb = get_supabase()
 
     # Resolve campaign from call record
+    # calls table has NO campaign_id — must join via campaign_contacts
     campaign_id: str | None = None
     audio_urls: dict = {}
-    campaign_name: str = "this event"
 
     if call_id_str:
         try:
-            call_resp = sb.table("calls").select("campaign_id").eq("id", call_id_str).single().execute()
-            if call_resp.data:
-                campaign_id = call_resp.data.get("campaign_id")
+            call_resp = (
+                sb.table("calls")
+                .select("campaign_contact_id")
+                .eq("id", call_id_str)
+                .single()
+                .execute()
+            )
+            cc_id = (call_resp.data or {}).get("campaign_contact_id")
+            if cc_id:
+                cc_resp = (
+                    sb.table("campaign_contacts")
+                    .select("campaign_id")
+                    .eq("id", cc_id)
+                    .single()
+                    .execute()
+                )
+                campaign_id = (cc_resp.data or {}).get("campaign_id")
         except Exception as exc:
             log.warning("flow_call_lookup_failed", error=str(exc))
 
@@ -331,13 +350,12 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
         try:
             camp_resp = (
                 sb.table("campaigns")
-                .select("name,brief")
+                .select("name,brief,audio_urls")
                 .eq("id", campaign_id)
                 .single()
                 .execute()
             )
             if camp_resp.data:
-                campaign_name = camp_resp.data.get("name", campaign_name)
                 # Try audio_urls column first, fall back to brief JSON
                 raw_audio = camp_resp.data.get("audio_urls")
                 if not raw_audio:
@@ -373,13 +391,16 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
         steps.append(Play(audio_url=greeting_url))
         log.info("flow_playing_audio", campaign_id=campaign_id, url=greeting_url)
     else:
-        # No pre-generated audio — nothing to play, just hang up gracefully
         log.warning("flow_no_audio_url", campaign_id=campaign_id, audio_keys=list(audio_urls.keys()))
 
     steps.append(Hangup())
 
     rendered = provider.render_steps(steps)
-    log.info("flow_response_sent", campaign_id=campaign_id, steps=len(steps))
+    log.info("flow_response_sent", campaign_id=campaign_id, steps=len(steps), provider=provider.name)
+
+    # Twilio needs XML, Exotel needs JSON
+    if provider.name == "twilio":
+        return PlainTextResponse(content=rendered, media_type="application/xml")
     return JSONResponse(content=rendered)
 
 
