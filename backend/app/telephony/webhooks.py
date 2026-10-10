@@ -300,50 +300,94 @@ async def _call_maybe_complete(campaign_id: UUID) -> None:
 
 # ── Supabase-based flow handler ───────────────────────────────────────────────
 
-async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
+def _render_steps_for_provider(provider, steps: list, webhook_base: str, webhook_secret: str, call_id_str: str) -> Response:
+    """Render flow steps for the correct provider and return HTTP response."""
+    from app.telephony.providers.base import Play, Gather, Hangup, Record
+
+    if provider.name == "twilio":
+        # Build TwiML XML manually — provider.render_steps returns str for Twilio
+        parts = ['<?xml version="1.0" encoding="UTF-8"?><Response>']
+        for step in steps:
+            if isinstance(step, Play):
+                parts.append(f'<Play>{step.audio_url}</Play>')
+            elif isinstance(step, Gather):
+                # Gather with action URL so Twilio POSTs digits back to us
+                action_url = f"{webhook_base}/webhooks/{webhook_secret}/flow?call_id={call_id_str}"
+                attrs = f'numDigits="{step.max_digits}" timeout="{step.timeout_sec}" action="{action_url}" method="POST"'
+                inner = f'<Play>{step.prompt_audio_url}</Play>' if step.prompt_audio_url else ""
+                if not inner and step.prompt_audio_url == "":
+                    # Use <Say> if no audio URL for prompt
+                    inner = '<Say voice="alice">Press 1 to confirm, 2 to decline, or 9 to stop calls.</Say>'
+                parts.append(f'<Gather {attrs}>{inner}</Gather>')
+            elif isinstance(step, Record):
+                parts.append(f'<Record maxLength="{step.max_seconds}" timeout="{step.silence_timeout_sec}"/>')
+            elif isinstance(step, Hangup):
+                parts.append('<Hangup/>')
+        parts.append('</Response>')
+        twiml = "".join(parts)
+        return PlainTextResponse(content=twiml, media_type="application/xml")
+    else:
+        # Exotel: use provider.render_steps for JSON
+        rendered = provider.render_steps(steps)
+        return JSONResponse(content=rendered)
+
+
+async def _handle_flow_supabase(call_id_str: str | None, provider, body: dict = {}) -> Response:
     """
-    Handle the flow webhook using Supabase.
-    Looks up call → campaign_contact → campaign → audio_urls.
-    Returns TwiML XML for Twilio, Exotel JSON for Exotel.
-    Falls back to a plain spoken greeting if no audio is pre-generated.
+    Handle the flow webhook using the real flow engine.
+    Works for both Twilio (TwiML XML) and Exotel (JSON).
+
+    Flow:
+      call answered  → load audio → engine(Answered) → greeting + Gather
+      digit pressed  → engine(Digits)                → ack + Hangup
+      no input       → engine(Timeout)               → reprompt or goodbye
     """
     from app.db.supabase_client import get_supabase, is_supabase_configured
+    from app.telephony.flow.context import (
+        CallContext, TemplateView, Answered, Digits, Timeout
+    )
+    from app.telephony.flow import engine as flow_engine
+    import uuid as _uuid
+
+    webhook_base = settings.webhook_base_url or settings.public_base_url
+    webhook_secret = settings.webhook_secret
 
     if not is_supabase_configured():
         log.warning("flow_supabase_not_configured")
-        _fallback_steps = [Hangup()]
-        _rendered = provider.render_steps(_fallback_steps)
-        if provider.name == "twilio":
-            return PlainTextResponse(content=_rendered, media_type="application/xml")
-        return JSONResponse(content=_rendered)
+        return _render_steps_for_provider(provider, [Hangup()], webhook_base, webhook_secret, call_id_str or "")
 
     sb = get_supabase()
 
-    # Resolve campaign from call record
-    # calls table has NO campaign_id — must join via campaign_contacts
+    # ── Resolve campaign from call ────────────────────────────────────────────
     campaign_id: str | None = None
     audio_urls: dict = {}
     brief_text: str = ""
+    flow_state: dict = {}
+    language: str = "en"
 
     if call_id_str:
         try:
             call_resp = (
                 sb.table("calls")
-                .select("campaign_contact_id")
+                .select("campaign_contact_id,flow_state,status")
                 .eq("id", call_id_str)
                 .single()
                 .execute()
             )
-            cc_id = (call_resp.data or {}).get("campaign_contact_id")
+            call_data = call_resp.data or {}
+            flow_state = call_data.get("flow_state") or {}
+            cc_id = call_data.get("campaign_contact_id")
             if cc_id:
                 cc_resp = (
                     sb.table("campaign_contacts")
-                    .select("campaign_id")
+                    .select("campaign_id,language")
                     .eq("id", cc_id)
                     .single()
                     .execute()
                 )
-                campaign_id = (cc_resp.data or {}).get("campaign_id")
+                cc_data = cc_resp.data or {}
+                campaign_id = cc_data.get("campaign_id")
+                language = cc_data.get("language") or "en"
         except Exception as exc:
             log.warning("flow_call_lookup_failed", error=str(exc))
 
@@ -357,7 +401,6 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
                 .execute()
             )
             if camp_resp.data:
-                # Try audio_urls column first, fall back to brief JSON
                 raw_audio = camp_resp.data.get("audio_urls")
                 if not raw_audio:
                     import json as _json
@@ -368,14 +411,13 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
                     except Exception:
                         raw_audio = None
                 audio_urls = raw_audio or {}
-                # Keep brief text for <Say> fallback
                 brief_text = camp_resp.data.get("brief") or ""
                 if brief_text.startswith("{"):
-                    brief_text = ""  # JSON blob, not human text
+                    brief_text = ""
         except Exception as exc:
             log.warning("flow_campaign_lookup_failed", error=str(exc))
 
-    # Update call status to in_progress
+    # ── Update call status to in_progress ────────────────────────────────────
     if call_id_str:
         try:
             now = datetime.now(timezone.utc).isoformat()
@@ -383,51 +425,114 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
         except Exception:
             pass
 
-    # Build steps: play greeting audio then hangup
-    from app.telephony.providers.base import Play, Hangup
-    greeting_url = (
-        audio_urls.get("greeting")
-        or audio_urls.get("prompt")
-        or audio_urls.get("welcome")
+    # ── Determine event type from body ───────────────────────────────────────
+    # Twilio sends Digits in the body when a Gather completes
+    digits = body.get("Digits") or body.get("digits") or ""
+    call_status = (body.get("CallStatus") or body.get("Status") or "").lower()
+
+    if digits:
+        event = Digits(value=str(digits))
+    elif call_status in ("no-answer", "busy", "failed", "canceled"):
+        from app.telephony.flow.context import Completed
+        event = Completed(status=call_status)
+    else:
+        event = Answered()
+
+    # ── Build CallContext and run engine ─────────────────────────────────────
+    dtmf_map = {"1": "confirm", "2": "decline", "9": "stop_calling"}
+
+    # If no audio, build <Say> text as audio stub — engine will use empty string
+    # and we'll substitute <Say> in the renderer
+    ctx = CallContext(
+        call_id=_uuid.UUID(call_id_str) if call_id_str else _uuid.uuid4(),
+        language=language,
+        amd_result=None,
+        flow_state=flow_state,
+        template=TemplateView(
+            dtmf_map=dtmf_map,
+            speech_enabled=False,
+            voicemail_policy="skip_and_retry",
+        ),
+        audio=audio_urls,
     )
 
-    log.info("flow_building_response",
-             campaign_id=campaign_id,
-             provider=provider.name,
-             has_audio=bool(greeting_url))
+    decision = flow_engine.next(ctx, event)
 
-    # Twilio: return TwiML XML directly
+    # ── Persist new flow state + outcome ─────────────────────────────────────
+    if call_id_str:
+        try:
+            now = datetime.now(timezone.utc).isoformat()
+            updates: dict = {"flow_state": decision.new_flow_state, "updated_at": now}
+            if decision.outcome:
+                updates["status"] = decision.outcome if decision.finalize else "in_progress"
+            sb.table("calls").update(updates).eq("id", call_id_str).execute()
+            # Update campaign_contact status on finalize
+            if decision.finalize and decision.outcome:
+                call_data2 = sb.table("calls").select("campaign_contact_id").eq("id", call_id_str).single().execute()
+                cc_id2 = (call_data2.data or {}).get("campaign_contact_id")
+                if cc_id2:
+                    outcome_to_status = {
+                        "confirmed": "completed", "declined": "completed",
+                        "opted_out": "completed", "no_input": "completed",
+                        "unclear": "completed", "no_answer": "failed",
+                        "busy": "failed", "failed": "failed",
+                    }
+                    cc_status = outcome_to_status.get(decision.outcome, "completed")
+                    sb.table("campaign_contacts").update({
+                        "status": cc_status, "updated_at": now
+                    }).eq("id", cc_id2).execute()
+        except Exception as exc:
+            log.warning("flow_state_persist_failed", error=str(exc))
+
+    # ── Fill in <Say> text for steps that have empty audio URLs ──────────────
+    # This ensures caller hears something even without pre-generated audio
+    from app.telephony.providers.base import Play, Gather
+    _say_fallbacks = {
+        "greeting":    brief_text or "Hello! You have been invited. Press 1 to confirm, 2 to decline, or 9 to opt out.",
+        "prompt":      "Press 1 to confirm, 2 to decline, or 9 to stop calls.",
+        "reprompt":    "We did not catch that. Press 1 to confirm, 2 to decline.",
+        "ack_confirm": "Thank you for confirming! Goodbye.",
+        "ack_decline": "Thank you. Goodbye.",
+        "ack_stop":    "You have been removed from our list. Goodbye.",
+        "ack_unclear": "We could not process your response. We will follow up. Goodbye.",
+        "goodbye":     "Thank you for your time. Goodbye.",
+    }
+
+    # For Twilio with no audio, replace empty Play URLs with Say text in TwiML
     if provider.name == "twilio":
-        if greeting_url:
-            twiml = (
-                '<?xml version="1.0" encoding="UTF-8"?>'
-                '<Response>'
-                f'<Play>{greeting_url}</Play>'
-                '<Hangup/>'
-                '</Response>'
-            )
-        else:
-            # No pre-generated audio — use campaign brief as <Say> fallback
-            say_text = brief_text or "Hello! This is a campaign call from Veylo. Thank you for your time. Goodbye."
-            # Escape XML special chars
-            say_text = say_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            twiml = (
-                '<?xml version="1.0" encoding="UTF-8"?>'
-                '<Response>'
-                f'<Say voice="alice" language="en-IN">{say_text}</Say>'
-                '<Hangup/>'
-                '</Response>'
-            )
-        log.info("flow_response_sent", campaign_id=campaign_id, provider="twilio")
+        parts = ['<?xml version="1.0" encoding="UTF-8"?><Response>']
+        for step in decision.steps:
+            if isinstance(step, Play):
+                if step.audio_url:
+                    parts.append(f'<Play>{step.audio_url}</Play>')
+                else:
+                    # Find which segment this play corresponds to
+                    seg = next((k for k, v in audio_urls.items() if v == step.audio_url), None)
+                    fallback = _say_fallbacks.get(seg or "", "Please respond after the tone.")
+                    fallback = fallback.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    parts.append(f'<Say voice="alice" language="en-IN">{fallback}</Say>')
+            elif isinstance(step, Gather):
+                action_url = f"{webhook_base}/webhooks/{webhook_secret}/flow?call_id={call_id_str}"
+                attrs = f'numDigits="{step.max_digits}" timeout="{step.timeout_sec}" action="{action_url}" method="POST"'
+                if step.prompt_audio_url:
+                    inner = f'<Play>{step.prompt_audio_url}</Play>'
+                else:
+                    prompt_text = _say_fallbacks.get("prompt", "Press 1 to confirm, 2 to decline.")
+                    prompt_text = prompt_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    inner = f'<Say voice="alice" language="en-IN">{prompt_text}</Say>'
+                parts.append(f'<Gather {attrs}>{inner}</Gather>')
+            elif isinstance(step, Hangup):
+                parts.append('<Hangup/>')
+        parts.append('</Response>')
+        twiml = "".join(parts)
+        log.info("flow_response_sent", campaign_id=campaign_id, provider="twilio",
+                 event=type(event).__name__, outcome=decision.outcome)
         return PlainTextResponse(content=twiml, media_type="application/xml")
 
-    # Exotel: return JSON steps
-    steps = []
-    if greeting_url:
-        steps.append(Play(audio_url=greeting_url))
-    steps.append(Hangup())
-    rendered = provider.render_steps(steps)
-    log.info("flow_response_sent", campaign_id=campaign_id, steps=len(steps), provider=provider.name)
+    # Exotel: use provider.render_steps
+    rendered = provider.render_steps(decision.steps)
+    log.info("flow_response_sent", campaign_id=campaign_id, provider=provider.name,
+             event=type(event).__name__, outcome=decision.outcome)
     return JSONResponse(content=rendered)
 
 
@@ -484,9 +589,9 @@ async def _handle_webhook(
         call_id=call_id_str,
     )
 
-    # ── Flow webhook: serve audio to Exotel when call is answered ────────────
+    # ── Flow webhook: serve audio when call is answered / digit pressed ──────
     if kind == "flow":
-        return await _handle_flow_supabase(call_id_str, provider)
+        return await _handle_flow_supabase(call_id_str, provider, body)
 
     # ── Status webhook: update call record in Supabase ───────────────────────
     if kind == "status":
