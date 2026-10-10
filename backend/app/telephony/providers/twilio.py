@@ -72,14 +72,12 @@ class TwilioProvider(CallProvider):
 
         # Use Url parameter pointing to our flow webhook.
         # Twilio fetches this URL when the call is answered and executes the TwiML.
-        # TimeLimit is NOT allowed on Twilio trial accounts — omit it.
+        # StatusCallback is NOT allowed on Twilio trial — use Url only.
         payload: dict = {
             "To":     req.to_number,
             "From":   caller_id,
             "Url":    req.flow_url,
             "Method": "POST",
-            "StatusCallback":       req.status_callback_url,
-            "StatusCallbackMethod": "POST",
         }
 
         log.info("twilio_place_call_attempt",
