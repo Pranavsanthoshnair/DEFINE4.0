@@ -421,9 +421,12 @@ async def _handle_flow_supabase(call_id_str: str | None, provider, body: dict = 
     if call_id_str:
         try:
             now = datetime.now(timezone.utc).isoformat()
-            sb.table("calls").update({"status": "in_progress", "updated_at": now}).eq("id", call_id_str).execute()
+            sb.table("calls").update({"status": "in_progress", "answered_at": now}).eq("id", call_id_str).execute()
         except Exception:
             pass
+
+    log.info("flow_audio_urls", campaign_id=campaign_id,
+             keys=list(audio_urls.keys()), has_greeting=bool(audio_urls.get("greeting")))
 
     # ── Determine event type from body ───────────────────────────────────────
     # Twilio sends Digits in the body when a Gather completes
