@@ -85,9 +85,14 @@ class TwilioProvider(CallProvider):
                  base=self._base)
 
         async with httpx.AsyncClient(auth=self._auth, timeout=15.0) as client:
+            # urllib.parse.urlencode encodes + as %2B (correct for phone numbers)
+            # httpx data= encodes + as + which Twilio interprets as space
+            import urllib.parse
+            encoded_body = urllib.parse.urlencode(payload)
             resp = await client.post(
                 f"{self._base}/Calls.json",
-                data=payload,
+                content=encoded_body,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
             )
             log.info("twilio_api_response",
                      status_code=resp.status_code,
