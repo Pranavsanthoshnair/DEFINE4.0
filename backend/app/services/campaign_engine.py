@@ -430,9 +430,10 @@ async def run_campaign(
     except ValueError as exc:
         return {"error": str(exc)}
 
-    if campaign.get("status") not in ("draft", "ready", "scheduled", "paused"):
+    # Allow relaunch from any non-completed state
+    if campaign.get("status") in ("completed",):
         return {
-            "error": f"Campaign is {campaign.get('status')} — cannot launch",
+            "error": f"Campaign is {campaign.get('status')} — cannot relaunch a completed campaign",
             "campaign_id": campaign_id,
         }
 
