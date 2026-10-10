@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import uuid
 
+from fastapi import APIRouter, HTTPException, status
+from pydantic import BaseModel
+
 from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()

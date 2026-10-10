@@ -100,28 +100,58 @@ class ExotelProvider(CallProvider):
 
     async def place_call(self, req: PlaceCallRequest) -> PlaceCallResult:
         """
-        Initiate an outbound call via Exotel.
+        Initiate an outbound call via Exotel Calls/connect.json API.
+
+        Exotel API reference:
+          POST https://api.in.exotel.com/v1/Accounts/{sid}/Calls/connect.json
+          Auth: HTTP Basic (api_key : api_token)
+          Form fields:
+            From        – the virtual/caller number (ExoPhone)
+            To          – destination number to dial
+            CallerId    – same as From (required separately by Exotel)
+            Url         – passthru applet URL OR StatusCallback for simple calls
+            StatusCallback – webhook for call status updates
+            CustomField – echoed back in webhook (we store our call_id here)
+            TimeLimit   – max call duration in seconds
         """
         caller_id = req.caller_id or settings.exotel_caller_id
-        payload = {
-            "From": caller_id,
-            "To": req.to_number,
-            "Url": req.flow_url,           # dynamic mode
+        # Build the payload per Exotel's connect.json spec
+        payload: dict = {
+            "From": caller_id,          # ExoPhone / virtual number
+            "To": req.to_number,        # Destination number
+            "CallerId": caller_id,      # Required by Exotel (same as From)
             "StatusCallback": req.status_callback_url,
             _FIELD_CUSTOM_FIELD: req.custom_field,
-            "TimeLimit": req.time_limit_sec,
+            "TimeLimit": str(req.time_limit_sec or 120),
+            "TimeOut": "30",            # Ring timeout in seconds
         }
-        async with httpx.AsyncClient(auth=self._auth, timeout=12.0) as client:
+        # Url field: use our flow webhook so Exotel calls us when answered
+        # This must be a publicly reachable URL (your Render backend URL)
+        if req.flow_url:
+            payload["Url"] = req.flow_url
+
+        log.info("exotel_place_call_attempt",
+                 to=req.to_number[-4:],
+                 caller_id=caller_id,
+                 base_url=self._base_url,
+                 flow_url=req.flow_url)
+
+        async with httpx.AsyncClient(auth=self._auth, timeout=15.0) as client:
             resp = await client.post(
                 f"{self._base_url}/Calls/connect.json",
                 data=payload,
             )
+            log.info("exotel_api_response",
+                     status_code=resp.status_code,
+                     body=resp.text[:500])
             if not resp.is_success:
-                log.error("exotel_call_failed", status_code=resp.status_code, body=resp.text)
+                log.error("exotel_call_failed",
+                          status_code=resp.status_code,
+                          body=resp.text)
                 return PlaceCallResult(
                     provider_call_sid="",
                     accepted=False,
-                    raw_status=f"http_{resp.status_code}: {resp.text[:200]}",
+                    raw_status=f"http_{resp.status_code}: {resp.text[:500]}",
                 )
             body = resp.json()
 
@@ -129,15 +159,12 @@ class ExotelProvider(CallProvider):
         sid = call_data.get("Sid") or call_data.get(_FIELD_CALL_SID, "")
         raw_status = call_data.get(_FIELD_STATUS, "initiated")
 
-        if not sid:
-            log.warning("exotel_place_call_no_sid", call_id=str(req.call_id), raw_status=raw_status)
+        log.info("exotel_place_call_result",
+                 call_id=str(req.call_id),
+                 sid=sid,
+                 raw_status=raw_status,
+                 accepted=bool(sid))
 
-        log.info(
-            "exotel_place_call",
-            call_id=str(req.call_id),
-            sid=sid,
-            raw_status=raw_status,
-        )
         return PlaceCallResult(
             provider_call_sid=sid,
             accepted=bool(sid),

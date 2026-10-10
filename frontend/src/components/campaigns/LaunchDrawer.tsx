@@ -68,20 +68,10 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
         setStep(1, { status: "done", detail: `${count} contact(s) queued` });
         await delay(300);
 
-        // Step 2 — TTS (best-effort, don't fail launch if missing)
+        // Step 2 — Skip TTS re-generation; use audio from "Prepare Audio" button
         setStep(2, { status: "running" });
-        try {
-          const ttsRes = await fetch(`${API}/api/v1/campaigns/${campaign.id}/prepare-audio`, {
-            method: "POST",
-          });
-          if (ttsRes.ok) {
-            setStep(2, { status: "done", detail: "Audio clips ready" });
-          } else {
-            setStep(2, { status: "done", detail: "Using browser TTS fallback" });
-          }
-        } catch {
-          setStep(2, { status: "done", detail: "Browser TTS fallback" });
-        }
+        await delay(200);
+        setStep(2, { status: "done", detail: "Using pre-generated audio clips" });
         await delay(300);
 
         // Step 3 — Launch
