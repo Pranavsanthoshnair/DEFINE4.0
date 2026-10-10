@@ -145,35 +145,23 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
     campaign_name = campaign.get("name", "Campaign")
     language = campaign.get("language", "en")
 
-    # Step 1: Pre-generate ElevenLabs audio (graceful fallback if key not set)
+    # Step 1: Use pre-generated audio — do NOT re-call ElevenLabs on launch.
+    # Use the "Prepare Audio" button to generate audio before launching.
     log.info("campaign_engine_telephony_audio_prep", campaign_id=campaign_id)
-<<<<<<< HEAD
-    from app.services.tts_service import generate_campaign_audio
-    audio_urls = await generate_campaign_audio(
-        campaign_id=campaign_id,
-        campaign_name=campaign_name,
-        language=language,
-        custom_scripts=(campaign.get("script") or campaign.get("template_script")
-                        if isinstance(campaign.get("script") or campaign.get("template_script"), dict)
-                        else None),
-    )
-    # Save audio URLs to campaign
-    sb = get_supabase()
-    sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
-=======
-    audio_urls: dict = {}
-    try:
-        from app.services.tts_service import generate_campaign_audio
-        audio_urls = await generate_campaign_audio(
-            campaign_id=campaign_id,
-            campaign_name=campaign_name,
-            language=language,
-        )
-        sb = get_supabase()
-        sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
-    except Exception as exc:
-        log.warning("campaign_engine_tts_skipped", error=str(exc))
->>>>>>> 1305cc7c61e5decba9f2e912782a415522e4f450
+    audio_urls: dict = campaign.get("audio_urls") or {}
+    if not audio_urls:
+        import json as _json
+        brief_str = campaign.get("brief") or ""
+        try:
+            if isinstance(brief_str, str) and brief_str.startswith("{"):
+                audio_urls = _json.loads(brief_str).get("audio_urls") or {}
+        except Exception:
+            pass
+    if audio_urls:
+        log.info("campaign_engine_audio_reuse", campaign_id=campaign_id, segments=len(audio_urls))
+    else:
+        log.warning("campaign_engine_no_audio", campaign_id=campaign_id,
+                    hint="Click 'Prepare Audio' before launching")
 
     # Step 2: Place calls
     provider = get_provider()
