@@ -23,13 +23,14 @@ interface Props {
 }
 
 export default function LaunchDrawer({ campaign, channel = "auto", onClose, onSuccess }: Props) {
-  // Prevent background scrolling when drawer is open
+  // Prevent background scrolling ONLY when drawer is actually open
   useEffect(() => {
+    if (!campaign) return;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, []);
+  }, [campaign]);
 
   const [steps, setSteps] = useState<Step[]>([]);
   const [done, setDone]   = useState(false);

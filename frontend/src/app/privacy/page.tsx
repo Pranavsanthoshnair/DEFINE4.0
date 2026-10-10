@@ -91,36 +91,40 @@ export default function PrivacyPage() {
       </Section>
 
       {/* ── Processing location ──────────────────────────────────────────── */}
-      <Section title="3. Processing Location">
+      <Section title="3. Processing Locations & Third-Party Providers">
         <table style={tableStyle}>
           <thead>
             <tr>
-              {["System", "Location", "Notes"].map((h) => (
+              {["Provider / System", "Service Role", "Data Received", "Region"].map((h) => (
                 <th key={h} style={thStyle}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {[
-              ["PostgreSQL database", "VPS — India (Mumbai region)", "Phone numbers and names AES-256-GCM encrypted at rest"],
-              ["Redis cache", "Same VPS", "No personal data cached; only campaign state counters"],
-              ["AI service (STT / TTS / intent)", "Same VPS (on-premise GPU)", "Audio processed in RAM only; no data written to disk by the AI service"],
-              ["Call recordings", "Same VPS", "Encrypted before write; decrypted only for authorised admin playback"],
-              ["Telephony (Exotel)", "Exotel cloud — India", "Only the E.164 number and caller ID are sent; no names or transcripts"],
-              ["TTS edge voices (fallback)", "Microsoft Azure — global CDN", "Text sent is the rendered script segment, which contains no personal data"],
-            ].map(([system, location, notes]) => (
-              <tr key={system}>
-                <td style={tdStyle}><strong>{system}</strong></td>
-                <td style={tdStyle}>{location}</td>
-                <td style={tdStyle}>{notes}</td>
+              ["Supabase", "Cloud Database & Pooler", "Campaigns, contacts (hashes & encrypted data), call logs, users", "ap-southeast-1 (Singapore)"],
+              ["Exotel", "Telephony Carrier", "Decrypted phone number at dial time; live duplex call audio", "India (ap-south-1 / Mumbai)"],
+              ["Sarvam AI", "Indic Translation / TTS / STT", "Template text for translation/TTS; caller audio bytes for STT (no names/numbers)", "India"],
+              ["Groq", "Fast STT Racing / Fallback", "Caller audio bytes for Whisper transcription only", "United States"],
+              ["ElevenLabs", "Synthetic Voice TTS", "Rendered script text only (no names or phone numbers)", "United States"],
+              ["Google Gemini", "Fallback Intent Classification", "Text transcripts only when local rules and ONNX model are uncertain", "United States"],
+              ["Microsoft Edge TTS", "Voice synthesis fallback", "Template script text strings only", "Global Anycast"],
+              ["Telegram", "Campaign Alerts & RSVP Bot", "Aggregated campaign metrics, button callbacks. ZERO names or phone numbers.", "Global (Dubai / EU)"],
+              ["Application Hosting", "API & Web Application", "In-memory request routing, orchestration", "Render / Cloud VPS (TBD)"],
+            ].map(([provider, role, data, region]) => (
+              <tr key={provider}>
+                <td style={tdStyle}><strong>{provider}</strong></td>
+                <td style={tdStyle}>{role}</td>
+                <td style={tdStyle}>{data}</td>
+                <td style={tdStyle}>{region}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <p style={{ marginTop: 14, fontSize: 13, color: "#5B6B7D" }}>
-          No personal data is transferred outside India except to Exotel
-          (Indian entity) and, for TTS fallback only, to Microsoft Azure. The
-          script text sent for TTS contains no contact names or phone numbers.
+          Notice: Veylo utilizes multi-region cloud services across India, Singapore, and the United States.
+          AI speech, transcription, and translation services receive only script text or audio streams, never
+          contact directory names or phone numbers. Telegram bot notifications are strictly free of any PII.
         </p>
       </Section>
 

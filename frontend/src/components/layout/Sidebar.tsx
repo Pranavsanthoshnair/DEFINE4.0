@@ -35,26 +35,27 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Brand Logo & Header */}
+    <div className="flex flex-col h-full min-h-0">
+      {/* Brand Logo & Header — Pinned at top */}
       <Link
         href="/"
         onClick={onNavigate}
-        className="flex items-center gap-2.5 mb-6 no-underline select-none px-1"
+        className="flex items-center gap-2.5 mb-5 no-underline select-none px-1 flex-none"
       >
-        <svg viewBox="0 0 32 32" fill="none" stroke="#17263A" strokeWidth="2" strokeLinecap="round" width="28" height="28" aria-hidden="true" style={{ flex: "none" }}>
-          <path d="M9 19a10 10 0 0 1 14 0M5 14a16 16 0 0 1 22 0" />
-          <circle cx="16" cy="24" r="3.2" fill="#E10600" stroke="none" />
-          <circle cx="5"  cy="14" r="2"   fill="#FFD700" />
-          <circle cx="27" cy="14" r="2"   fill="#FFD700" />
-          <circle cx="16" cy="6"  r="2"   fill="#FFD700" />
-        </svg>
+        <img 
+          src="/logo.png" 
+          alt="Veylo" 
+          width={32} 
+          height={32} 
+          style={{ objectFit: "contain", flex: "none" }} 
+          aria-hidden="true" 
+        />
         <span style={{ font: "800 19px 'Manrope', sans-serif", letterSpacing: "-.03em", color: "#17263A" }}>
-          Vey<span style={{ color: "#EA1D2C" }}>lo</span>
+          Vey<b style={{ color: "#EA1D2C", fontWeight: 800 }}>lo</b>
         </span>
       </Link>
 
-      {/* Nav groups */}
+      {/* Nav groups — middle scrollable area */}
       <div className="flex-1 overflow-y-auto min-h-0 pr-0.5 space-y-4" style={{ scrollbarWidth: "none" }}>
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
@@ -71,7 +72,7 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
                   aria-current={active ? "page" : undefined}
                   className="flex items-center gap-3 w-full rounded-xl mb-1 no-underline transition-all duration-150 group"
                   style={{
-                    padding: "9px 12px",
+                    padding: "8px 12px",
                     background: active ? "#17263A" : "transparent",
                     color: active ? "#ffffff" : "#5A6E84",
                     fontWeight: active ? 700 : 500,
@@ -101,12 +102,12 @@ function NavContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </div>
 
-      {/* Account / Plan widget */}
-      <div className="mt-auto pt-4 border-t border-black/5">
-        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background: "rgba(183,216,245,.25)" }}>
+      {/* Account / Plan widget — Pinned at bottom */}
+      <div className="mt-auto pt-3 border-t border-black/5 flex-none">
+        <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: "rgba(183,216,245,.25)" }}>
           <span
             className="grid place-items-center rounded-full flex-none text-white text-xs font-bold shadow-xs"
-            style={{ width: 32, height: 32, background: "#17263A", fontFamily: "Manrope, sans-serif" }}
+            style={{ width: 28, height: 28, background: "#17263A", fontFamily: "Manrope, sans-serif" }}
           >
             VI
           </span>
@@ -139,14 +140,23 @@ export default function Sidebar() {
     <>
       {/* ── Desktop sidebar (lg+) ─────────────────────────────────────── */}
       <aside
-        className="hidden lg:flex flex-col fixed inset-y-0 left-0 z-20 overflow-y-auto"
+        className="hidden lg:flex flex-col select-none"
         style={{
+          position: "fixed",
+          top: 0,
+          bottom: 0,
+          left: 0,
           width: 220,
-          padding: "24px 14px",
-          background: "rgba(242,245,248,.92)",
+          height: "100vh",
+          maxHeight: "100vh",
+          zIndex: 40,
+          padding: "20px 14px 16px",
+          background: "rgba(242,245,248,.95)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
           borderRight: "1px solid rgba(23,38,58,.08)",
+          boxSizing: "border-box",
+          overflow: "hidden",
         }}
         aria-label="Primary navigation"
       >
@@ -164,12 +174,16 @@ export default function Sidebar() {
         }}
       >
         <Link href="/overview" className="flex items-center gap-2 no-underline">
-          <svg viewBox="0 0 32 32" fill="none" stroke="#17263A" strokeWidth="2" strokeLinecap="round" width="24" height="24" aria-hidden="true">
-            <path d="M9 19a10 10 0 0 1 14 0M5 14a16 16 0 0 1 22 0" />
-            <circle cx="16" cy="24" r="3.2" fill="#E10600" stroke="none" />
-          </svg>
+          <img 
+            src="/logo.png" 
+            alt="Veylo" 
+            width={28} 
+            height={28} 
+            style={{ objectFit: "contain", flex: "none" }} 
+            aria-hidden="true" 
+          />
           <span style={{ font: "800 17px 'Manrope', sans-serif", letterSpacing: "-.03em", color: "#17263A" }}>
-            Vey<span style={{ color: "#EA1D2C" }}>lo</span>
+            Vey<b style={{ color: "#EA1D2C", fontWeight: 800 }}>lo</b>
           </span>
         </Link>
         <button
@@ -197,10 +211,10 @@ export default function Sidebar() {
             aria-hidden="true"
           />
           <div
-            className="absolute left-0 top-0 bottom-0 flex flex-col overflow-y-auto"
+            className="absolute left-0 top-0 bottom-0 flex flex-col overflow-hidden"
             style={{
               width: 260,
-              padding: "20px 14px",
+              padding: "20px 14px 16px",
               background: "#F2F5F8",
               boxShadow: "4px 0 24px rgba(23,38,58,.18)",
               animation: "slideInLeft .22s ease-out",

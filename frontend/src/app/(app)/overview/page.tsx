@@ -84,7 +84,7 @@ export default function OverviewPage() {
     outcomeData.total > 0 ? `${((n / outcomeData.total) * 100).toFixed(0)}%` : "0%";
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <div className="w-full">
       <PageHeader
         eyebrow="overview"
         title={<Suspense fallback="Welcome back"><Greeting suffix="Org" /></Suspense>}

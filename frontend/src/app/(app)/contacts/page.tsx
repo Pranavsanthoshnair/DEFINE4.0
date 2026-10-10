@@ -103,7 +103,7 @@ export default function ContactsPage() {
   });
 
   return (
-    <div style={{ maxWidth: 1150, margin: "0 auto", paddingBottom: 40 }}>
+    <div className="w-full">
       <PageHeader
         eyebrow="audience management"
         title="Audience & Contacts"
@@ -290,7 +290,8 @@ export default function ContactsPage() {
             </div>
           </div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#F8F9FA", borderBottom: "1px solid rgba(23,38,58,.08)" }}>
                 {["Contact Name & Phone", "Language", "Segment", "Status", "Consent", "Campaign Link"].map((h) => (
@@ -360,7 +361,8 @@ export default function ContactsPage() {
                 );
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         )}
       </div>
 

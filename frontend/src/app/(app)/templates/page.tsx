@@ -32,7 +32,7 @@ export default function TemplatesPage() {
   }, [isDemo]);
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+    <div className="w-full">
       <PageHeader
         eyebrow="templates"
         title="Voice Templates"

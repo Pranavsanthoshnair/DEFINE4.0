@@ -259,7 +259,9 @@ export default function AddContactsDrawer({
           top: 0,
           bottom: 0,
           right: 0,
-          width: "min(100vw, 500px)",
+          width: "min(100vw, 520px)",
+          height: "100vh",
+          maxHeight: "100vh",
           zIndex: 1001,
           background: "#fff",
           boxShadow: "-8px 0 40px rgba(10,16,28,.18)",
@@ -267,12 +269,22 @@ export default function AddContactsDrawer({
           flexDirection: "column",
           fontFamily: "Manrope, sans-serif",
           animation: "slideInRight .25s cubic-bezier(.4,0,.2,1)",
+          overflow: "hidden",
         }}
       >
         <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
 
         {/* Scrollable internal content */}
-        <div style={{ padding: "28px 28px 40px", flex: 1, overflowY: "auto", minHeight: 0 }}>
+        <div
+          style={{
+            padding: "24px 28px 40px",
+            flex: 1,
+            overflowY: "auto",
+            minHeight: 0,
+            WebkitOverflowScrolling: "touch",
+            overscrollBehavior: "contain",
+          }}
+        >
           {/* Header */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
@@ -320,11 +332,13 @@ export default function AddContactsDrawer({
                   style={{ ...inputStyle, background: "#fff" }}
                 >
                   <option value="">— General Audience (No specific campaign) —</option>
-                  {campaigns.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  {campaigns
+                    .filter((c) => c && c.name && c.name.trim().length > 0)
+                    .map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
                 </select>
               )}
             </div>

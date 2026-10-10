@@ -21,7 +21,7 @@ export default function TeamPage() {
   const members = isDemo ? DEMO_MEMBERS : [];
 
   return (
-    <div className="page-in" style={{ maxWidth: 1180, margin: "0 auto", padding: "30px 28px 60px" }}>
+    <div className="page-in w-full">
       <PageHeader
         eyebrow="team & permissions"
         title="Team & Permissions"

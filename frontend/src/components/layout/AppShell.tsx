@@ -40,10 +40,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Main content — offset by sidebar on desktop, top-bar on mobile */}
       <main
-        className="relative z-10 lg:ml-[220px] pt-16 lg:pt-0 min-h-screen"
-        style={{ padding: "var(--page-pad, 28px) var(--page-pad, 28px)" }}
+        className="relative z-10 lg:ml-[220px] pt-16 lg:pt-0 min-h-screen flex flex-col"
+        style={{ padding: "24px 28px 48px" }}
       >
-        <div className="max-w-7xl mx-auto">{children}</div>
+        <div className="w-full max-w-6xl mx-auto flex-1">{children}</div>
       </main>
     </div>
   );

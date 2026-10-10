@@ -227,7 +227,7 @@ export default function CampaignsPage() {
   };
 
   return (
-    <div style={{ maxWidth: 1150, margin: "0 auto", paddingBottom: 40 }}>
+    <div className="w-full">
       <PageHeader
         eyebrow="campaign management"
         title="Outbound Voice Campaigns"
@@ -470,7 +470,8 @@ export default function CampaignsPage() {
             </p>
           </div>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#F8F9FA", borderBottom: "1px solid rgba(23,38,58,.08)" }}>
                 {["Status", "Campaign & Host", "Language", "Recipients", "Rate", "Actions"].map((h) => (
@@ -541,28 +542,7 @@ export default function CampaignsPage() {
                         >
                           👤 Add Contacts
                         </button>
-                        {/* Prepare Audio */}
-                         {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
-                           <button
-                             title="Pre-generate ElevenLabs audio for this campaign"
-                             onClick={() => prepareAudio(c)}
-                             disabled={preparingAudio === c.id}
-                             style={{
-                               padding: "6px 12px",
-                               background: preparingAudio === c.id ? "#d1fae5" : "rgba(16,185,129,.12)",
-                               border: "1px solid rgba(16,185,129,.3)",
-                               borderRadius: 6,
-                               fontFamily: "Manrope, sans-serif",
-                               fontWeight: 700,
-                               fontSize: 11,
-                               cursor: preparingAudio === c.id ? "not-allowed" : "pointer",
-                               color: "#065f46",
-                             }}
-                           >
-                             {preparingAudio === c.id ? "⏳ Generating…" : "🎙 Prepare Audio"}
-                           </button>
-                         )}
-                         {/* Launch */}
+                        {/* Launch */}
                          {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
                            <button
                              onClick={() => launch(c)}
@@ -677,20 +657,23 @@ export default function CampaignsPage() {
                 );
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         )}
       </div>
 
       {/* Custom launch drawer */}
-      <LaunchDrawer
-        campaign={launchTarget}
-        channel={launchChannel}
-        onClose={() => setLaunchTarget(null)}
-        onSuccess={() => {
-          setLaunchTarget(null);
-          load();
-        }}
-      />
+      {launchTarget && (
+        <LaunchDrawer
+          campaign={launchTarget}
+          channel={launchChannel}
+          onClose={() => setLaunchTarget(null)}
+          onSuccess={() => {
+            setLaunchTarget(null);
+            load();
+          }}
+        />
+      )}
 
       {/* Add contacts drawer — single or bulk CSV */}
       {addContactsCampaign && (
