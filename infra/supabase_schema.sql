@@ -1,11 +1,23 @@
--- Veylo — Supabase SQL Schema
+-- Veylo — Supabase SQL Schema (with Row Level Security enabled on all tables)
 -- Run this in: Supabase Dashboard → SQL Editor → New Query
 -- Project: mmhsjabzjlfpagdhxrcs
 
 -- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- ── campaigns ──────────────────────────────────────────────────────────────
+-- ── 1. users ───────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role          TEXT NOT NULL DEFAULT 'organiser' CHECK (role IN ('admin', 'organiser')),
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS ix_users_email ON users(email);
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- ── 2. campaigns ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS campaigns (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        TEXT NOT NULL CHECK (char_length(name) BETWEEN 1 AND 200),
@@ -25,8 +37,9 @@ CREATE TABLE IF NOT EXISTS campaigns (
 
 CREATE INDEX IF NOT EXISTS ix_campaigns_status ON campaigns(status);
 CREATE INDEX IF NOT EXISTS ix_campaigns_created_at ON campaigns(created_at DESC);
+ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
 
--- ── contacts ──────────────────────────────────────────────────────────────
+-- ── 3. contacts ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS contacts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     phone_enc       TEXT NOT NULL,         -- hex-encoded encrypted phone
@@ -41,16 +54,17 @@ CREATE TABLE IF NOT EXISTS contacts (
     dnd             BOOLEAN NOT NULL DEFAULT FALSE,
     opted_out       BOOLEAN NOT NULL DEFAULT FALSE,
     opted_out_at    TIMESTAMPTZ,
+    telegram_chat_id TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS ix_contacts_phone_hash ON contacts(phone_hash);
-
--- Telegram delivery address for contacts. Safe to run against an existing database.
+-- Ensure telegram_chat_id column exists on pre-existing contacts table before indexing
 ALTER TABLE contacts ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
+CREATE INDEX IF NOT EXISTS ix_contacts_phone_hash ON contacts(phone_hash);
 CREATE INDEX IF NOT EXISTS ix_contacts_telegram_chat_id ON contacts(telegram_chat_id);
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 
--- ── campaign_contacts ─────────────────────────────────────────────────────
+-- ── 4. campaign_contacts ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS campaign_contacts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     campaign_id     UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
@@ -66,8 +80,9 @@ CREATE TABLE IF NOT EXISTS campaign_contacts (
 
 CREATE INDEX IF NOT EXISTS ix_cc_campaign_id ON campaign_contacts(campaign_id);
 CREATE INDEX IF NOT EXISTS ix_cc_status ON campaign_contacts(status);
+ALTER TABLE campaign_contacts ENABLE ROW LEVEL SECURITY;
 
--- ── calls ─────────────────────────────────────────────────────────────────
+-- ── 5. calls ──────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS calls (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     campaign_id         UUID REFERENCES campaigns(id) ON DELETE SET NULL,
@@ -90,8 +105,9 @@ CREATE TABLE IF NOT EXISTS calls (
 CREATE INDEX IF NOT EXISTS ix_calls_campaign_id ON calls(campaign_id);
 CREATE INDEX IF NOT EXISTS ix_calls_provider_call_sid ON calls(provider_call_sid);
 CREATE INDEX IF NOT EXISTS ix_calls_status ON calls(status);
+ALTER TABLE calls ENABLE ROW LEVEL SECURITY;
 
--- ── call_events ────────────────────────────────────────────────────────────
+-- ── 6. call_events ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS call_events (
     id                BIGSERIAL PRIMARY KEY,
     call_id           UUID REFERENCES calls(id) ON DELETE SET NULL,
@@ -103,8 +119,9 @@ CREATE TABLE IF NOT EXISTS call_events (
 );
 
 CREATE INDEX IF NOT EXISTS ix_call_events_provider_call_sid ON call_events(provider_call_sid);
+ALTER TABLE call_events ENABLE ROW LEVEL SECURITY;
 
--- ── templates ─────────────────────────────────────────────────────────────
+-- ── 7. templates ──────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS templates (
     id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name             TEXT NOT NULL,
@@ -120,13 +137,17 @@ CREATE TABLE IF NOT EXISTS templates (
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ── dnd_numbers ────────────────────────────────────────────────────────────
+ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
+
+-- ── 8. dnd_numbers ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS dnd_numbers (
     phone_hash  VARCHAR(64) PRIMARY KEY,
     added_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ── audit_log ─────────────────────────────────────────────────────────────
+ALTER TABLE dnd_numbers ENABLE ROW LEVEL SECURITY;
+
+-- ── 9. audit_log ──────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL PRIMARY KEY,
     user_id     UUID,
@@ -140,9 +161,9 @@ CREATE TABLE IF NOT EXISTS audit_log (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ── execution_sessions ────────────────────────────────────────────────────
--- Shared across BROWSER_VOICE, TELEGRAM, TELEPHONY, SIMULATION channels.
--- is_simulation=TRUE records NEVER count in real telephony analytics.
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+
+-- ── 10. execution_sessions ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS execution_sessions (
     id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     campaign_id         UUID REFERENCES campaigns(id) ON DELETE SET NULL,
@@ -156,32 +177,60 @@ CREATE TABLE IF NOT EXISTS execution_sessions (
     transcript          TEXT,
     intent              TEXT,
     confidence          NUMERIC(5,4),
-    decision_method     TEXT,   -- 'rules'|'model'|'dtmf_keypad'|'keyword_fallback'|'llm'
+    decision_method     TEXT,
     outcome             TEXT,
     error_meta          JSONB,
-    telegram_chat_id    TEXT,   -- only for TELEGRAM sessions
-    provider_session_id TEXT,   -- Exotel CallSid / Twilio CallSid / ElevenLabs conv_id
+    telegram_chat_id    TEXT,
+    provider_session_id TEXT,
     responded_at        TIMESTAMPTZ,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Ensure columns exist on pre-existing execution_sessions table before indexing
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS provider_session_id TEXT;
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS is_simulation BOOLEAN NOT NULL DEFAULT TRUE;
+
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_campaign ON execution_sessions(campaign_id);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_type ON execution_sessions(execution_type);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_is_sim ON execution_sessions(is_simulation);
-ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS campaign_contact_id UUID REFERENCES campaign_contacts(id) ON DELETE SET NULL;
-CREATE INDEX IF NOT EXISTS ix_exec_sessions_campaign_contact ON execution_sessions(campaign_contact_id);
+ALTER TABLE execution_sessions ENABLE ROW LEVEL SECURITY;
 
--- ── Row Level Security (enable but allow service role full access) ─────────
-ALTER TABLE campaigns        ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contacts         ENABLE ROW LEVEL SECURITY;
-ALTER TABLE campaign_contacts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE calls             ENABLE ROW LEVEL SECURITY;
-ALTER TABLE call_events       ENABLE ROW LEVEL SECURITY;
-ALTER TABLE templates         ENABLE ROW LEVEL SECURITY;
-
--- Service role bypasses RLS automatically in Supabase.
--- Add user-scoped policies here when multi-tenancy is required.
+-- ── Policies ──────────────────────────────────────────────────────────────
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'users' AND policyname = 'service_role_all_users') THEN
+        CREATE POLICY service_role_all_users ON users FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'campaigns' AND policyname = 'service_role_all_campaigns') THEN
+        CREATE POLICY service_role_all_campaigns ON campaigns FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'contacts' AND policyname = 'service_role_all_contacts') THEN
+        CREATE POLICY service_role_all_contacts ON contacts FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'campaign_contacts' AND policyname = 'service_role_all_cc') THEN
+        CREATE POLICY service_role_all_cc ON campaign_contacts FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'calls' AND policyname = 'service_role_all_calls') THEN
+        CREATE POLICY service_role_all_calls ON calls FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'call_events' AND policyname = 'service_role_all_events') THEN
+        CREATE POLICY service_role_all_events ON call_events FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'templates' AND policyname = 'service_role_all_templates') THEN
+        CREATE POLICY service_role_all_templates ON templates FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'dnd_numbers' AND policyname = 'service_role_all_dnd') THEN
+        CREATE POLICY service_role_all_dnd ON dnd_numbers FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'audit_log' AND policyname = 'service_role_all_audit') THEN
+        CREATE POLICY service_role_all_audit ON audit_log FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'execution_sessions' AND policyname = 'service_role_all_exec') THEN
+        CREATE POLICY service_role_all_exec ON execution_sessions FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+    END IF;
+END $$;
 
 -- Done!
-SELECT 'Schema applied successfully.' AS result;
+SELECT 'Schema applied successfully with RLS enabled on all tables.' AS result;
