@@ -323,6 +323,7 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
     # calls table has NO campaign_id — must join via campaign_contacts
     campaign_id: str | None = None
     audio_urls: dict = {}
+    brief_text: str = ""
 
     if call_id_str:
         try:
@@ -367,6 +368,10 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
                     except Exception:
                         raw_audio = None
                 audio_urls = raw_audio or {}
+                # Keep brief text for <Say> fallback
+                brief_text = camp_resp.data.get("brief") or ""
+                if brief_text.startswith("{"):
+                    brief_text = ""  # JSON blob, not human text
         except Exception as exc:
             log.warning("flow_campaign_lookup_failed", error=str(exc))
 
@@ -402,13 +407,14 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
                 '</Response>'
             )
         else:
-            # No pre-generated audio — use <Say> as fallback so caller hears something
+            # No pre-generated audio — use campaign brief as <Say> fallback
+            say_text = brief_text or "Hello! This is a campaign call from Veylo. Thank you for your time. Goodbye."
+            # Escape XML special chars
+            say_text = say_text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             twiml = (
                 '<?xml version="1.0" encoding="UTF-8"?>'
                 '<Response>'
-                '<Say voice="alice" language="en-IN">'
-                'Hello! This is a campaign call from Veylo. Thank you for your time. Goodbye.'
-                '</Say>'
+                f'<Say voice="alice" language="en-IN">{say_text}</Say>'
                 '<Hangup/>'
                 '</Response>'
             )
