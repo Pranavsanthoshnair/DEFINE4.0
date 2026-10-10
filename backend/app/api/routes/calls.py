@@ -99,12 +99,8 @@ async def list_calls(
                 outcome=r.get("outcome"),
                 duration_sec=r.get("duration_sec"),
                 created_at=str(r.get("created_at", "")),
-                contact=(f"••••{contact_by_id[str(link_by_id[str(r.get('campaign_contact_id'))].get('contact_id'))].get('phone_last4')}"
-                         if str(r.get("campaign_contact_id")) in link_by_id and link_by_id[str(r.get("campaign_contact_id"))].get("contact_id") in contact_by_id else None),
-                lang=(contact_by_id.get(str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("contact_id")), {}).get("language")
-                      or None),
             )
-            for r in rows
+            for r in (resp.data or [])
         ]
     except Exception as exc:
         raise HTTPException(

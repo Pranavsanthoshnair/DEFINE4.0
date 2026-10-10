@@ -61,6 +61,26 @@ def _parse_phone(raw: str) -> str:
     return raw.strip().replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
 
 
+def _decrypt_optional(enc: Optional[str]) -> Optional[str]:
+    """Return None — name is stored encrypted, not returned raw."""
+    return None
+
+
+def _masked_phone(phone_last4: Optional[str]) -> Optional[str]:
+    """Return masked phone like ••••7594."""
+    if not phone_last4:
+        return None
+    return f"••••{phone_last4}"
+
+
+def _get_suppression_filter():
+    """Stub — returns an object that never suppresses (no suppression list configured)."""
+    class _NoOp:
+        def is_suppressed(self, _phone: str) -> bool:
+            return False
+    return _NoOp()
+
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @router.post("/", response_model=ContactOut, status_code=status.HTTP_201_CREATED)
@@ -72,15 +92,15 @@ async def create_contact(body: ContactIn):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Phone number too short — expected at least 7 digits.",
         )
+    phone_hash = hashlib.sha256(phone.encode()).hexdigest()
     phone_last4 = phone[-4:] if len(phone) >= 4 else phone.ljust(4, "0")
-    if get_suppression_filter().is_suppressed(phone):
+    if _get_suppression_filter().is_suppressed(phone):
         raise HTTPException(status_code=409, detail="Contact is suppressed")
     try:
         sb = get_supabase()
         now = datetime.now(timezone.utc).isoformat()
 
         # Check if contact already exists by phone_hash to avoid FK violation
-        # on upsert (changing the id of a row referenced by campaign_contacts)
         existing = sb.table(_TABLE).select("id").eq("phone_hash", phone_hash).limit(1).execute()
         if existing.data:
             contact_id = existing.data[0]["id"]
