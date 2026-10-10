@@ -189,42 +189,64 @@ async def generate_campaign_audio(
         scripts = translated
 
     audio_urls: dict[str, str] = {}
-    tts_provider = settings.tts_provider.lower()
+    used_provider = settings.tts_provider.lower()
 
     last_error: str | None = None
 
+    # Try to get Supabase client for persistent storage
+    try:
+        from app.db.supabase_client import get_supabase, is_supabase_configured
+        sb = get_supabase() if is_supabase_configured() else None
+    except Exception:
+        sb = None
+
     for segment_key, text in scripts.items():
         try:
-            audio_bytes, tts_provider = await synthesize_text(
+            audio_bytes, used_provider = await synthesize_text(
                 text=text, language=language, voice_id=voice_id
             )
 
-            # Store in cache and generate a servable URL
-            token = _make_token(segment_key, campaign_id)
-            _AUDIO_CACHE[token] = audio_bytes
+            # Try uploading to Supabase Storage first (persistent across Render restarts)
+            public_url: str = ""
+            if sb:
+                try:
+                    storage_path = f"campaigns/{campaign_id}/{language}/{segment_key}.mp3"
+                    sb.storage.from_("audio").upload(
+                        path=storage_path,
+                        file=audio_bytes,
+                        file_options={"content-type": "audio/mpeg", "upsert": "true"},
+                    )
+                    # Get public URL
+                    public_url = sb.storage.from_("audio").get_public_url(storage_path)
+                    log.info("campaign_audio_uploaded_supabase",
+                             campaign_id=campaign_id, segment=segment_key, url=public_url)
+                except Exception as upload_exc:
+                    log.warning("supabase_storage_upload_failed",
+                                segment=segment_key, error=str(upload_exc))
+                    public_url = ""
 
-            audio_urls[segment_key] = _audio_url(token)
-            log.info(
-                "campaign_audio_generated",
-                campaign_id=campaign_id,
-                segment=segment_key,
-                provider=tts_provider,
-                bytes=len(audio_bytes),
-            )
+            # Fallback: in-process cache + token URL (works only on single-instance)
+            if not public_url:
+                token = _make_token(segment_key, campaign_id)
+                _AUDIO_CACHE[token] = audio_bytes
+                public_url = _audio_url(token)
+                log.info("campaign_audio_cached_in_memory",
+                         campaign_id=campaign_id, segment=segment_key)
+
+            audio_urls[segment_key] = public_url
+            log.info("campaign_audio_generated",
+                     campaign_id=campaign_id, segment=segment_key,
+                     provider=used_provider, bytes=len(audio_bytes))
 
         except Exception as exc:
             last_error = str(exc)
-            log.error(
-                "campaign_audio_generation_failed",
-                campaign_id=campaign_id,
-                segment=segment_key,
-                error=last_error,
-            )
-            audio_urls[segment_key] = ""   # flow engine handles empty URLs gracefully
+            log.error("campaign_audio_generation_failed",
+                      campaign_id=campaign_id, segment=segment_key, error=last_error)
+            audio_urls[segment_key] = ""
 
     # If every segment failed, surface the error so the caller knows what went wrong
     if last_error and not any(v for v in audio_urls.values()):
-        raise RuntimeError(f"TTS failed for all segments ({tts_provider}): {last_error}")
+        raise RuntimeError(f"TTS failed for all segments ({used_provider}): {last_error}")
 
     return audio_urls
 
