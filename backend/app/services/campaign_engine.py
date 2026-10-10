@@ -235,16 +235,23 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
                     sb.table(_CONTACTS_TABLE).update({
                         "status": "queued",
                     }).eq("id", cc_id).execute()
-                # Insert call record with correct schema columns
+                # Insert call record — only columns that exist in the actual schema
                 try:
+                    # Get campaign_id via campaign_contact
+                    _camp_id = None
+                    try:
+                        _cc_row = sb.table(_CONTACTS_TABLE).select("campaign_id").eq("id", cc_id).single().execute()
+                        _camp_id = (_cc_row.data or {}).get("campaign_id")
+                    except Exception:
+                        pass
                     sb.table("calls").insert({
                         "id": str(call_id),
                         "campaign_contact_id": cc_id,
-                        "attempt_no": 1,
-                        "provider": provider_name,
+                        "campaign_id": _camp_id,
                         "provider_call_sid": result.provider_call_sid or "",
-                        "status": "initiated",
-                        "flow_state": {},
+                        "status": "queued",
+                        "direction": "outbound",
+                        "language": contact.get("language", "en"),
                         "started_at": now_ts,
                         "created_at": now_ts,
                     }).execute()

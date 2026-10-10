@@ -462,9 +462,17 @@ async def _handle_flow_supabase(call_id_str: str | None, provider, body: dict = 
     if call_id_str:
         try:
             now = datetime.now(timezone.utc).isoformat()
-            updates: dict = {"flow_state": decision.new_flow_state, "updated_at": now}
-            if decision.outcome:
-                updates["status"] = decision.outcome if decision.finalize else "in_progress"
+            # Only update columns that exist: status, outcome, answered_at, ended_at, duration_s
+            valid_statuses = {"queued","ringing","in_progress","completed","failed","busy","no_answer","cancelled"}
+            if decision.finalize and decision.outcome:
+                call_status = decision.outcome if decision.outcome in valid_statuses else "completed"
+                updates: dict = {
+                    "status": call_status,
+                    "outcome": decision.outcome,
+                    "ended_at": now,
+                }
+            else:
+                updates = {"status": "in_progress", "answered_at": now}
             sb.table("calls").update(updates).eq("id", call_id_str).execute()
             # Update campaign_contact status on finalize
             if decision.finalize and decision.outcome:
@@ -479,7 +487,7 @@ async def _handle_flow_supabase(call_id_str: str | None, provider, body: dict = 
                     }
                     cc_status = outcome_to_status.get(decision.outcome, "completed")
                     sb.table("campaign_contacts").update({
-                        "status": cc_status, "updated_at": now
+                        "status": cc_status
                     }).eq("id", cc_id2).execute()
         except Exception as exc:
             log.warning("flow_state_persist_failed", error=str(exc))
@@ -551,9 +559,13 @@ async def _handle_status_supabase(call_id_str: str | None, prov_event) -> None:
             "in_progress": "in_progress",
         }
         new_status = status_map.get(prov_event.type, prov_event.type)
-        updates: dict = {"status": new_status, "updated_at": now}
+        updates: dict = {"status": new_status}
+        if prov_event.type in ("answered", "in_progress"):
+            updates["answered_at"] = now
         if prov_event.type in ("completed", "busy", "no_answer", "failed"):
-            updates["duration_sec"] = prov_event.data.get("duration", 0)
+            updates["ended_at"] = now
+            updates["duration_s"] = prov_event.data.get("duration", 0)
+            updates["outcome"] = prov_event.data.get("hangup_cause") or prov_event.type
 
         # Update by call_id if we have it, else by provider_call_sid
         if call_id_str:
