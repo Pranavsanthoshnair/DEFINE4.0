@@ -93,30 +93,48 @@ def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
 
 
 def _decode_phone(row: dict) -> str | None:
-    """Decrypt a contact phone and normalize it to E.164."""
+    """Decrypt a contact phone and normalize it to E.164.
+
+    Handles two storage formats:
+      1. AES-256-GCM encrypted (production) — decrypt() path
+      2. Plain UTF-8 hex (dev/contacts.py import) — bytes.fromhex().decode() path
+    """
     phone_enc = row.get("phone_enc")
     if phone_enc:
         try:
             if isinstance(phone_enc, str):
-                # Supabase can return bytea as either hex text or a bytea value.
                 encoded = phone_enc[2:] if phone_enc.startswith("\\x") else phone_enc
                 phone_blob = bytes.fromhex(encoded)
             else:
                 phone_blob = bytes(phone_enc)
-            raw = decrypt(phone_blob)
-            # Strip non-digits except leading +
-            if raw.startswith("+"):
-                digits = "+" + "".join(c for c in raw[1:] if c.isdigit())
-            else:
-                digits = "".join(c for c in raw if c.isdigit())
-            # Normalize: 10-digit Indian → +91..., 12-digit 91... → +91...
-            if digits.startswith("+"):
-                return digits
-            if len(digits) == 10:
-                return f"+91{digits}"
-            if len(digits) == 12 and digits.startswith("91"):
-                return f"+{digits}"
-            return digits if digits else None
+
+            # Try AES-GCM first (production path)
+            raw: str | None = None
+            try:
+                raw = decrypt(phone_blob)
+            except Exception:
+                pass
+
+            # Fallback: plain UTF-8 hex (dev import path in contacts.py)
+            if not raw:
+                try:
+                    raw = phone_blob.decode("utf-8")
+                except Exception:
+                    pass
+
+            if raw:
+                if raw.startswith("+"):
+                    digits = "+" + "".join(c for c in raw[1:] if c.isdigit())
+                else:
+                    digits = "".join(c for c in raw if c.isdigit())
+                if digits.startswith("+"):
+                    return digits
+                if len(digits) == 10:
+                    return f"+91{digits}"
+                if len(digits) == 12 and digits.startswith("91"):
+                    return f"+{digits}"
+                if digits:
+                    return digits
         except Exception:
             pass
     return row.get("phone_e164") or row.get("phone")
