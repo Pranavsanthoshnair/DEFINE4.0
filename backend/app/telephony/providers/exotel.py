@@ -98,6 +98,20 @@ class ExotelProvider(CallProvider):
     def _auth(self) -> tuple[str, str]:
         return (self._key, self._token)
 
+    @staticmethod
+    def _normalize_to(number: str) -> str:
+        """
+        Exotel expects Indian numbers as 0XXXXXXXXXX (11 digits, leading 0).
+        Converts E.164 +91XXXXXXXXXX → 0XXXXXXXXXX.
+        Leaves non-Indian or already-normalised numbers unchanged.
+        """
+        n = number.strip()
+        if n.startswith("+91") and len(n) == 13:
+            return "0" + n[3:]       # +916282617594 → 06282617594
+        if n.startswith("91") and len(n) == 12:
+            return "0" + n[2:]       # 916282617594  → 06282617594
+        return n
+
     async def place_call(self, req: PlaceCallRequest) -> PlaceCallResult:
         """
         Initiate an outbound call via Exotel Calls/connect.json API.
@@ -106,29 +120,30 @@ class ExotelProvider(CallProvider):
           POST https://api.in.exotel.com/v1/Accounts/{sid}/Calls/connect.json
           Auth: HTTP Basic (api_key : api_token)
           Form fields:
-            From        – the virtual/caller number (ExoPhone)
-            To          – destination number to dial
-            CallerId    – same as From (required separately by Exotel)
-            Url         – passthru applet URL OR StatusCallback for simple calls
-            StatusCallback – webhook for call status updates
-            CustomField – echoed back in webhook (we store our call_id here)
-            TimeLimit   – max call duration in seconds
+            From        – ExoPhone (caller ID, e.g. 08048636957)
+            To          – destination in 0XXXXXXXXXX format for India
+            CallerId    – same as From (required by Exotel)
+            Url         – flow webhook URL (called when answered)
+            StatusCallback – status webhook URL
+            CustomField – echoed back in webhooks (we store our call_id)
+            TimeLimit   – max call duration seconds
+            TimeOut     – ring timeout seconds
         """
         caller_id = req.caller_id or settings.exotel_caller_id
-        # Build the payload per Exotel's connect.json spec
+        to_number = self._normalize_to(req.to_number)
+
         payload: dict = {
-            "From": caller_id,          # ExoPhone / virtual number
-            "To": req.to_number,        # Destination number
-            "CallerId": caller_id,      # Required by Exotel (same as From)
-            "StatusCallback": req.status_callback_url,
-            _FIELD_CUSTOM_FIELD: req.custom_field,
-            "TimeLimit": str(req.time_limit_sec or 120),
-            "TimeOut": "30",            # Ring timeout in seconds
+            "From":               caller_id,
+            "To":                 to_number,
+            "CallerId":           caller_id,
+            _FIELD_CUSTOM_FIELD:  req.custom_field,
+            "TimeLimit":          str(req.time_limit_sec or 120),
+            "TimeOut":            "30",
         }
-        # Url field: use our flow webhook so Exotel calls us when answered
-        # This must be a publicly reachable URL (your Render backend URL)
         if req.flow_url:
             payload["Url"] = req.flow_url
+        if req.status_callback_url:
+            payload["StatusCallback"] = req.status_callback_url
 
         log.info("exotel_place_call_attempt",
                  to=req.to_number[-4:],

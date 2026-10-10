@@ -29,6 +29,7 @@ def _exotel_ready() -> bool:
         _is_valid_cred(settings.exotel_api_key),
         _is_valid_cred(settings.exotel_api_token),
         _is_valid_cred(settings.exotel_sid),
+        _is_valid_cred(settings.exotel_caller_id),  # must have a registered ExoPhone
     ])
 
 
