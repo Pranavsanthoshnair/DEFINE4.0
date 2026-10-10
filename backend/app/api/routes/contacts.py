@@ -13,6 +13,7 @@ from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
 
 from app.db.supabase_client import get_supabase, is_supabase_configured
+from app.security.suppression import get_suppression_filter, normalize_e164
 
 router = APIRouter()
 
@@ -75,11 +76,8 @@ def _masked_phone(phone_last4: Optional[str]) -> Optional[str]:
 
 
 def _get_suppression_filter():
-    """Stub — returns an object that never suppresses (no suppression list configured)."""
-    class _NoOp:
-        def is_suppressed(self, _phone: str) -> bool:
-            return False
-    return _NoOp()
+    """Return the real keyed Bloom filter suppression instance."""
+    return get_suppression_filter()
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
@@ -457,3 +455,45 @@ async def import_contacts_to_campaign(
         )
 
     return ImportResult(queued=queued, skipped=skipped, errors=errors[:20])
+
+
+@router.delete("/{contact_id}", status_code=status.HTTP_200_OK)
+async def delete_contact(contact_id: str):
+    """
+    H2 + H3: Erase a contact.
+    If opted-out or on DND, their phone is added to the suppression filter first
+    so they can never be called again — even after the record is deleted.
+    """
+    if not is_supabase_configured():
+        raise HTTPException(status_code=503, detail="Database not configured")
+    try:
+        sb = get_supabase()
+        row = sb.table(_TABLE).select("phone_enc,opted_out,dnd").eq("id", contact_id).single().execute().data
+        if not row:
+            raise HTTPException(status_code=404, detail="Contact not found")
+
+        # Suppress before deleting if opted-out or DND
+        suppressed = False
+        phone_enc = row.get("phone_enc", "")
+        if phone_enc and (row.get("opted_out") or row.get("dnd")):
+            try:
+                phone = bytes.fromhex(phone_enc).decode("utf-8")
+                get_suppression_filter().suppress(phone)
+                suppressed = True
+            except Exception:
+                pass
+
+        sb.table(_TABLE).delete().eq("id", contact_id).execute()
+
+        return {
+            "deleted": True,
+            "contact_id": contact_id,
+            "suppressed": suppressed,
+            "message": ("Contact deleted and phone added to suppression filter — "
+                        "this number will never be called again, even after re-import."
+                        if suppressed else "Contact deleted."),
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Database error: {exc}")

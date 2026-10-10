@@ -12,6 +12,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.routes import health, campaigns, contacts, calls, analytics, webhooks, admin
 from app.api.routes import capabilities, sessions, telegram_webhook, audio
+from app.api.routes import simulation as simulation_routes
+from app.api.routes import preflight as preflight_routes
 from app.api.compat_router import compat_router
 from app.security.auth import router as auth_router
 from app.telephony.router import router as telephony_router
@@ -63,7 +65,9 @@ def create_app() -> FastAPI:
         tags=["telegram"],
     )
     app.include_router(telephony_router, tags=["telephony"])
-    app.include_router(templates_router, tags=["templates"])  # GET /api/templates
+    app.include_router(templates_router, tags=["templates"])
+    app.include_router(simulation_routes.router, prefix="/api/v1/simulation", tags=["simulation"])
+    app.include_router(preflight_routes.router, prefix="/api/v1/campaigns", tags=["preflight"])
     app.include_router(compat_router)  # /api/* aliases for frontend client
 
     return app
