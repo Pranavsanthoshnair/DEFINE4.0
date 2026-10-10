@@ -133,6 +133,7 @@ def _create_session(campaign_id: str, execution_type: str, contact: dict, prompt
     sb.table(_EXEC_TABLE).insert({
         "id": session_id,
         "campaign_id": campaign_id,
+        "campaign_contact_id": contact.get("id"),
         "execution_type": execution_type,
         "language": contact.get("language", "en"),
         "status": "active",

@@ -17,11 +17,12 @@ type Step = { label: string; status: "pending" | "running" | "done" | "error"; d
 
 interface Props {
   campaign: { id: string; name: string; language?: string } | null;
+  channel?: "auto" | "telephony" | "browser" | "telegram";
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
+export default function LaunchDrawer({ campaign, channel = "auto", onClose, onSuccess }: Props) {
   // Prevent background scrolling when drawer is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -76,7 +77,8 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
 
         // Step 3 — Launch
         setStep(3, { status: "running" });
-        const launchRes = await fetch(`${API}/api/v1/campaigns/${campaign.id}/launch`, {
+        const channelQuery = channel === "auto" ? "" : `?channel=${channel}`;
+        const launchRes = await fetch(`${API}/api/v1/campaigns/${campaign.id}/launch${channelQuery}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         });
@@ -96,7 +98,7 @@ export default function LaunchDrawer({ campaign, onClose, onSuccess }: Props) {
         setSteps(prev => prev.map(s => s.status === "running" ? { ...s, status: "error" as const, detail: msg } : s));
       }
     })();
-  }, [campaign]);
+  }, [campaign, channel]);
 
   if (!campaign) return null;
 

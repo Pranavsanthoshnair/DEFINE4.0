@@ -206,7 +206,8 @@ async def _persist_telegram_response(
     if not session:
         return None
     now = _utc_now()
-    get_supabase().table("execution_sessions").update({
+    sb = get_supabase()
+    sb.table("execution_sessions").update({
         "status": "completed",
         "transcript": transcript,
         "intent": intent,
@@ -216,6 +217,12 @@ async def _persist_telegram_response(
         "responded_at": now,
         "updated_at": now,
     }).eq("id", session["id"]).execute()
+    campaign_contact_id = session.get("campaign_contact_id")
+    if campaign_contact_id:
+        sb.table("campaign_contacts").update({
+            "status": "completed",
+            "outcome": intent,
+        }).eq("id", campaign_contact_id).execute()
     return session
 
 
@@ -387,7 +394,9 @@ async def telegram_webhook(
             chat_id = msg["chat"]["id"]
             text = msg.get("text", "")
 
-            if text.startswith("/start"):
+            if text.startswith("/chatid"):
+                await _send_message(chat_id, f"Your Telegram chat ID is <code>{chat_id}</code>")
+            elif text.startswith("/start"):
                 parts = text.split(maxsplit=1)
                 if len(parts) == 2:
                     campaign_id = parts[1].strip()

@@ -80,6 +80,7 @@ export default function CampaignsPage() {
   const [error, setError] = useState<string | null>(null);
   const [simulatorId, setSimulatorId] = useState<string | null>(null);
   const [launchTarget, setLaunchTarget] = useState<Campaign | null>(null);
+  const [launchChannel, setLaunchChannel] = useState<"auto" | "telegram">("auto");
   const [addContactsCampaign, setAddContactsCampaign] = useState<Campaign | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
@@ -211,7 +212,7 @@ export default function CampaignsPage() {
 
   // ── Launch campaign ─────────────────────────────────────────────────────
 
-  const launch = (campaign: Campaign) => {
+  const launch = (campaign: Campaign, channel: "auto" | "telegram" = "auto") => {
     if (isDemo) {
       setLaunchTarget({
         id: "demo-preview",
@@ -221,6 +222,7 @@ export default function CampaignsPage() {
       });
       return;
     }
+    setLaunchChannel(channel);
     setLaunchTarget(campaign);
   };
 
@@ -582,6 +584,27 @@ export default function CampaignsPage() {
                              🚀 Launch
                            </button>
                          )}
+                         {(c.status === "draft" || c.status === "scheduled" || c.status === "paused") && (
+                           <button
+                             onClick={() => launch(c, "telegram")}
+                             style={{
+                               padding: "6px 12px",
+                               background: "#229ED9",
+                               color: "#fff",
+                               border: "none",
+                               borderRadius: 6,
+                               fontFamily: "Manrope, sans-serif",
+                               fontWeight: 700,
+                               fontSize: 11,
+                               cursor: "pointer",
+                               display: "flex",
+                               alignItems: "center",
+                               gap: 4,
+                             }}
+                           >
+                             Telegram
+                           </button>
+                         )}
                          {/* Stop / De-launch */}
                          {c.status === "running" && (
                            <button
@@ -661,6 +684,7 @@ export default function CampaignsPage() {
       {/* Custom launch drawer */}
       <LaunchDrawer
         campaign={launchTarget}
+        channel={launchChannel}
         onClose={() => setLaunchTarget(null)}
         onSuccess={() => {
           setLaunchTarget(null);

@@ -51,15 +51,18 @@ _BCP47_TO_ISO: dict[str, str] = {v: k for k, v in _ISO_TO_BCP47.items()}
 
 # TTS voices — one female voice per language, suitable for outbound calling
 _CALLING_VOICES: dict[str, str] = {
-    "en-IN": "sanchita_en_customer",
-    "hi-IN": "ritu_hi_customer",
-    "ml-IN": "anushka",          # Sarvam does not yet have ml-specific persona; anushka is generic
-    "ta-IN": "gokul_ta_narration",
-    "te-IN": "kavitha_te_conversation",
-    "kn-IN": "chaitra_kn_conversation",
-    "bn-IN": "roopa_bn_conversational",
-    "mr-IN": "ritu_mr_narration",
-    "gu-IN": "pooja_gu_conversational",
+    # These are short Bulbul v3 speaker IDs. Persona IDs such as
+    # ``sanchita_en_customer`` belong to newer model catalogs and return 422
+    # when sent with bulbul:v3.
+    "en-IN": "shubh",
+    "hi-IN": "ritu",
+    "ml-IN": "shubh",
+    "ta-IN": "priya",
+    "te-IN": "kavitha",
+    "kn-IN": "shubh",
+    "bn-IN": "roopa",
+    "mr-IN": "ritu",
+    "gu-IN": "pooja",
 }
 
 

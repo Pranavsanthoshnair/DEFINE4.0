@@ -169,6 +169,8 @@ CREATE TABLE IF NOT EXISTS execution_sessions (
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_campaign ON execution_sessions(campaign_id);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_type ON execution_sessions(execution_type);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_is_sim ON execution_sessions(is_simulation);
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS campaign_contact_id UUID REFERENCES campaign_contacts(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS ix_exec_sessions_campaign_contact ON execution_sessions(campaign_contact_id);
 
 -- ── Row Level Security (enable but allow service role full access) ─────────
 ALTER TABLE campaigns        ENABLE ROW LEVEL SECURITY;
