@@ -1,15 +1,12 @@
 "use client";
 
 /**
- * Login page — Member 4.
- * Route: /login  (active root: frontend/src/app/login/page.tsx)
+ * Signup page — Member 4.
+ * Route: /signup (frontend/src/app/signup/page.tsx)
  *
- * Uses authApi.login from the shared API client.
- * On success the JWT is stored by authApi.login (sessionStorage "veylo_token")
+ * Uses authApi.signup from the shared API client.
+ * On success the JWT is stored by authApi.signup (sessionStorage "veylo_token")
  * and the user is redirected to /overview.
- *
- * Import path: @/lib/api-client resolves to frontend/src/lib/api-client.ts
- * per tsconfig.json paths: { "@/*": ["./src/*"] }.
  */
 
 import { useState, FormEvent } from "react";
@@ -17,29 +14,46 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { authApi } from "@/lib/api-client";
 
-export default function LoginPage() {
-  const [email, setEmail]       = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError]       = useState<string | null>(null);
-  const [loading, setLoading]   = useState(false);
+export default function SignupPage() {
+  const [email, setEmail]             = useState("");
+  const [password, setPassword]       = useState("");
+  const [confirmPass, setConfirmPass] = useState("");
+  const [error, setError]             = useState<string | null>(null);
+  const [loading, setLoading]         = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim() || !password) {
-      setError("Both email and password are required.");
+    const cleanEmail = email.trim();
+    if (!cleanEmail || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
+    if (!cleanEmail.includes("@") || !cleanEmail.includes(".")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
+    if (password !== confirmPass) {
+      setError("Passwords do not match.");
       return;
     }
 
     setLoading(true);
     try {
-      // authApi.login stores the JWT in sessionStorage automatically.
-      await authApi.login(email.trim(), password);
+      // authApi.signup registers user and stores the JWT in sessionStorage
+      await authApi.signup(cleanEmail, password);
       router.push("/overview");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+      setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,33 +72,36 @@ export default function LoginPage() {
     >
       <div
         className="glass"
-        style={{ width: "100%", maxWidth: 400, padding: "32px 28px" }}
+        style={{ width: "100%", maxWidth: 420, padding: "34px 30px" }}
       >
         {/* Logo / wordmark */}
+        <Link href="/" style={{ textDecoration: "none", display: "inline-block" }}>
+          <p
+            style={{
+              font: "800 24px 'Manrope', sans-serif",
+              letterSpacing: "-.04em",
+              marginBottom: 4,
+              color: "inherit",
+            }}
+          >
+            VEY<span style={{ color: "var(--red, #d63a3a)" }}>LO</span>
+          </p>
+        </Link>
         <p
           style={{
-            font: "800 22px 'Manrope', sans-serif",
-            letterSpacing: "-.04em",
-            marginBottom: 6,
-          }}
-        >
-          VEYLO
-        </p>
-        <p
-          style={{
-            font: "400 13px 'Manrope', sans-serif",
+            font: "400 13.5px 'Manrope', sans-serif",
             color: "#5B6B7D",
-            marginBottom: 28,
+            marginBottom: 24,
           }}
         >
-          Sign in to your account
+          Create your account to start campaigns
         </p>
 
         {/* Error banner */}
         {error && (
           <p
             style={{
-              padding: "8px 12px",
+              padding: "9px 12px",
               background: "rgba(220,50,50,.08)",
               border: "1px solid rgba(220,50,50,.25)",
               borderRadius: 6,
@@ -99,20 +116,20 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} noValidate>
           <label
-            htmlFor="login-email"
+            htmlFor="signup-email"
             style={{
               display: "block",
               font: "700 12px 'Manrope', sans-serif",
               marginBottom: 14,
             }}
           >
-            Email
+            Email Address
             <input
-              id="login-email"
+              id="signup-email"
               type="email"
               className="vfield"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder="name@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
@@ -122,22 +139,45 @@ export default function LoginPage() {
           </label>
 
           <label
-            htmlFor="login-password"
+            htmlFor="signup-password"
             style={{
               display: "block",
               font: "700 12px 'Manrope', sans-serif",
-              marginBottom: 20,
+              marginBottom: 14,
             }}
           >
             Password
             <input
-              id="login-password"
+              id="signup-password"
               type="password"
               className="vfield"
-              autoComplete="current-password"
-              placeholder="••••••••"
+              autoComplete="new-password"
+              placeholder="Minimum 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              style={{ marginTop: 5, fontWeight: 400 }}
+              required
+            />
+          </label>
+
+          <label
+            htmlFor="signup-confirm-password"
+            style={{
+              display: "block",
+              font: "700 12px 'Manrope', sans-serif",
+              marginBottom: 22,
+            }}
+          >
+            Confirm Password
+            <input
+              id="signup-confirm-password"
+              type="password"
+              className="vfield"
+              autoComplete="new-password"
+              placeholder="Re-enter your password"
+              value={confirmPass}
+              onChange={(e) => setConfirmPass(e.target.value)}
               disabled={loading}
               style={{ marginTop: 5, fontWeight: 400 }}
               required
@@ -150,16 +190,16 @@ export default function LoginPage() {
             disabled={loading}
             style={{ width: "100%", justifyContent: "center", marginBottom: 16 }}
           >
-            {loading ? "Signing in…" : "SIGN IN ↗"}
+            {loading ? "Creating account…" : "CREATE ACCOUNT ↗"}
           </button>
         </form>
 
         <div style={{ textAlign: "center", marginTop: 14 }}>
           <span style={{ fontSize: 13, color: "#5B6B7D" }}>
-            Don't have an account?{" "}
+            Already have an account?{" "}
           </span>
           <Link
-            href="/signup"
+            href="/login"
             style={{
               fontSize: 13,
               fontWeight: 700,
@@ -167,12 +207,12 @@ export default function LoginPage() {
               textDecoration: "none",
             }}
           >
-            Create one ↗
+            Sign in ↗
           </Link>
         </div>
 
         <div className="pgf" style={{ marginTop: 26 }}>
-          <span>VEYLO / LOGIN</span><i>✳</i>
+          <span>VEYLO / REGISTER</span><i>✳</i>
         </div>
       </div>
     </div>

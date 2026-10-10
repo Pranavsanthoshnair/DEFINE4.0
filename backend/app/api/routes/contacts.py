@@ -11,13 +11,12 @@ from typing import List, Optional
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
 
-from app.db.supabase_client import get_supabase
-from app.security.crypto import decrypt, encrypt, phone_hash, normalise_phone
-from app.security.suppression import get_suppression_filter
+from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()
 
 _TABLE = "contacts"
+_CC_TABLE = "campaign_contacts"
 
 MAX_CSV_BYTES = 10 * 1024 * 1024  # 10 MB
 REQUIRED_COLUMNS = {"phone"}
@@ -54,31 +53,20 @@ class ImportResult(BaseModel):
     errors: List[str]
 
 
-def _decrypt_optional(value: object) -> Optional[str]:
-    """Decode encrypted text returned by Supabase bytea columns."""
-    if not value:
-        return None
-    try:
-        if isinstance(value, str):
-            raw = value[2:] if value.startswith("\\x") else value
-            value = bytes.fromhex(raw)
-        return decrypt(bytes(value))
-    except (TypeError, ValueError):
-        return None
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def _parse_phone(raw: str) -> str:
+    """Normalize phone: strip spaces/dashes, keep digits and leading +."""
+    return raw.strip().replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
 
 
-def _masked_phone(phone_last4: object) -> str:
-    last4 = str(phone_last4 or "????")
-    return f"••••{last4}"
-
-
-# ── Routes ───────────────────────────────────────────────────────────────────
+# ── Routes ────────────────────────────────────────────────────────────────────
 
 @router.post("/", response_model=ContactOut, status_code=status.HTTP_201_CREATED)
 async def create_contact(body: ContactIn):
     """Add a single contact to the database."""
-    phone = normalise_phone(body.phone)
-    if not phone:
+    phone = _parse_phone(body.phone)
+    if len(phone) < 7:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Phone number too short — expected at least 7 digits.",
@@ -89,39 +77,47 @@ async def create_contact(body: ContactIn):
     try:
         sb = get_supabase()
         now = datetime.now(timezone.utc).isoformat()
-        row = {
-            "id": str(uuid.uuid4()),
-            "phone_enc": encrypt(phone).hex(),
-            "phone_hash": phone_hash(phone),
-            "phone_last4": phone_last4,
-            "name_enc": encrypt(body.name).hex() if body.name else None,
-            "language": body.language,
-            "segment": body.segment,
-            "consent": True,
-            "consent_source": "single_import",
-            "consent_at": now,
-            "dnd": False,
-            "opted_out": False,
-            "created_at": now,
-        }
-        # Upsert on phone_hash to prevent duplicates
-        resp = sb.table(_TABLE).upsert(row, on_conflict="phone_hash").execute()
-        r = (resp.data or [{}])[0]
-        contact_id = str(r.get("id", row["id"]))
+
+        # Check if contact already exists by phone_hash to avoid FK violation
+        # on upsert (changing the id of a row referenced by campaign_contacts)
+        existing = sb.table(_TABLE).select("id").eq("phone_hash", phone_hash).limit(1).execute()
+        if existing.data:
+            contact_id = existing.data[0]["id"]
+        else:
+            row = {
+                "id": str(uuid.uuid4()),
+                "phone_enc": phone.encode("utf-8").hex(),
+                "phone_hash": phone_hash,
+                "phone_last4": phone_last4,
+                "language": body.language,
+                "segment": body.segment,
+                "consent": True,
+                "consent_source": "single_import",
+                "consent_at": now,
+                "dnd": False,
+                "opted_out": False,
+                "created_at": now,
+            }
+            resp = sb.table(_TABLE).insert(row).execute()
+            contact_id = (resp.data or [{}])[0].get("id", row["id"])
+
+        # If campaign_id given, also insert into campaign_contacts
         if body.campaign_id:
-            sb.table("campaign_contacts").upsert(
-                {
+            try:
+                sb.table(_CC_TABLE).upsert({
                     "id": str(uuid.uuid4()),
                     "campaign_id": body.campaign_id,
                     "contact_id": contact_id,
                     "status": "pending",
-                },
-                on_conflict="campaign_id,contact_id",
-            ).execute()
+                    "attempt_count": 0,
+                    "created_at": now,
+                }, on_conflict="campaign_id,contact_id").execute()
+            except Exception:
+                pass  # non-fatal
+
         return ContactOut(
-            id=contact_id,
-            name=body.name,
-            phone=_masked_phone(phone_last4),
+            id=str(contact_id),
+            name=None,
             phone_last4=phone_last4,
             language=body.language,
             segment=body.segment,
@@ -130,11 +126,14 @@ async def create_contact(body: ContactIn):
             opted_out=False,
             created_at=now,
         )
+    except HTTPException:
+        raise
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",
         )
+
 
 @router.get("/", response_model=List[ContactOut])
 async def list_contacts(
@@ -142,6 +141,8 @@ async def list_contacts(
     offset: int = Query(0, ge=0),
 ):
     """List contacts (phone shown as last-4 digits only — PII protected)."""
+    if not is_supabase_configured():
+        return []
     try:
         sb = get_supabase()
         resp = (
@@ -207,7 +208,7 @@ async def import_contacts_csv(
     campaign_id: Optional[str] = Query(None),
 ):
     """
-    Import contacts from a CSV file.
+    Import contacts from a CSV file (no campaign link).
     Required columns: phone
     Optional columns: name, language (defaults to 'en'), email
     Max file size: 10 MB
@@ -249,35 +250,25 @@ async def import_contacts_csv(
     skipped = 0
 
     for i, row in enumerate(reader, start=2):  # row 1 = header
-        # CSV headers are user-supplied; make Name/PHONE/Language work the
-        # same as lowercase headers used by the API contract.
-        row = {(key or "").strip().lower(): value for key, value in row.items()}
-        phone_raw = (row.get("phone") or "").strip()
+        phone_raw = _parse_phone(row.get("phone") or "")
         if not phone_raw:
             errors.append(f"Row {i}: empty phone — skipped")
             skipped += 1
             continue
 
-        phone = normalise_phone(phone_raw)
-        if not phone or get_suppression_filter().is_suppressed(phone):
-            errors.append(f"Row {i}: invalid or suppressed phone - skipped")
-            skipped += 1
-            continue
-        phone_digest = phone_hash(phone)
-        phone_last4 = phone[-4:]
-
+        phone_hash = hashlib.sha256(phone_raw.encode()).hexdigest()
+        phone_last4 = phone_raw[-4:] if len(phone_raw) >= 4 else phone_raw.ljust(4, "0")
         lang = (row.get("language") or "en").strip()[:2].lower() or "en"
         now = datetime.now(timezone.utc).isoformat()
 
         rows_to_insert.append({
             "id": str(uuid.uuid4()),
-            "phone_enc": encrypt(phone).hex(),
-            "phone_hash": phone_digest,
+            "phone_enc": phone_raw.encode("utf-8").hex(),
+            "phone_hash": phone_hash,
             "phone_last4": phone_last4,
             "name_enc": encrypt((row.get("name") or "").strip()).hex() if (row.get("name") or "").strip() else None,
             "language": lang,
-            "segment": (row.get("segment") or "General").strip() or "General",
-            "consent": True,   # CSV import implies consent was obtained offline
+            "consent": True,
             "consent_source": f"csv_import:{file.filename}",
             "consent_at": now,
             "dnd": False,
@@ -288,7 +279,6 @@ async def import_contacts_csv(
     queued = 0
     if rows_to_insert:
         try:
-            # Upsert on phone_hash to avoid duplicate phone numbers
             resp = (
                 sb.table(_TABLE)
                 .upsert(rows_to_insert, on_conflict="phone_hash")
@@ -316,5 +306,129 @@ async def import_contacts_csv(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"Database write failed: {exc}",
             )
+
+    return ImportResult(queued=queued, skipped=skipped, errors=errors[:20])
+
+
+@router.post("/import-to-campaign", response_model=ImportResult, status_code=status.HTTP_202_ACCEPTED)
+async def import_contacts_to_campaign(
+    campaign_id: str,
+    file: UploadFile = File(...),
+):
+    """
+    ★ MAIN CALLING FLOW ENDPOINT ★
+
+    Upload a CSV of phone numbers for a specific campaign.
+    Creates contacts + campaign_contacts (status='pending').
+
+    After this, call POST /api/v1/campaigns/{id}/launch to place calls.
+
+    Required CSV column: phone
+    Optional: name, language (default 'en')
+    """
+    if not file.filename or not file.filename.lower().endswith(".csv"):
+        raise HTTPException(status_code=400, detail="Only .csv files are accepted.")
+
+    content = await file.read()
+    if len(content) > MAX_CSV_BYTES:
+        raise HTTPException(status_code=413, detail=f"CSV exceeds {MAX_CSV_BYTES // 1024 // 1024} MB limit.")
+
+    try:
+        text = content.decode("utf-8-sig")
+        reader = csv.DictReader(io.StringIO(text))
+        headers = set(h.strip().lower() for h in (reader.fieldnames or []))
+    except Exception:
+        raise HTTPException(status_code=422, detail="Could not parse CSV. Ensure valid UTF-8 encoding.")
+
+    if "phone" not in headers:
+        raise HTTPException(status_code=422, detail="CSV missing required column: phone.")
+
+    sb = get_supabase()
+
+    # Verify campaign exists
+    try:
+        camp_resp = sb.table("campaigns").select("id").eq("id", campaign_id).single().execute()
+        if not camp_resp.data:
+            raise HTTPException(status_code=404, detail=f"Campaign '{campaign_id}' not found.")
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Database error: {exc}")
+
+    contact_rows: list[dict] = []
+    errors: list[str] = []
+    skipped = 0
+    now = datetime.now(timezone.utc).isoformat()
+
+    for i, row in enumerate(reader, start=2):
+        phone_raw = _parse_phone(row.get("phone") or "")
+        if not phone_raw:
+            errors.append(f"Row {i}: empty phone — skipped")
+            skipped += 1
+            continue
+
+        phone_hash = hashlib.sha256(phone_raw.encode()).hexdigest()
+        phone_last4 = phone_raw[-4:] if len(phone_raw) >= 4 else phone_raw.ljust(4, "0")
+        lang = (row.get("language") or "en").strip()[:2].lower() or "en"
+
+        contact_rows.append({
+            "id": str(uuid.uuid4()),
+            "phone_enc": phone_raw.encode("utf-8").hex(),
+            "phone_hash": phone_hash,
+            "phone_last4": phone_last4,
+            "language": lang,
+            "consent": True,
+            "consent_source": f"csv_campaign_import:{file.filename}",
+            "consent_at": now,
+            "dnd": False,
+            "opted_out": False,
+            "created_at": now,
+        })
+
+    if not contact_rows:
+        return ImportResult(queued=0, skipped=skipped, errors=errors[:20])
+
+    queued = 0
+    try:
+        # 1. For each row: check existing by phone_hash to avoid FK violations,
+        #    insert only truly new contacts, collect all final contact IDs.
+        phone_hashes = [r["phone_hash"] for r in contact_rows]
+        existing_resp = (
+            sb.table(_TABLE)
+            .select("id,phone_hash")
+            .in_("phone_hash", phone_hashes)
+            .execute()
+        )
+        existing_map = {r["phone_hash"]: r["id"] for r in (existing_resp.data or [])}
+
+        new_rows = [r for r in contact_rows if r["phone_hash"] not in existing_map]
+        if new_rows:
+            insert_resp = sb.table(_TABLE).insert(new_rows).execute()
+            for r in (insert_resp.data or []):
+                existing_map[r["phone_hash"]] = r["id"]
+
+        # 2. Link all contacts (new + existing) to this campaign via campaign_contacts
+        cc_rows = [
+            {
+                "id": str(uuid.uuid4()),
+                "campaign_id": campaign_id,
+                "contact_id": contact_id,
+                "status": "pending",
+                "attempt_count": 0,
+                "created_at": now,
+            }
+            for contact_id in existing_map.values()
+        ]
+        if cc_rows:
+            sb.table(_CC_TABLE).upsert(
+                cc_rows, on_conflict="campaign_id,contact_id"
+            ).execute()
+        queued = len(cc_rows)
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database write failed: {exc}",
+        )
 
     return ImportResult(queued=queued, skipped=skipped, errors=errors[:20])

@@ -30,11 +30,15 @@ async def main():
 
     provider = get_provider()
     active_name = active_provider_name()
+    caller_id = (
+        settings.twilio_phone_number if active_name == "twilio"
+        else settings.exotel_caller_id
+    )
     print(f"\n==========================================")
     print(f" Veylo Telephony Test Caller")
     print(f" Active Provider: {active_name.upper()}")
     print(f" Destination:     {to_number}")
-    print(f" Caller ID:       {settings.twilio_phone_number}")
+    print(f" Caller ID:       {caller_id}")
     print(f"==========================================\n")
 
     call_id = uuid.uuid4()
@@ -46,7 +50,7 @@ async def main():
     req = PlaceCallRequest(
         call_id=call_id,
         to_number=to_number,
-        caller_id=settings.twilio_phone_number,
+        caller_id=caller_id,
         status_callback_url=f"{settings.public_base_url}/webhooks/{settings.webhook_secret}/status?call_id={call_id}",
         flow_url=f"{settings.public_base_url}/webhooks/{settings.webhook_secret}/flow?call_id={call_id}",
         custom_field=str(call_id),

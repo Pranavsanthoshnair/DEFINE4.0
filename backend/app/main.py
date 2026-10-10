@@ -13,6 +13,7 @@ from app.core.config import settings
 from app.api.routes import health, campaigns, contacts, calls, analytics, webhooks, admin
 from app.api.routes import capabilities, sessions, telegram_webhook, audio
 from app.api.compat_router import compat_router
+from app.security.auth import router as auth_router
 from app.telephony.router import router as telephony_router
 from app.templates.router import router as templates_router
 
@@ -36,9 +37,19 @@ def create_app() -> FastAPI:
     )
 
     # ── CORS ────────────────────────────────────────────────────────────────
+    cors_allowed = list(set([
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        *([settings.web_origin] if settings.web_origin else []),
+        *(settings.cors_origins or []),
+    ]))
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_origins,
+        allow_origins=cors_allowed,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -46,6 +57,7 @@ def create_app() -> FastAPI:
 
     # ── Routers ─────────────────────────────────────────────────────────────
     app.include_router(health.router, tags=["health"])
+    app.include_router(auth_router)  # /api/auth (login, signup, me)
     app.include_router(campaigns.router, prefix="/api/v1/campaigns", tags=["campaigns"])
     app.include_router(contacts.router, prefix="/api/v1/contacts", tags=["contacts"])
     app.include_router(calls.router, prefix="/api/v1/calls", tags=["calls"])

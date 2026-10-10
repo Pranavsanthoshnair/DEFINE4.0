@@ -191,6 +191,8 @@ async def generate_campaign_audio(
     audio_urls: dict[str, str] = {}
     tts_provider = settings.tts_provider.lower()
 
+    last_error: str | None = None
+
     for segment_key, text in scripts.items():
         try:
             audio_bytes, tts_provider = await synthesize_text(
@@ -211,13 +213,18 @@ async def generate_campaign_audio(
             )
 
         except Exception as exc:
+            last_error = str(exc)
             log.error(
                 "campaign_audio_generation_failed",
                 campaign_id=campaign_id,
                 segment=segment_key,
-                error=str(exc),
+                error=last_error,
             )
             audio_urls[segment_key] = ""   # flow engine handles empty URLs gracefully
+
+    # If every segment failed, surface the error so the caller knows what went wrong
+    if last_error and not any(v for v in audio_urls.values()):
+        raise RuntimeError(f"TTS failed for all segments ({tts_provider}): {last_error}")
 
     return audio_urls
 

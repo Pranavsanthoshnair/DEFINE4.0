@@ -35,7 +35,7 @@ compat_router.include_router(analytics_router, prefix="/api/analytics", tags=["c
 from fastapi import APIRouter as _R
 _overview = _R()
 
-from app.db.supabase_client import get_supabase
+from app.db.supabase_client import get_supabase, is_supabase_configured
 from pydantic import BaseModel
 
 
@@ -52,6 +52,16 @@ class Overview(BaseModel):
 @_overview.get("")
 async def get_overview():
     """Dashboard overview — aggregates for the KPI cards."""
+    if not is_supabase_configured():
+        return Overview(
+            total_campaigns=0,
+            total_contacts=0,
+            total_calls=0,
+            calls_answered=0,
+            calls_failed=0,
+            callbacks_pending=0,
+            eligible_for_retry=0,
+        )
     try:
         sb = get_supabase()
         campaigns_resp = sb.table("campaigns").select("id", count="exact").execute()  # type: ignore[arg-type]
@@ -78,8 +88,15 @@ async def get_overview():
             eligible_for_retry=retry_resp.count or 0,
         )
     except Exception as exc:
-        from fastapi import HTTPException, status
-        raise HTTPException(status_code=503, detail=f"Database error: {exc}")
+        return Overview(
+            total_campaigns=0,
+            total_contacts=0,
+            total_calls=0,
+            calls_answered=0,
+            calls_failed=0,
+            callbacks_pending=0,
+            eligible_for_retry=0,
+        )
 
 
 compat_router.include_router(_overview, prefix="/api/overview", tags=["compat-overview"])

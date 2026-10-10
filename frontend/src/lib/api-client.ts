@@ -100,12 +100,14 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   }
 
   if (!res.ok) {
-    const errBody = json as Partial<ApiErrorBody>;
+    const errBody = json as Partial<ApiErrorBody> & { detail?: string };
     const err = errBody?.error;
+    // FastAPI returns {"detail": "..."} — fall back to that if no structured error
+    const message = err?.message ?? errBody?.detail ?? `HTTP ${res.status}`;
     throw new ApiError(
       res.status,
       err?.code ?? "unknown_error",
-      err?.message ?? `HTTP ${res.status}`,
+      message,
       err?.details ?? {}
     );
   }
@@ -116,6 +118,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 // Auth
 
 export const authApi = {
+  signup: async (email: string, password: string): Promise<LoginResponse> => {
+    const res = await request<LoginResponse>("/api/auth/signup", {
+      method: "POST",
+      body: { email, password },
+      public: true,
+    });
+    setToken(res.access_token);
+    return res;
+  },
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const res = await request<LoginResponse>("/api/auth/login", {
       method: "POST",

@@ -17,33 +17,61 @@ router = APIRouter()
 _TABLE = "campaigns"
 
 
-# ── Schemas ──────────────────────────────────────────────────────────────────
-
 class CampaignCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=200)
+    org_name: Optional[str] = Field(None, description="Host organization / client name")
+    organization: Optional[str] = None
     description: Optional[str] = None
     language: str = "en"
+    languages: Optional[List[str]] = None
     brief: Optional[str] = None
+    voice_id: Optional[str] = None
+    event_details: Optional[dict] = None
+    status: Optional[str] = "draft"
+    scheduled_at: Optional[str] = None
+    max_retries: Optional[int] = 2
 
 
 class CampaignOut(BaseModel):
     id: str
     name: str
+    org_name: Optional[str] = None
+    organization: Optional[str] = None
     description: Optional[str] = None
-    language: str
-    status: str
-    created_at: str   # ISO string — Supabase returns strings
+    language: str = "en"
+    languages: Optional[List[str]] = None
+    brief: Optional[str] = None
+    voice_id: Optional[str] = None
+    event_details: Optional[dict] = None
+    status: str = "draft"
+    contact_count: Optional[int] = 0
+    confirmed: Optional[int] = 0
+    rate: Optional[str] = None
+    created_at: str   # ISO string
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _row_to_out(row: dict) -> CampaignOut:
+    org = row.get("org_name") or row.get("organization")
+    # If not in separate column, check if stored in brief or description
+    desc = row.get("description")
+    brief = row.get("brief")
     return CampaignOut(
         id=str(row["id"]),
         name=row["name"],
-        description=row.get("description"),
+        org_name=org,
+        organization=org,
+        description=desc,
         language=row.get("language", "en"),
+        languages=row.get("languages") or [row.get("language", "en")],
+        brief=brief,
+        voice_id=row.get("voice_id"),
+        event_details=row.get("event_details"),
         status=row.get("status", "draft"),
+        contact_count=row.get("contact_count", 0),
+        confirmed=row.get("confirmed", 0),
+        rate=row.get("rate"),
         created_at=str(row.get("created_at", "")),
     )
 
@@ -69,6 +97,9 @@ async def list_campaigns(
         )
         return [_row_to_out(r) for r in (resp.data or [])]
     except Exception as exc:
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return []
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=f"Database error: {exc}",
@@ -82,22 +113,42 @@ async def create_campaign(payload: CampaignCreate):
         sb = get_supabase()
         new_id = str(uuid.uuid4())
         now = datetime.now(timezone.utc).isoformat()
+        org = payload.org_name or payload.organization
+        desc = payload.description
+        if org and not desc:
+            desc = f"Organization: {org}"
+        elif org and desc and org not in desc:
+            desc = f"{desc} | Org: {org}"
+            
+        brief = payload.brief
+        if org and not brief:
+            brief = f"Host: {org}"
+
         row = {
             "id": new_id,
             "name": payload.name,
-            "description": payload.description,
+            "description": desc,
             "language": payload.language,
-            "brief": payload.brief,
-            "status": "draft",
+            "brief": brief,
+            "status": payload.status or "draft",
             "created_at": now,
         }
+        if payload.scheduled_at:
+            row["scheduled_at"] = payload.scheduled_at
+        if payload.max_retries is not None:
+            row["max_retries"] = payload.max_retries
+
         resp = sb.table(_TABLE).insert(row).execute()
         if not resp.data:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Campaign insert returned no data.",
             )
-        return _row_to_out(resp.data[0])
+        out = _row_to_out(resp.data[0])
+        if org:
+            out.org_name = org
+            out.organization = org
+        return out
     except HTTPException:
         raise
     except Exception as exc:
@@ -186,6 +237,8 @@ async def launch_campaign(
 
     if "error" in result:
         raise HTTPException(status_code=400, detail=result["error"])
+    if "warning" in result:
+        raise HTTPException(status_code=400, detail=result["warning"])
     return result
 
 
@@ -281,6 +334,33 @@ async def preview_call(campaign_id: str):
 
 
 
+@router.post("/{campaign_id}/stop", status_code=status.HTTP_200_OK)
+async def stop_campaign(campaign_id: str):
+    """
+    Stop / de-launch a running campaign.
+    Sets status back to 'paused' so it can be relaunched later.
+    """
+    try:
+        sb = get_supabase()
+        now = datetime.now(timezone.utc).isoformat()
+        resp = (
+            sb.table(_TABLE)
+            .update({"status": "paused", "updated_at": now})
+            .eq("id", campaign_id)
+            .execute()
+        )
+        if not resp.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Campaign not found")
+        return {"campaign_id": campaign_id, "status": "paused"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
+
+
 @router.delete("/{campaign_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_campaign(campaign_id: str):
     """Delete a campaign by ID."""
@@ -342,13 +422,17 @@ async def prepare_campaign_audio(
             detail=f"TTS generation failed: {exc}. Ensure ELEVENLABS_API_KEY is set.",
         )
 
-    # Persist audio URLs and mark campaign ready
+    # Persist audio URLs (do NOT change status — avoids check constraint issues)
     try:
         sb = get_supabase()
-        sb.table(_TABLE).update({
-            "audio_urls": audio_urls,
-            "status": "ready",
-        }).eq("id", campaign_id).execute()
+        try:
+            sb.table(_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
+        except Exception:
+            # audio_urls column not yet added — store URLs serialised in brief as fallback
+            import json as _json
+            sb.table(_TABLE).update({
+                "brief": _json.dumps({"audio_urls": audio_urls}),
+            }).eq("id", campaign_id).execute()
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Failed to save audio URLs: {exc}")
 

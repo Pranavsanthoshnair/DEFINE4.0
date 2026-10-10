@@ -40,6 +40,7 @@ class CallAttemptOut(BaseModel):
 class CallRecord(BaseModel):
     id: str
     campaign_id: Optional[str] = None
+    campaign_contact_id: Optional[str] = None
     status: str
     outcome: Optional[str] = None
     duration_sec: Optional[int] = None
@@ -58,28 +59,42 @@ async def list_calls(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ):
-    """List call records, optionally filtered by campaign."""
+    """List call records, optionally filtered by campaign via campaign_contacts join."""
     if not is_supabase_configured():
         return []
     try:
         sb = get_supabase()
-        # Supabase stores campaign ownership on campaign_contacts; calls use
-        # campaign_contact_id.  Selecting * keeps this compatible with both
-        # the current Supabase schema and older rows with optional fields.
-        resp = sb.table("calls").select("*").order("created_at", desc=True).range(offset, offset + limit - 1).execute()
-        rows = resp.data or []
-        cc_ids = [str(r.get("campaign_contact_id")) for r in rows if r.get("campaign_contact_id")]
-        links = sb.table("campaign_contacts").select("id,campaign_id,contact_id").in_("id", cc_ids).execute().data if cc_ids else []
-        link_by_id = {str(r["id"]): r for r in links}
         if campaign_id:
-            rows = [r for r in rows if str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("campaign_id")) == campaign_id]
-        contact_ids = [str(r.get("contact_id")) for r in links if r.get("contact_id")]
-        contacts = sb.table("contacts").select("id,phone_last4,language").in_("id", contact_ids).execute().data if contact_ids else []
-        contact_by_id = {str(r["id"]): r for r in contacts}
+            # calls has no campaign_id — join via campaign_contacts
+            cc_resp = (
+                sb.table("campaign_contacts")
+                .select("id")
+                .eq("campaign_id", campaign_id)
+                .execute()
+            )
+            cc_ids = [r["id"] for r in (cc_resp.data or [])]
+            if not cc_ids:
+                return []
+            q = (
+                sb.table("calls")
+                .select("id,campaign_contact_id,status,outcome,duration_sec,created_at")
+                .in_("campaign_contact_id", cc_ids)
+                .order("created_at", desc=True)
+                .range(offset, offset + limit - 1)
+            )
+        else:
+            q = (
+                sb.table("calls")
+                .select("id,campaign_contact_id,status,outcome,duration_sec,created_at")
+                .order("created_at", desc=True)
+                .range(offset, offset + limit - 1)
+            )
+        resp = q.execute()
         return [
             CallRecord(
                 id=str(r["id"]),
-                campaign_id=link_by_id.get(str(r.get("campaign_contact_id")), {}).get("campaign_id"),
+                campaign_id=campaign_id,
+                campaign_contact_id=r.get("campaign_contact_id"),
                 status=r.get("status", "unknown"),
                 outcome=r.get("outcome"),
                 duration_sec=r.get("duration_sec"),

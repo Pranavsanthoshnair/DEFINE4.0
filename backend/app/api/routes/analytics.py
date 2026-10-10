@@ -4,14 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.db.models import Call, Campaign, CampaignContact, Contact
-from app.db.session import get_db
-from app.services.analytics_service import AnalyticsService
+from app.db.supabase_client import get_supabase, is_supabase_configured
 
 router = APIRouter()
 
@@ -29,6 +22,21 @@ class CampaignStats(BaseModel):
 
 @router.get("/{campaign_id}")
 async def get_campaign_analytics(campaign_id: str):
+    """
+    Return aggregate call statistics for a campaign.
+    Computed live from campaign_contacts and calls tables.
+    """
+    if not is_supabase_configured():
+        return CampaignStats(
+            campaign_id=campaign_id,
+            total_recipients=0,
+            calls_attempted=0,
+            calls_answered=0,
+            calls_failed=0,
+            calls_pending=0,
+            completion_rate=0.0,
+            answer_rate=0.0,
+        )
     try:
         # Analytics must read the same Supabase data used by campaigns and
         # contacts.  The SQLAlchemy store is only used by the worker model and
@@ -60,36 +68,53 @@ async def get_campaign_analytics(campaign_id: str):
     except (ValueError, TypeError):
         raise HTTPException(status_code=400, detail="Invalid campaign id")
     except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"Database error: {exc}")
-
-
-@router.get("/{campaign_id}/recipients/{recipient_id}")
-async def get_recipient_history(campaign_id: str, recipient_id: str):
-    try:
-        return {
-            "campaign_id": campaign_id,
-            "recipient_id": recipient_id,
-            "calls": await AnalyticsService().get_recipient_history(recipient_id),
-        }
-    except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="Invalid id")
-    except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"Database error: {exc}")
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return CampaignStats(
+                campaign_id=campaign_id,
+                total_recipients=0, calls_attempted=0, calls_answered=0,
+                calls_failed=0, calls_pending=0, completion_rate=0.0, answer_rate=0.0,
+            )
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
 
 
 @router.get("/overview/summary")
-async def get_overview_summary(db: AsyncSession = Depends(get_db)):
-    campaigns = await db.scalar(select(func.count()).select_from(Campaign)) or 0
-    contacts = await db.scalar(select(func.count()).select_from(Contact)) or 0
-    calls = await db.scalar(select(func.count()).select_from(Call)) or 0
-    answered = await db.scalar(select(func.count()).select_from(Call).where(
-        Call.status == "completed")) or 0
-    failed = await db.scalar(select(func.count()).select_from(Call).where(
-        Call.status.in_(["failed", "busy", "no_answer", "canceled"]))) or 0
-    return {
-        "total_campaigns": int(campaigns),
-        "total_contacts": int(contacts),
-        "total_calls": int(calls),
-        "calls_answered": int(answered),
-        "calls_failed": int(failed),
-    }
+async def get_overview_summary():
+    """
+    Overall platform summary — total campaigns, contacts, calls made.
+    Used by the dashboard overview page.
+    """
+    if not is_supabase_configured():
+        return {
+            "total_campaigns": 0,
+            "total_contacts": 0,
+            "total_calls": 0,
+            "calls_answered": 0,
+            "calls_failed": 0,
+        }
+    try:
+        sb = get_supabase()
+
+        campaigns_resp = sb.table("campaigns").select("id", count="exact").execute()
+        contacts_resp = sb.table("contacts").select("id", count="exact").execute()
+        calls_resp = sb.table("calls").select("status").execute()
+        calls = calls_resp.data or []
+
+        return {
+            "total_campaigns": campaigns_resp.count or 0,
+            "total_contacts": contacts_resp.count or 0,
+            "total_calls": len(calls),
+            "calls_answered": sum(1 for c in calls if c.get("status") == "completed"),
+            "calls_failed": sum(1 for c in calls if c.get("status") in ("failed", "error")),
+        }
+    except Exception as exc:
+        err_str = str(exc).lower()
+        if "invalid api key" in err_str or "apikey" in err_str or "unauthorized" in err_str:
+            return {"total_campaigns": 0, "total_contacts": 0, "total_calls": 0, "calls_answered": 0, "calls_failed": 0}
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database error: {exc}",
+        )
