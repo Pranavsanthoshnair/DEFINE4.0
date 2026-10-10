@@ -5,6 +5,17 @@
 -- Enable UUID generation
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- ── users ─────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role          TEXT NOT NULL DEFAULT 'organiser' CHECK (role IN ('admin', 'organiser')),
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS ix_users_email ON users(email);
+
 -- ── campaigns ──────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS campaigns (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -171,12 +182,13 @@ CREATE INDEX IF NOT EXISTS ix_exec_sessions_type ON execution_sessions(execution
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_is_sim ON execution_sessions(is_simulation);
 
 -- ── Row Level Security (enable but allow service role full access) ─────────
-ALTER TABLE campaigns        ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contacts         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE campaigns         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contacts          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE campaign_contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE calls             ENABLE ROW LEVEL SECURITY;
 ALTER TABLE call_events       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE templates         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users             ENABLE ROW LEVEL SECURITY;
 
 -- Service role bypasses RLS automatically in Supabase.
 -- Add user-scoped policies here when multi-tenancy is required.
