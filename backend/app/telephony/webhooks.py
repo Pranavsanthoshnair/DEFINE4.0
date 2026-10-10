@@ -386,21 +386,42 @@ async def _handle_flow_supabase(call_id_str: str | None, provider) -> Response:
         or audio_urls.get("welcome")
     )
 
+    log.info("flow_building_response",
+             campaign_id=campaign_id,
+             provider=provider.name,
+             has_audio=bool(greeting_url))
+
+    # Twilio: return TwiML XML directly
+    if provider.name == "twilio":
+        if greeting_url:
+            twiml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<Response>'
+                f'<Play>{greeting_url}</Play>'
+                '<Hangup/>'
+                '</Response>'
+            )
+        else:
+            # No pre-generated audio — use <Say> as fallback so caller hears something
+            twiml = (
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<Response>'
+                '<Say voice="alice" language="en-IN">'
+                'Hello! This is a campaign call from Veylo. Thank you for your time. Goodbye.'
+                '</Say>'
+                '<Hangup/>'
+                '</Response>'
+            )
+        log.info("flow_response_sent", campaign_id=campaign_id, provider="twilio")
+        return PlainTextResponse(content=twiml, media_type="application/xml")
+
+    # Exotel: return JSON steps
     steps = []
     if greeting_url:
         steps.append(Play(audio_url=greeting_url))
-        log.info("flow_playing_audio", campaign_id=campaign_id, url=greeting_url)
-    else:
-        log.warning("flow_no_audio_url", campaign_id=campaign_id, audio_keys=list(audio_urls.keys()))
-
     steps.append(Hangup())
-
     rendered = provider.render_steps(steps)
     log.info("flow_response_sent", campaign_id=campaign_id, steps=len(steps), provider=provider.name)
-
-    # Twilio needs XML, Exotel needs JSON
-    if provider.name == "twilio":
-        return PlainTextResponse(content=rendered, media_type="application/xml")
     return JSONResponse(content=rendered)
 
 
