@@ -239,12 +239,9 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
                 log.info("campaign_call_placed", provider=provider_name, phone_last4=phone[-4:])
             else:
                 failed += 1
-                log.warning("campaign_call_rejected", reason=result.raw_status)
-        except Exception as exc:
-            failed += 1
-            log.error("campaign_call_failed", error=str(exc), phone_last4=phone[-4:] if phone else "?")
-            # Surface the first error in the result so it's visible in the UI
-            if failed == 1:
+                rejection_reason = result.raw_status or "unknown rejection"
+                log.warning("campaign_call_rejected", reason=rejection_reason, phone_last4=phone[-4:])
+                # Surface Exotel rejection immediately so it shows in the UI
                 return {
                     "channel": "telephony",
                     "provider": provider_name,
@@ -252,8 +249,21 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
                     "calls_placed": placed,
                     "calls_failed": failed,
                     "calls_skipped_no_phone": skipped,
-                    "error": str(exc),
+                    "error": f"Exotel rejected call: {rejection_reason}",
                 }
+        except Exception as exc:
+            failed += 1
+            err_msg = str(exc)
+            log.error("campaign_call_failed", error=err_msg, phone_last4=phone[-4:] if phone else "?")
+            return {
+                "channel": "telephony",
+                "provider": provider_name,
+                "contacts_total": len(contacts),
+                "calls_placed": placed,
+                "calls_failed": failed,
+                "calls_skipped_no_phone": skipped,
+                "error": f"Call dispatch exception: {err_msg}",
+            }
 
     return {
         "channel": "telephony",
