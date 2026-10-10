@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Ensure telegram_chat_id column exists on pre-existing contacts table before indexing
+ALTER TABLE contacts ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
 CREATE INDEX IF NOT EXISTS ix_contacts_phone_hash ON contacts(phone_hash);
 CREATE INDEX IF NOT EXISTS ix_contacts_telegram_chat_id ON contacts(telegram_chat_id);
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
@@ -185,51 +187,46 @@ CREATE TABLE IF NOT EXISTS execution_sessions (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Ensure columns exist on pre-existing execution_sessions table before indexing
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS provider_session_id TEXT;
+ALTER TABLE execution_sessions ADD COLUMN IF NOT EXISTS is_simulation BOOLEAN NOT NULL DEFAULT TRUE;
+
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_campaign ON execution_sessions(campaign_id);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_type ON execution_sessions(execution_type);
 CREATE INDEX IF NOT EXISTS ix_exec_sessions_is_sim ON execution_sessions(is_simulation);
 ALTER TABLE execution_sessions ENABLE ROW LEVEL SECURITY;
 
--- ── Allow authenticated/service role full access policies ─────────────────
+-- ── Policies ──────────────────────────────────────────────────────────────
 DO $$
 BEGIN
-    -- users policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'users' AND policyname = 'service_role_all_users') THEN
         CREATE POLICY service_role_all_users ON users FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- campaigns policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'campaigns' AND policyname = 'service_role_all_campaigns') THEN
         CREATE POLICY service_role_all_campaigns ON campaigns FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- contacts policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'contacts' AND policyname = 'service_role_all_contacts') THEN
         CREATE POLICY service_role_all_contacts ON contacts FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- campaign_contacts policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'campaign_contacts' AND policyname = 'service_role_all_cc') THEN
         CREATE POLICY service_role_all_cc ON campaign_contacts FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- calls policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'calls' AND policyname = 'service_role_all_calls') THEN
         CREATE POLICY service_role_all_calls ON calls FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- call_events policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'call_events' AND policyname = 'service_role_all_events') THEN
         CREATE POLICY service_role_all_events ON call_events FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- templates policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'templates' AND policyname = 'service_role_all_templates') THEN
         CREATE POLICY service_role_all_templates ON templates FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- dnd_numbers policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'dnd_numbers' AND policyname = 'service_role_all_dnd') THEN
         CREATE POLICY service_role_all_dnd ON dnd_numbers FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- audit_log policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'audit_log' AND policyname = 'service_role_all_audit') THEN
         CREATE POLICY service_role_all_audit ON audit_log FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
-    -- execution_sessions policy
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'execution_sessions' AND policyname = 'service_role_all_exec') THEN
         CREATE POLICY service_role_all_exec ON execution_sessions FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
     END IF;
