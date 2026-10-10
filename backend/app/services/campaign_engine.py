@@ -263,7 +263,7 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
                     "calls_placed": placed,
                     "calls_failed": failed,
                     "calls_skipped_no_phone": skipped,
-                    "error": f"Exotel rejected call: {rejection_reason}",
+                    "error": f"{provider_name} rejected call: {rejection_reason}",
                 }
         except Exception as exc:
             failed += 1
