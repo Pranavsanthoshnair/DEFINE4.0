@@ -361,43 +361,97 @@ async def signup(
             detail={"error": {"code": "email_exists", "message": "An account with this email already exists."}},
         )
 
+async def _save_user(
+    email: str,
+    password_hash: str,
+    role: str = "organiser",
+    db: AsyncSession | None = None,
+) -> dict[str, Any]:
+    """Persist user to Supabase/PostgreSQL, failing loudly in production if DB is unavailable."""
+    email_clean = email.strip().lower()
     user_id = str(uuid.uuid4())
     now_iso = datetime.now(timezone.utc).isoformat()
-    hashed_pwd = get_password_hash(body.password)
-    user_role = body.role if body.role in ("admin", "organiser") else "organiser"
-
     user_record = {
         "id": user_id,
         "email": email_clean,
-        "password_hash": hashed_pwd,
-        "role": user_role,
+        "password_hash": password_hash,
+        "role": role,
         "created_at": now_iso,
     }
 
-    # Store in memory
-    _users_by_email[email_clean] = user_record
-    _users_by_id[user_id] = user_record
+    db_success = False
+    supabase_err = None
+    db_err = None
 
-    # Try storing in Supabase REST
     if is_supabase_configured():
         try:
             sb = get_supabase()
             sb.table("users").insert(user_record).execute()
+            db_success = True
         except Exception as e:
-            log.debug("supabase_user_insert_notice", error=str(e))
+            supabase_err = e
+            log.warning("supabase_user_insert_error", error=str(e))
 
-    # Try storing in direct DB
-    try:
-        new_user = User(
-            id=uuid.UUID(user_id),
-            email=email_clean,
-            password_hash=hashed_pwd,
-            role=user_role,
+    if db:
+        try:
+            new_user = User(
+                id=uuid.UUID(user_id),
+                email=email_clean,
+                password_hash=password_hash,
+                role=role,
+            )
+            db.add(new_user)
+            await db.commit()
+            db_success = True
+        except Exception as e:
+            db_err = e
+            log.warning("db_user_insert_error", error=str(e))
+
+    # In production, never fallback silently to in-memory state
+    if settings.environment == "production" and not db_success:
+        log.error("production_db_unavailable", supabase_err=str(supabase_err), db_err=str(db_err))
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={"error": {"code": "database_unavailable", "message": "Database unavailable in production. Memory fallback is disabled."}},
         )
-        db.add(new_user)
-        await db.commit()
-    except Exception as e:
-        log.debug("db_user_insert_notice", error=str(e))
+
+    # Store in memory for dev / caching
+    _users_by_email[email_clean] = user_record
+    _users_by_id[user_id] = user_record
+    return user_record
+
+
+@router.post("/signup", response_model=TokenResponse)
+async def signup(
+    request: Request,
+    body: SignupRequest,
+    db: Annotated[AsyncSession, Depends(get_db)],
+) -> TokenResponse:
+    """Create a new user account with secure password hashing.
+
+    In production, this strictly requires persistent database storage.
+    """
+    ip = request.client.host if request.client else "unknown"
+    _check_rate_limit(ip)
+
+    email_clean = body.email.strip().lower()
+    existing = await _find_user_by_email(email_clean, db)
+    if existing is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"error": {"code": "email_exists", "message": "An account with this email already exists."}},
+        )
+
+    user_role = body.role if body.role in ("admin", "organiser") else "organiser"
+    hashed_pwd = get_password_hash(body.password)
+
+    user_record = await _save_user(
+        email=email_clean,
+        password_hash=hashed_pwd,
+        role=user_role,
+        db=db,
+    )
+    user_id = user_record["id"]
 
     token = create_access_token({"sub": user_id})
     log.info("signup_ok", user_id=user_id, role=user_role, email=email_clean)

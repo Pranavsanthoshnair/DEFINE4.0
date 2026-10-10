@@ -42,6 +42,7 @@ ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY;
 -- ── 3. contacts ───────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS contacts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name            TEXT,                  -- Customer / contact name
     phone_enc       TEXT NOT NULL,         -- hex-encoded encrypted phone
     phone_hash      VARCHAR(64) NOT NULL UNIQUE,
     phone_last4     VARCHAR(4) NOT NULL,
@@ -58,7 +59,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Ensure telegram_chat_id column exists on pre-existing contacts table before indexing
+-- Ensure name and telegram_chat_id columns exist on pre-existing contacts table before indexing
+ALTER TABLE contacts ADD COLUMN IF NOT EXISTS name TEXT;
 ALTER TABLE contacts ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
 CREATE INDEX IF NOT EXISTS ix_contacts_phone_hash ON contacts(phone_hash);
 CREATE INDEX IF NOT EXISTS ix_contacts_telegram_chat_id ON contacts(telegram_chat_id);
