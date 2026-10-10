@@ -31,6 +31,7 @@ class ContactIn(BaseModel):
     language: str = "en"
     segment: Optional[str] = "General"
     notes: Optional[str] = None
+    telegram_chat_id: Optional[str] = None
 
 
 class ContactOut(BaseModel):
@@ -83,6 +84,8 @@ async def create_contact(body: ContactIn):
         existing = sb.table(_TABLE).select("id").eq("phone_hash", phone_hash).limit(1).execute()
         if existing.data:
             contact_id = existing.data[0]["id"]
+            if body.telegram_chat_id:
+                sb.table(_TABLE).update({"telegram_chat_id": body.telegram_chat_id}).eq("id", contact_id).execute()
         else:
             row = {
                 "id": str(uuid.uuid4()),
@@ -91,6 +94,7 @@ async def create_contact(body: ContactIn):
                 "phone_last4": phone_last4,
                 "language": body.language,
                 "segment": body.segment,
+                "telegram_chat_id": body.telegram_chat_id,
                 "consent": True,
                 "consent_source": "single_import",
                 "consent_at": now,

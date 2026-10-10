@@ -46,6 +46,10 @@ CREATE TABLE IF NOT EXISTS contacts (
 
 CREATE INDEX IF NOT EXISTS ix_contacts_phone_hash ON contacts(phone_hash);
 
+-- Telegram delivery address for contacts. Safe to run against an existing database.
+ALTER TABLE contacts ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT;
+CREATE INDEX IF NOT EXISTS ix_contacts_telegram_chat_id ON contacts(telegram_chat_id);
+
 -- ── campaign_contacts ─────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS campaign_contacts (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),

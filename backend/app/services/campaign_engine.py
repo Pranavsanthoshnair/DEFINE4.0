@@ -30,6 +30,7 @@ import structlog
 
 from app.core.config import settings
 from app.db.supabase_client import get_supabase
+from app.security.crypto import decrypt
 from app.telephony.providers.factory import active_provider_name, get_provider
 
 log = structlog.get_logger()
@@ -75,7 +76,7 @@ def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
     sb = get_supabase()
     resp = (
         sb.table(_CONTACTS_TABLE)
-        .select("*, contacts(phone_enc, phone_last4, language)")
+        .select("*, contacts(phone_enc, phone_last4, language, telegram_chat_id)")
         .eq("campaign_id", campaign_id)
         .eq("status", "pending")
         .limit(limit)
@@ -92,11 +93,17 @@ def _get_contacts(campaign_id: str, limit: int = 500) -> list[dict]:
 
 
 def _decode_phone(row: dict) -> str | None:
-    """Decode hex-encoded phone from contacts table and normalize to E.164."""
-    phone_enc = row.get("phone_enc", "")
+    """Decrypt a contact phone and normalize it to E.164."""
+    phone_enc = row.get("phone_enc")
     if phone_enc:
         try:
-            raw = bytes.fromhex(phone_enc).decode("utf-8")
+            if isinstance(phone_enc, str):
+                # Supabase can return bytea as either hex text or a bytea value.
+                encoded = phone_enc[2:] if phone_enc.startswith("\\x") else phone_enc
+                phone_blob = bytes.fromhex(encoded)
+            else:
+                phone_blob = bytes(phone_enc)
+            raw = decrypt(phone_blob)
             # Strip non-digits except leading +
             if raw.startswith("+"):
                 digits = "+" + "".join(c for c in raw[1:] if c.isdigit())
@@ -147,33 +154,20 @@ async def _run_telephony(campaign: dict, contacts: list[dict]) -> dict:
 
     # Step 1: Pre-generate ElevenLabs audio (graceful fallback if key not set)
     log.info("campaign_engine_telephony_audio_prep", campaign_id=campaign_id)
-<<<<<<< HEAD
-    from app.services.tts_service import generate_campaign_audio
-    audio_urls = await generate_campaign_audio(
-        campaign_id=campaign_id,
-        campaign_name=campaign_name,
-        language=language,
-        custom_scripts=(campaign.get("script") or campaign.get("template_script")
-                        if isinstance(campaign.get("script") or campaign.get("template_script"), dict)
-                        else None),
-    )
-    # Save audio URLs to campaign
-    sb = get_supabase()
-    sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
-=======
     audio_urls: dict = {}
     try:
         from app.services.tts_service import generate_campaign_audio
+        scripts = campaign.get("script") or campaign.get("template_script")
         audio_urls = await generate_campaign_audio(
             campaign_id=campaign_id,
             campaign_name=campaign_name,
             language=language,
+            custom_scripts=scripts if isinstance(scripts, dict) else None,
         )
         sb = get_supabase()
         sb.table(_CAMP_TABLE).update({"audio_urls": audio_urls}).eq("id", campaign_id).execute()
     except Exception as exc:
         log.warning("campaign_engine_tts_skipped", error=str(exc))
->>>>>>> 1305cc7c61e5decba9f2e912782a415522e4f450
 
     # Step 2: Place calls
     provider = get_provider()
@@ -308,7 +302,13 @@ async def _run_browser(campaign: dict, contacts: list[dict]) -> dict:
 
 # ── Channel 3: TELEGRAM BOT ───────────────────────────────────────────────────
 
-async def _send_telegram_invite(chat_id: str | int, campaign_name: str, campaign_id: str) -> bool:
+async def _send_telegram_invite(
+    chat_id: str | int,
+    campaign_name: str,
+    campaign_id: str,
+    language: str = "en",
+    prompt: str | None = None,
+) -> bool:
     """Send a campaign invitation via Telegram with inline keyboard."""
     if not settings.telegram_bot_token:
         return False
@@ -322,6 +322,18 @@ async def _send_telegram_invite(chat_id: str | int, campaign_name: str, campaign
                 [{"text": "📞 Request callback", "callback_data": f"campaign:{campaign_id}:call_later"}],
             ]
         }
+        invite_text = prompt or f"You have been invited to {campaign_name}. Please reply by voice, text, or number."
+        try:
+            from app.services.tts_service import synthesize_text
+            audio, _provider = await synthesize_text(invite_text, language)
+            async with httpx.AsyncClient(timeout=30) as client:
+                await client.post(
+                    f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendAudio",
+                    data={"chat_id": str(chat_id), "caption": "Campaign invitation"},
+                    files={"audio": ("invitation.mp3", audio, "audio/mpeg")},
+                )
+        except Exception as exc:
+            log.warning("telegram_invite_tts_failed", error_type=type(exc).__name__)
         async with httpx.AsyncClient(timeout=10) as client:
             await client.post(
                 f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage",
@@ -345,8 +357,6 @@ async def _run_telegram(campaign: dict, contacts: list[dict]) -> dict:
     """Send Telegram invitations to contacts that have a telegram_chat_id."""
     campaign_id = campaign["id"]
     campaign_name = campaign.get("name", "Campaign")
-    prompt = f"You have been invited to {campaign_name}. Tap a button or send a voice note to respond."
-
     sent = 0
     skipped = 0
 
@@ -356,7 +366,10 @@ async def _run_telegram(campaign: dict, contacts: list[dict]) -> dict:
             skipped += 1
             continue
         try:
-            ok = await _send_telegram_invite(chat_id, campaign_name, campaign_id)
+            language = contact.get("language") or campaign.get("language", "en")
+            from app.services.tts_service import build_localized_prompt
+            prompt = await build_localized_prompt(campaign, language)
+            ok = await _send_telegram_invite(chat_id, campaign_name, campaign_id, language, prompt)
             if ok:
                 _create_session(campaign_id, "TELEGRAM", contact, prompt)
                 sent += 1

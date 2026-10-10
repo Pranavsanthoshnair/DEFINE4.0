@@ -90,10 +90,48 @@ async def list_calls(
                 .range(offset, offset + limit - 1)
             )
         resp = q.execute()
+        rows = resp.data or []
+
+        # Telegram replies are stored as execution_sessions, but belong in the
+        # same history returned to the dashboard.
+        session_query = (
+            sb.table("execution_sessions")
+            .select("id,campaign_id,status,outcome,created_at,intent,confidence,decision_method,language")
+            .eq("execution_type", "TELEGRAM")
+            .order("created_at", desc=True)
+            .limit(limit)
+        )
+        if campaign_id:
+            session_query = session_query.eq("campaign_id", campaign_id)
+        rows.extend(session_query.execute().data or [])
+
+        # Resolve contact details through campaign_contacts because calls stores
+        # the campaign-contact link rather than a direct contact_id.
+        link_by_id: dict[str, dict] = {}
+        contact_by_id: dict[str, dict] = {}
+        row_cc_ids = [str(r.get("campaign_contact_id")) for r in rows if r.get("campaign_contact_id")]
+        if row_cc_ids:
+            links_resp = (
+                sb.table("campaign_contacts")
+                .select("id,contact_id")
+                .in_("id", row_cc_ids)
+                .execute()
+            )
+            links = links_resp.data or []
+            link_by_id = {str(link["id"]): link for link in links}
+            contact_ids = [str(link["contact_id"]) for link in links if link.get("contact_id")]
+            if contact_ids:
+                contacts_resp = (
+                    sb.table("contacts")
+                    .select("id,phone_last4,language")
+                    .in_("id", contact_ids)
+                    .execute()
+                )
+                contact_by_id = {str(contact["id"]): contact for contact in (contacts_resp.data or [])}
         return [
             CallRecord(
                 id=str(r["id"]),
-                campaign_id=campaign_id,
+                campaign_id=campaign_id or r.get("campaign_id"),
                 campaign_contact_id=r.get("campaign_contact_id"),
                 status=r.get("status", "unknown"),
                 outcome=r.get("outcome"),
@@ -101,7 +139,10 @@ async def list_calls(
                 created_at=str(r.get("created_at", "")),
                 contact=(f"••••{contact_by_id[str(link_by_id[str(r.get('campaign_contact_id'))].get('contact_id'))].get('phone_last4')}"
                          if str(r.get("campaign_contact_id")) in link_by_id and link_by_id[str(r.get("campaign_contact_id"))].get("contact_id") in contact_by_id else None),
-                lang=(contact_by_id.get(str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("contact_id")), {}).get("language")
+                intent=r.get("intent"),
+                confidence=r.get("confidence"),
+                method=r.get("decision_method"),
+                lang=(r.get("language") or contact_by_id.get(str(link_by_id.get(str(r.get("campaign_contact_id")), {}).get("contact_id")), {}).get("language")
                       or None),
             )
             for r in rows

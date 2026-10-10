@@ -29,6 +29,8 @@ import asyncio
 import hashlib
 import hmac
 import tempfile
+import uuid
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 import httpx
@@ -142,9 +144,107 @@ async def _classify_text(text: str, language: str = "en") -> tuple[str, Optional
     return intent, confidence, method
 
 
+async def _send_voice_reply(chat_id: int | str, text: str, language: str) -> None:
+    """Send a spoken response, with a text fallback when TTS is unavailable."""
+    try:
+        from app.services.tts_service import synthesize_text
+        audio, _provider = await synthesize_text(text, language)
+        await _send_audio(chat_id, audio)
+    except Exception as exc:
+        log.warning("telegram_tts_failed", error_type=type(exc).__name__)
+        await _send_message(chat_id, text)
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _active_session(chat_id: int | str, campaign_id: Optional[str] = None) -> Optional[dict]:
+    """Find the latest active Telegram session for this chat."""
+    sb = get_supabase()
+    query = (
+        sb.table("execution_sessions")
+        .select("*")
+        .eq("telegram_chat_id", str(chat_id))
+        .in_("status", ["active", "prompting"])
+        .order("created_at", desc=True)
+        .limit(1)
+    )
+    if campaign_id:
+        query = query.eq("campaign_id", campaign_id)
+    response = query.execute()
+    return (response.data or [None])[0]
+
+
+def _create_telegram_session(chat_id: int | str, campaign: dict, language: str, prompt: str) -> dict:
+    session = {
+        "id": str(uuid.uuid4()),
+        "campaign_id": campaign["id"],
+        "execution_type": "TELEGRAM",
+        "language": language,
+        "status": "active",
+        "is_simulation": False,
+        "prompt_text": prompt,
+        "telegram_chat_id": str(chat_id),
+        "created_at": _utc_now(),
+        "updated_at": _utc_now(),
+    }
+    get_supabase().table("execution_sessions").insert(session).execute()
+    return session
+
+
+async def _persist_telegram_response(
+    chat_id: int | str,
+    transcript: Optional[str],
+    intent: str,
+    confidence: Optional[float],
+    method: str,
+    campaign_id: Optional[str] = None,
+) -> Optional[dict]:
+    """Persist the reply to its active campaign session."""
+    session = _active_session(chat_id, campaign_id)
+    if not session:
+        return None
+    now = _utc_now()
+    get_supabase().table("execution_sessions").update({
+        "status": "completed",
+        "transcript": transcript,
+        "intent": intent,
+        "confidence": confidence,
+        "decision_method": method,
+        "outcome": intent,
+        "responded_at": now,
+        "updated_at": now,
+    }).eq("id", session["id"]).execute()
+    return session
+
+
+async def _respond_to_telegram(
+    chat_id: int | str,
+    transcript: Optional[str],
+    intent: str,
+    confidence: Optional[float],
+    method: str,
+    campaign_id: Optional[str] = None,
+) -> None:
+    """Send spoken acknowledgement and mark the matching site session complete."""
+    session = await _persist_telegram_response(
+        chat_id, transcript, intent, confidence, method, campaign_id
+    )
+    reply = _INTENT_LABELS.get(intent, _INTENT_LABELS["unclear"])
+    language = (session or {}).get("language", "en")
+    await _send_voice_reply(chat_id, reply, language)
+    if intent == "unclear":
+        await _send_message(chat_id, "Please choose an option:", reply_markup=_rsvp_keyboard())
+    if not session:
+        log.info("telegram_response_without_active_session", chat_id=str(chat_id))
+
+
 # ── Update handlers ───────────────────────────────────────────────────────────
 
 async def _handle_voice(chat_id: int, voice: dict, language: str = "en") -> None:
+    active = _active_session(chat_id)
+    language = (active or {}).get("language", language)
     """Download voice note → STT → classify → persist → reply."""
     file_id: Optional[str] = voice.get("file_id")
     file_size: int = voice.get("file_size", 0)
@@ -180,6 +280,14 @@ async def _handle_voice(chat_id: int, voice: dict, language: str = "en") -> None
         intent = result.intent
         confidence = result.confidence
         method = result.source or "rules"
+        await _respond_to_telegram(
+            chat_id,
+            transcript,
+            intent or "unclear",
+            confidence,
+            method,
+        )
+        return
     except Exception as exc:
         log.warning("telegram_stt_failed", error=str(exc))
         await _send_message(
@@ -224,10 +332,14 @@ async def _handle_callback_query(callback: dict) -> None:
     data = callback.get("data", "")
     callback_query_id = callback["id"]
 
-    if data.startswith("intent:"):
-        intent = data.split("intent:")[1]
-        reply = _INTENT_LABELS.get(intent, _INTENT_LABELS["unclear"])
-        await _send_message(chat_id, reply)
+    campaign_id: Optional[str] = None
+    if data.startswith("campaign:"):
+        _, campaign_id, intent = data.split(":", 2)
+    elif data.startswith("intent:"):
+        intent = data.split("intent:", 1)[1]
+    else:
+        intent = "unclear"
+    await _respond_to_telegram(chat_id, None, intent, None, "telegram_button", campaign_id)
 
     # Answer callback to remove loading spinner
     async with httpx.AsyncClient(timeout=5) as client:
@@ -276,6 +388,22 @@ async def telegram_webhook(
             text = msg.get("text", "")
 
             if text.startswith("/start"):
+                parts = text.split(maxsplit=1)
+                if len(parts) == 2:
+                    campaign_id = parts[1].strip()
+                    try:
+                        campaign_resp = get_supabase().table("campaigns").select("*").eq("id", campaign_id).single().execute()
+                        campaign = campaign_resp.data
+                        if campaign:
+                            language = (campaign.get("language") or "en").lower()
+                            from app.services.tts_service import build_localized_prompt
+                            prompt = await build_localized_prompt(campaign, language)
+                            _create_telegram_session(chat_id, campaign, language, prompt)
+                            await _send_voice_reply(chat_id, prompt, language)
+                            await _send_message(chat_id, "Please reply by voice, text, or number:", reply_markup=_rsvp_keyboard())
+                            return JSONResponse({"ok": True})
+                    except Exception as exc:
+                        log.warning("telegram_start_campaign_failed", error_type=type(exc).__name__)
                 await _send_message(
                     chat_id,
                     "👋 Welcome to <b>Veylo</b>!\n\n"
@@ -300,6 +428,11 @@ async def telegram_webhook(
 
             elif text:
                 intent, confidence, method = await _classify_text(text)
+                if text.strip() in {"1", "2", "3", "0"}:
+                    intent = {"1": "confirm", "2": "decline", "3": "call_later", "0": "unclear"}[text.strip()]
+                    method = "telegram_keypad"
+                await _respond_to_telegram(chat_id, text, intent, confidence, method)
+                return JSONResponse({"ok": True})
                 reply = _INTENT_LABELS.get(intent, _INTENT_LABELS["unclear"])
                 await _send_message(
                     chat_id,
