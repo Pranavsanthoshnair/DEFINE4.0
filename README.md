@@ -6,7 +6,10 @@ Veylo helps organisations create, launch, monitor, and analyse outbound calling 
 
 ---
 
+
+
 ## Quick Start
+
 
 ### Prerequisites
 
@@ -18,6 +21,7 @@ Veylo helps organisations create, launch, monitor, and analyse outbound calling 
 | pip | 24.x |
 
 ---
+
 
 ### 1 — Clone the repo
 
@@ -177,6 +181,7 @@ DEFINE4.0/
 ```
 
 
+
 ---
 
 ## Environment Variables
@@ -232,30 +237,43 @@ pytest tests/ -v
 
 ---
 
+
+
+
 ## Implementation Status
 
 | Feature | Status |
 |---------|--------|
 | Project structure & architecture | ✅ Done |
 | Frontend shell (landing, dashboard, campaigns, contacts, analytics) | ✅ Done |
-| Backend health endpoint | ✅ Done |
-| Campaign CRUD stubs | ✅ Stub |
-| Contact import stubs | ✅ Stub |
-| Supabase integration | 🔲 Pending |
-| AI script generation | 🔲 Pending |
-| Exotel call initiation | 🔲 Pending |
-| Webhook processing | 🔲 Pending |
-| Retry logic | 🔲 Pending |
-| Analytics aggregation | 🔲 Pending |
-| Campaign creation wizard UI | 🔲 Pending |
-| Live campaign monitoring UI | 🔲 Pending |
+| Backend API (campaigns, contacts, calls, sessions, analytics) | ✅ Done |
+| AI microservice (STT, TTS, translation, intent detection) | ✅ Done |
+| Campaign creation wizard UI | ✅ Done |
+| Campaign engine & orchestration | ✅ Done |
+| Exotel call initiation & integration | ✅ Done |
+| Webhook processing (Exotel callbacks) | ✅ Done |
+| Retry logic & adaptive scheduling | ✅ Done |
+| Telegram bot integration | ✅ Done |
+| Call simulation / testing mode | ✅ Done |
+| Call recording handling | ✅ Done |
+| Multilingual support (translate + STT/TTS) | ✅ Done |
+| Supabase auth & database integration | ✅ Done |
+| Analytics aggregation | ✅ Done |
+| Contact CSV import | ✅ Done |
+| AI-generated call scripts | ✅ Done |
+| Live campaign monitoring UI | ✅ Done |
+| AI insights page | ✅ Done |
+| Full test coverage | ✅ Done |
 
 ---
 
-## Team
+## Team : KMAP
 
-| Name | Role |
-|------|------|
-| — | — |
+## 👥 Team Members
+
+- Keerthana G Pillai
+- Maria S Patani
+- Ananthakrishnan K.V
+- Pranav S Nair
 
 DEFINE 4.0 — The World's Realest Hackathon
