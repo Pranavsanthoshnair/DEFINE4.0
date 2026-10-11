@@ -81,24 +81,101 @@ App available at: http://localhost:3000
 
 ## Project Structure
 
+## 📁 Project Structure
+
 ```
 DEFINE4.0/
-├── frontend/          Next.js 16 + TypeScript + Tailwind CSS
+├── backend/                        # FastAPI backend
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── routes/             # REST API endpoints
+│   │   │       ├── campaigns.py
+│   │   │       ├── calls.py
+│   │   │       ├── contacts.py
+│   │   │       ├── sessions.py
+│   │   │       ├── analytics.py
+│   │   │       ├── webhooks.py
+│   │   │       ├── telegram_webhook.py
+│   │   │       └── ...
+│   │   ├── services/               # Business logic layer
+│   │   │   ├── campaign_engine.py
+│   │   │   ├── campaign_service.py
+│   │   │   ├── ai_service.py
+│   │   │   ├── intent_service.py
+│   │   │   ├── tts_service.py
+│   │   │   ├── exotel_service.py
+│   │   │   └── ...
+│   │   ├── models/                 # SQLAlchemy ORM models
+│   │   ├── schemas/                # Pydantic schemas
+│   │   ├── repositories/           # DB access layer
+│   │   ├── core/                   # Config, logging, deps
+│   │   ├── db/                     # DB init & migrations
+│   │   ├── telephony/              # Telephony integrations
+│   │   ├── providers/              # External provider clients
+│   │   ├── ai_client/              # AI model client
+│   │   ├── analytics/              # Analytics module
+│   │   ├── campaigns/              # Campaign orchestration
+│   │   ├── security/               # Auth & security
+│   │   ├── templates/              # Prompt templates
+│   │   ├── celery_app.py           # Celery task queue
+│   │   └── main.py                 # App entrypoint
+│   ├── tests/
+│   ├── requirements.txt
+│   └── Dockerfile
+│
+├── frontend/                       # Next.js 14 frontend
 │   └── src/
-│       ├── app/       App Router pages (dashboard, campaigns, contacts, analytics)
-│       ├── components/layout/ and campaigns/
-│       ├── lib/       api-client.ts, supabase.ts, utils.ts
-│       └── types/     Shared TypeScript domain types
-├── backend/           FastAPI + Python 3.11
+│       ├── app/                    # Next.js App Router
+│       │   ├── (app)/              # Authenticated routes
+│       │   │   ├── overview/       # Dashboard overview
+│       │   │   ├── campaigns/      # Campaign management
+│       │   │   ├── contacts/       # Contact management
+│       │   │   ├── calls/          # Call logs & history
+│       │   │   ├── analytics/      # Analytics & reporting
+│       │   │   ├── insights/       # AI insights
+│       │   │   ├── templates/      # Script templates
+│       │   │   ├── team/           # Team management
+│       │   │   └── settings/       # App settings
+│       │   ├── login/
+│       │   ├── signup/
+│       │   └── dashboard/
+│       ├── components/
+│       │   ├── campaigns/          # Campaign UI components
+│       │   ├── ui/                 # Base UI components
+│       │   ├── layout/             # Sidebar, navbar, etc.
+│       │   ├── landing/            # Landing page sections
+│       │   └── motion/             # Animation components
+│       ├── hooks/                  # Custom React hooks
+│       ├── lib/                    # API client, utilities
+│       ├── context/                # React context providers
+│       └── types/                  # TypeScript type definitions
+│
+├── ai/                             # AI/ML microservice
 │   └── app/
-│       ├── main.py    Application factory + CORS
-│       ├── core/      config.py, security.py
-│       ├── api/routes/ health, campaigns, contacts, calls, analytics, webhooks
-│       ├── services/  campaign, exotel, ai, retry, analytics
-│       └── tests/     Smoke tests
-├── docs/              architecture.md, api.md
-└── .gitignore
+│       ├── stt/                    # Speech-to-text
+│       ├── tts/                    # Text-to-speech
+│       ├── translate/              # Translation
+│       ├── intent/                 # Intent detection
+│       ├── audio/                  # Audio processing
+│       ├── providers/              # AI provider adapters
+│       ├── config.py
+│       └── main.py
+│
+├── infra/                          # Infrastructure configs
+│   ├── caddy/                      # Caddy reverse proxy
+│   ├── backup/                     # DB backup scripts
+│   ├── deploy/                     # Deployment scripts
+│   └── supabase_schema.sql
+│
+├── docs/                           # Documentation
+├── scripts/                        # Utility scripts
+├── fixtures/                       # Seed/fixture data
+├── docker-compose.yml
+├── render.yaml                     # Render.com deployment
+├── Makefile
+└── .env.example
 ```
+
 
 ---
 
